@@ -7,7 +7,7 @@ import trophy from '@images/misc/trophy.png'
     <VCardText>
       <div class="mb-2">
         <h5 class="text-h5">
-          Congratulations John! <span class="text-high-emphasis">🎉</span>
+          Congratulations Deemz <span class="text-high-emphasis">🎉</span>
         </h5>
         <div class="text-body-1">
           Best seller of the month

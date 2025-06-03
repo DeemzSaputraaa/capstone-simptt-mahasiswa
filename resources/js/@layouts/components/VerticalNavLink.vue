@@ -26,12 +26,14 @@ const props = defineProps({
       <span class="nav-item-title">
         {{ item.title }}
       </span>
-      <span
+      <!--
+        <span
         class="nav-item-badge"
         :class="item.badgeClass"
-      >
+        >
         {{ item.badgeContent }}
-      </span>
+        </span> 
+      -->
     </Component>
   </li>
 </template>

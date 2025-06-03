@@ -33,20 +33,22 @@ import UserProfile from '@/layouts/components/UserProfile.vue'
           </IconBtn>
 
           <span class="d-none d-md-flex align-center text-disabled">
-            <span class="me-3">Search</span>
+            <span class="me-3">Mencari</span>
             <span class="meta-key">&#8984;K</span>
           </span>
         </div>
 
         <VSpacer />
 
-        <IconBtn
+        <!--
+          <IconBtn
           href="https://github.com/themeselection/materio-vuetify-vuejs-laravel-admin-template-free"
           target="_blank"
           rel="noopener noreferrer"
-        >
+          >
           <VIcon icon="ri-github-fill" />
-        </IconBtn>
+          </IconBtn> 
+        -->
 
         <IconBtn>
           <VIcon icon="ri-notification-line" />
@@ -71,7 +73,7 @@ import UserProfile from '@/layouts/components/UserProfile.vue'
         <!-- eslint-enable -->
 
         <h1 class="font-weight-medium leading-normal text-xl text-uppercase">
-          Materio
+          SIMPTT
         </h1>
       </RouterLink>
 

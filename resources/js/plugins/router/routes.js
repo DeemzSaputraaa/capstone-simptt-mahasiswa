@@ -32,6 +32,18 @@ export const routes = [
         path: 'form-layouts',
         component: () => import('@/pages/form-layouts.vue'),
       },
+      {
+        path: 'pra-yudisium',
+        component: () => import('@/pages/PraYudisium.vue'),
+      },
+      {
+        path: 'validasi-ijazah',
+        component: () => import('@/pages/ValidasiIjazah.vue'),
+      },
+      {
+        path: 'pendaftaran-legalisasi',
+        component: () => import('@/pages/PendaftaranLegalisasi.vue'),
+      },
     ],
   },
   {

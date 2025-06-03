@@ -1,285 +1,103 @@
 <script setup>
-import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTitle.vue'
 import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue'
 import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
 </script>
 
 <template>
   <!-- 👉 Dashboards -->
-  <VerticalNavGroup
+  <VerticalNavLink
     :item="{
       title: 'Dashboards',
-      badgeContent: '5',
-      badgeClass: 'bg-error',
+      // badgeContent: '5',
+      // badgeClass: 'bg-error',
       icon: 'ri-home-smile-line',
+      to: '/dashboard',
     }"
-  >
-    <VerticalNavLink
-      :item="{
-        title: 'Analytics',
-        to: '/dashboard',
-      }"
-    />
-    <VerticalNavLink
-      :item="{
-        title: 'CRM',
-        href: 'https://demos.themeselection.com/materio-vuetify-vuejs-laravel-admin-template/demo-1/dashboards/crm',
-        target: '_blank',
-        badgeContent: 'Pro',
-        badgeClass: 'bg-light-primary text-primary',
-      }"
-    />
-    <VerticalNavLink
-      :item="{
-        title: 'ECommerce',
-        href: 'https://demos.themeselection.com/materio-vuetify-vuejs-laravel-admin-template/demo-1/dashboards/ecommerce',
-        target: '_blank',
-        badgeContent: 'Pro',
-        badgeClass: 'bg-light-primary text-primary',
-      }"
-    />
-    <VerticalNavLink
-      :item="{
-        title: 'Academy',
-        href: 'https://demos.themeselection.com/materio-vuetify-vuejs-laravel-admin-template/demo-1/dashboards/academy',
-        target: '_blank',
-        badgeContent: 'Pro',
-        badgeClass: 'bg-light-primary text-primary',
-      }"
-    />
-    <VerticalNavLink
-      :item="{
-        title: 'Logistics',
-        href: 'https://demos.themeselection.com/materio-vuetify-vuejs-laravel-admin-template/demo-1/dashboards/logistics',
-        target: '_blank',
-        badgeContent: 'Pro',
-        badgeClass: 'bg-light-primary text-primary',
-      }"
-    />
-  </VerticalNavGroup>
+  />
+
+  <!-- 👉 Pra Yudisium -->
+  <VerticalNavLink
+    :item="{
+      title: 'Pra Yudisium',
+      icon: 'ri-file-copy-line',
+      to: '/pra-yudisium',
+    }"
+  />
+
+  <!-- 👉 Validasi Ijazah -->
+  <VerticalNavLink
+    :item="{
+      title: 'Validasi Ijazah',
+      icon: 'ri-file-copy-line',
+      to: '/validasi-ijazah',
+    }"
+  />
+
+  <!-- 👉 Pendaftaran Legalisasi -->
+  <VerticalNavLink
+    :item="{
+      title: 'Pendaftaran Legalisasi',
+      icon: 'ri-file-copy-line',
+      to: '/pendaftaran-legalisasi',
+    }"
+  />
 
   <!-- 👉 Front Pages -->
+  <!--
+    <VerticalNavLink
+    :item="{
+    title: 'Landing',
+    href: 'https://demos.themeselection.com/materio-vuetify-vuejs-laravel-admin-template/demo-1/front-pages/landing-page',
+    target: '_blank',
+    }"
+    />
+    <VerticalNavLink
+    :item="{
+    title: 'Pricing',
+    href: 'https://demos.themeselection.com/materio-vuetify-vuejs-laravel-admin-template/demo-1/front-pages/pricing',
+    target: '_blank',
+    }"
+    />
+    </VerticalNavGroup> 
+  -->
+
   <VerticalNavGroup
     :item="{
-      title: 'Front Pages',
+      title: 'Validasi Ijazah',
       icon: 'ri-file-copy-line',
-      badgeContent: 'Pro',
-      badgeClass: 'bg-light-primary text-primary',
+      // to: '/fitur-satu',
+      // href: 'FiturSatu',
+      // target: '_blank',
+      // path: '/fitur-satu',
     }"
   >
-    <VerticalNavLink
+    <VerticalNavLink 
       :item="{
-        title: 'Landing',
+        title: 'Pembayaran',
         href: 'https://demos.themeselection.com/materio-vuetify-vuejs-laravel-admin-template/demo-1/front-pages/landing-page',
-        target: '_blank',
+        // target: '_blank',
       }"
     />
-    <VerticalNavLink
+    <VerticalNavLink 
       :item="{
-        title: 'Pricing',
-        href: 'https://demos.themeselection.com/materio-vuetify-vuejs-laravel-admin-template/demo-1/front-pages/pricing',
-        target: '_blank',
-      }"
-    />
-    <VerticalNavLink
-      :item="{
-        title: 'Payment',
-        href: 'https://demos.themeselection.com/materio-vuetify-vuejs-laravel-admin-template/demo-1/front-pages/payment',
-        target: '_blank',
-      }"
-    />
-    <VerticalNavLink
-      :item="{
-        title: 'Checkout',
-        href: 'https://demos.themeselection.com/materio-vuetify-vuejs-laravel-admin-template/demo-1/front-pages/checkout',
-        target: '_blank',
-      }"
-    />
-    <VerticalNavLink
-      :item="{
-        title: 'Help Center',
-        href: 'https://demos.themeselection.com/materio-vuetify-vuejs-laravel-admin-template/demo-1/front-pages/help-center',
-        target: '_blank',
+        title: 'Pengiriman',
+        href: 'https://demos.themeselection.com/materio-vuetify-vuejs-laravel-admin-template/demo-1/front-pages/landing-page',
+        // target: '_blank',
       }"
     />
   </VerticalNavGroup>
-
-  <!-- 👉 Apps & Pages -->
-  <VerticalNavSectionTitle
+  <VerticalNavLink
     :item="{
-      heading: 'Apps & Pages',
+      title: 'Pendaftaran Ijazah',
+      icon: 'ri-file-copy-line',
+      to: '',
     }"
   />
   <VerticalNavLink
     :item="{
-      title: 'Email',
-      icon: 'ri-mail-line',
-      href: 'https://demos.themeselection.com/materio-vuetify-vuejs-laravel-admin-template/demo-1/apps/email',
-      target: '_blank',
-      badgeContent: 'Pro',
-      badgeClass: 'bg-light-primary text-primary',
-    }"
-  />
-  <VerticalNavLink
-    :item="{
-      title: 'Chat',
-      icon: 'ri-wechat-line',
-      href: 'https://demos.themeselection.com/materio-vuetify-vuejs-laravel-admin-template/demo-1/apps/chat',
-      target: '_blank',
-      badgeContent: 'Pro',
-      badgeClass: 'bg-light-primary text-primary',
-    }"
-  />
-  <VerticalNavLink
-    :item="{
-      title: 'Calendar',
-      icon: 'ri-calendar-line',
-      href: 'https://demos.themeselection.com/materio-vuetify-vuejs-laravel-admin-template/demo-1/apps/calendar',
-      target: '_blank',
-      badgeContent: 'Pro',
-      badgeClass: 'bg-light-primary text-primary',
-    }"
-  />
-  <VerticalNavLink
-    :item="{
-      title: 'Kanban',
-      icon: 'ri-drag-drop-line',
-      href: 'https://demos.themeselection.com/materio-vuetify-vuejs-laravel-admin-template/demo-1/apps/kanban',
-      target: '_blank',
-      badgeContent: 'Pro',
-      badgeClass: 'bg-light-primary text-primary',
-    }"
-  />
-
-  <VerticalNavLink
-    :item="{
-      title: 'Account Settings',
-      icon: 'ri-user-settings-line',
-      to: '/account-settings',
-    }"
-  />
-
-  <VerticalNavLink
-    :item="{
-      title: 'Login',
-      icon: 'ri-login-box-line',
-      to: '/login',
-    }"
-  />
-  <VerticalNavLink
-    :item="{
-      title: 'Register',
-      icon: 'ri-user-add-line',
-      to: '/register',
-    }"
-  />
-  <VerticalNavLink
-    :item="{
-      title: 'Error',
-      icon: 'ri-information-line',
-      to: '/no-existence',
-    }"
-  />
-
-  <!-- 👉 User Interface -->
-  <VerticalNavSectionTitle
-    :item="{
-      heading: 'User Interface',
-    }"
-  />
-  <VerticalNavLink
-    :item="{
-      title: 'Typography',
-      icon: 'ri-text',
-      to: '/typography',
-    }"
-  />
-  <VerticalNavLink
-    :item="{
-      title: 'Icons',
-      icon: 'ri-remixicon-line',
-      to: '/icons',
-    }"
-  />
-  <VerticalNavLink
-    :item="{
-      title: 'Cards',
-      icon: 'ri-bar-chart-box-line',
-      to: '/cards',
-    }"
-  />
-
-  <!-- 👉 Forms & Tables -->
-  <VerticalNavSectionTitle
-    :item="{
-      heading: 'Forms & Tables',
-    }"
-  />
-  <VerticalNavLink
-    :item="{
-      title: 'Form Layouts',
-      icon: 'ri-layout-4-line',
-      to: '/form-layouts',
-    }"
-  />
-  <VerticalNavLink
-    :item="{
-      title: 'Form Validation',
-      icon: 'ri-checkbox-multiple-line',
-      href: 'https://demos.themeselection.com/materio-vuetify-vuejs-laravel-admin-template/demo-1/forms/form-validation',
-      target: '_blank',
-      badgeContent: 'Pro',
-      badgeClass: 'bg-light-primary text-primary',
-    }"
-  />
-  <VerticalNavLink
-    :item="{
-      title: 'Form Wizard',
-      icon: 'ri-git-commit-line',
-      href: 'https://demos.themeselection.com/materio-vuetify-vuejs-laravel-admin-template/demo-1/forms/form-wizard-numbered',
-      target: '_blank',
-      badgeContent: 'Pro',
-      badgeClass: 'bg-light-primary text-primary',
-    }"
-  />
-  <VerticalNavLink
-    :item="{
-      title: 'Tables',
-      icon: 'ri-table-alt-line',
-      to: '/tables',
-    }"
-  />
-
-  <!-- 👉 Others -->
-  <VerticalNavSectionTitle
-    :item="{
-      heading: 'Others',
-    }"
-  />
-  <VerticalNavLink
-    :item="{
-      title: 'Access Control',
-      icon: 'ri-shield-line',
-      href: 'https://demos.themeselection.com/materio-vuetify-vuejs-laravel-admin-template/demo-1/access-control',
-      target: '_blank',
-      badgeContent: 'Pro',
-      badgeClass: 'bg-light-primary text-primary',
-    }"
-  />
-  <VerticalNavLink
-    :item="{
-      title: 'Documentation',
-      icon: 'ri-article-line',
-      href: 'https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/documentation/guide/laravel-integration/folder-structure.html',
-      target: '_blank',
-    }"
-  />
-  <VerticalNavLink
-    :item="{
-      title: 'Raise Support',
-      href: 'https://github.com/themeselection/materio-vuetify-vuejs-laravel-admin-template-free/issues',
-      icon: 'ri-lifebuoy-line',
-      target: '_blank',
+      title: 'Pendaftaran Legalisir',
+      icon: 'ri-file-copy-line',
+      to: '',
     }"
   />
 </template>
