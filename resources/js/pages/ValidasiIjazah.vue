@@ -50,12 +50,24 @@
               outlined
               dense
               hide-details
+              class="upload-field mb-2 custom-upload-box"
               prepend-icon=""
-              prepend-inner-icon="ri-upload-cloud-2-line"
-              label="Browse Files to upload"
-              class="upload-field mb-2"
-              @change="updateFileStatus('photoIjazah', $event)"
-            />
+              :show-size="false"
+            >
+              <template #default>
+                <div class="upload-center-content">
+                  <VIcon
+                    size="40"
+                    color="success"
+                  >
+                    ri-upload-cloud-2-line
+                  </VIcon>
+                  <div class="upload-label">
+                    Browse Files to upload
+                  </div>
+                </div>
+              </template>
+            </VFileInput>
             <div class="text-caption grey--text">
               {{ fileStatus.photoIjazah || 'No selected file' }}
             </div>
@@ -70,12 +82,24 @@
               outlined
               dense
               hide-details
+              class="upload-field mb-2 custom-upload-box"
               prepend-icon=""
-              prepend-inner-icon="ri-upload-cloud-2-line"
-              label="Browse Files to upload"
-              class="upload-field mb-2"
-              @change="updateFileStatus('photoCtp', $event)"
-            />
+              :show-size="false"
+            >
+              <template #default>
+                <div class="upload-center-content">
+                  <VIcon
+                    size="40"
+                    color="success"
+                  >
+                    ri-upload-cloud-2-line
+                  </VIcon>
+                  <div class="upload-label">
+                    Browse Files to upload
+                  </div>
+                </div>
+              </template>
+            </VFileInput>
             <div class="text-caption grey--text">
               {{ fileStatus.photoCtp || 'No selected file' }}
             </div>
@@ -140,31 +164,50 @@ export default {
   position: relative;
 }
 
-.upload-field .v-input__prepend-inner {
+.custom-upload-box {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  border: 2px dashed #2196f3 !important;
+  border-radius: 12px !important;
+  background: #fff;
+  box-shadow: 0 2px 8px 0 rgba(33, 150, 243, 5%);
+  margin-block-end: 16px;
+  min-block-size: 120px;
+}
+
+.upload-center-content {
   position: absolute;
-  z-index: 1;
-  inset-block-start: 50%;
-  inset-inline-start: 50%;
-  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  block-size: 100%;
+  inline-size: 100%;
+  inset: 0;
+  pointer-events: none;
+}
+
+.upload-label {
+  color: #2196f3;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-block-start: 8px;
 }
 
 .upload-field .v-input__slot {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  min-block-size: 120px !important;
+  min-block-size: unset !important;
 }
 
 .upload-field .v-label {
-  position: absolute;
-  inset-block-end: 20px;
-  inset-inline: 0;
-  margin-block-start: 60px;
-  text-align: center;
+  display: none;
 }
 
 .upload-field .v-input__control {
   block-size: 100%;
+}
+
+.upload-field .v-input__prepend-inner {
+  display: none;
 }
 </style> 
