@@ -78,10 +78,79 @@ const payments = [
 
 // Data dummy pengiriman
 const shipments = [
-  { date: '2024-06-10', item: 'Document A', status: 'Delivered' },
-  { date: '2024-06-09', item: 'Document B', status: 'In Transit' },
-  { date: '2024-06-08', item: 'Document C', status: 'Pending' },
+  { date: '2024-06-10', item: 'Document A', status: 'Delivered', trackingNumber: 'TRK123456789', history: [
+    { timestamp: '2024-06-10 10:00', location: 'Warehouse A', status: 'Delivered' },
+    { timestamp: '2024-06-09 18:00', location: 'Delivery Hub', status: 'Out for Delivery' },
+    { timestamp: '2024-06-09 09:00', location: 'Sorting Center B', status: 'In Transit' },
+    { timestamp: '2024-06-08 15:00', location: 'Origin Facility', status: 'Shipped' },
+  ] },
+  { date: '2024-06-09', item: 'Document B', status: 'In Transit', trackingNumber: 'TRK987654321', history: [
+    { timestamp: '2024-06-09 14:30', location: 'Sorting Center A', status: 'In Transit' },
+    { timestamp: '2024-06-09 10:00', location: 'Origin Facility', status: 'Shipped' },
+  ] },
+  { date: '2024-06-08', item: 'Document C', status: 'Pending', trackingNumber: 'TRK112233445', history: [
+    { timestamp: '2024-06-08 11:00', location: 'Waiting for pickup', status: 'Pending' },
+  ] },
 ]
+
+const trackingNumber = ref('')
+const showTrackingModal = ref(false)
+const trackingResults = ref(null)
+const searchError = ref(false)
+
+function trackShipment() {
+  searchError.value = false
+
+  const result = shipments.find(s => s.trackingNumber === trackingNumber.value)
+  if (result) {
+    trackingResults.value = result
+    showTrackingModal.value = true
+  } else {
+    searchError.value = true
+    trackingResults.value = null
+  }
+}
+
+const notifications = ref([
+  {
+    id: 1,
+    icon: 'ri-calendar-event-line',
+    color: 'warning',
+    title: 'You\'ve added new project recently, with no deadline.',
+  },
+  {
+    id: 2,
+    icon: 'ri-refund-2-line',
+    color: 'error',
+    title: 'Project owner Adam requested a refund',
+  },
+  {
+    id: 3,
+    icon: 'ri-user-3-line',
+    color: 'info',
+    title: 'Today, it\'s Tatia\'s anniversary! Wish her Happy Birthday!',
+  },
+  {
+    id: 4,
+    icon: 'ri-calendar-event-line',
+    color: 'warning',
+    title: 'Another project added without a deadline.',
+  },
+  {
+    id: 5,
+    icon: 'ri-refund-2-line',
+    color: 'error',
+    title: 'Another refund request from client Z.',
+  },
+  {
+    id: 6,
+    icon: 'ri-user-3-line',
+    color: 'info',
+    title: 'John Doe\'s birthday is next week.',
+  },
+])
+
+const showNotificationsModal = ref(false)
 </script>
 
 <template>
@@ -152,6 +221,7 @@ const shipments = [
               color="primary"
               class="text-none px-2"
               style="min-inline-size: 0;"
+              @click="showNotificationsModal = true"
             >
               See all
             </VBtn>
@@ -159,6 +229,8 @@ const shipments = [
           <div class="notification-scroll">
             <VList class="notification-list">
               <VListItem
+                v-for="notification in notifications.slice(0, 3)"
+                :key="notification.id"
                 class="notification-item mb-2"
                 rounded
               >
@@ -166,110 +238,15 @@ const shipments = [
                   <VAvatar
                     rounded
                     size="40"
-                    class="bg-warning"
+                    :class="`bg-${notification.color}`"
                   >
                     <VIcon color="white">
-                      ri-calendar-event-line
+                      {{ notification.icon }}
                     </VIcon>
                   </VAvatar>
                 </template>
                 <VListItemTitle class="text-body-2">
-                  You've added new project recently, with no deadline.
-                </VListItemTitle>
-              </VListItem>
-              <VListItem
-                class="notification-item mb-2"
-                rounded
-              >
-                <template #prepend>
-                  <VAvatar
-                    rounded
-                    size="40"
-                    class="bg-error"
-                  >
-                    <VIcon color="white">
-                      ri-refund-2-line
-                    </VIcon>
-                  </VAvatar>
-                </template>
-                <VListItemTitle class="text-body-2">
-                  Project owner Adam requested a refund
-                </VListItemTitle>
-              </VListItem>
-              <VListItem
-                class="notification-item"
-                rounded
-              >
-                <template #prepend>
-                  <VAvatar
-                    rounded
-                    size="40"
-                    class="bg-info"
-                  >
-                    <VIcon color="white">
-                      ri-user-3-line
-                    </VIcon>
-                  </VAvatar>
-                </template>
-                <VListItemTitle class="text-body-2">
-                  Today, it's Tatia's anniversary! <span class="text-caption text-grey">Wish her Happy Birthday!</span>
-                </VListItemTitle>
-              </VListItem>
-              <VListItem
-                class="notification-item mb-2"
-                rounded
-              >
-                <template #prepend>
-                  <VAvatar
-                    rounded
-                    size="40"
-                    class="bg-warning"
-                  >
-                    <VIcon color="white">
-                      ri-calendar-event-line
-                    </VIcon>
-                  </VAvatar>
-                </template>
-                <VListItemTitle class="text-body-2">
-                  You've added new project recently, with no deadline.
-                </VListItemTitle>
-              </VListItem>
-              <VListItem
-                class="notification-item mb-2"
-                rounded
-              >
-                <template #prepend>
-                  <VAvatar
-                    rounded
-                    size="40"
-                    class="bg-error"
-                  >
-                    <VIcon color="white">
-                      ri-refund-2-line
-                    </VIcon>
-                  </VAvatar>
-                </template>
-                <VListItemTitle class="text-body-2">
-                  Project owner Adam requested a refund
-                </VListItemTitle>
-              </VListItem>
-              <VListItem
-                class="notification-item"
-                rounded
-              >
-                <template #prepend>
-                  <VAvatar
-                    rounded
-                    size="40"
-                    class="bg-info"
-                  >
-                    <VIcon color="white">
-                      ri-user-3-line
-                    </VIcon>
-                  </VAvatar>
-                </template>
-                <VListItemTitle class="text-body-2">
-                  Today, it's Tatia's anniversary! <span class="text-caption text-grey">Wish her Happy Birthday!</span>
+                  {{ notification.title }}
                 </VListItemTitle>
               </VListItem>
             </VList>
@@ -277,6 +254,49 @@ const shipments = [
         </VCard>
       </VCol>
     </VRow>
+    <!-- All Notifications Modal -->
+    <VDialog
+      v-model="showNotificationsModal"
+      max-width="600"
+    >
+      <VCard>
+        <VCardTitle class="d-flex align-center justify-space-between pe-4">
+          Notifications
+          <VBtn
+            icon="ri-close-line"
+            variant="text"
+            size="small"
+            @click="showNotificationsModal = false"
+          />
+        </VCardTitle>
+        <VDivider />
+        <VCardText>
+          <VList class="notification-list">
+            <VListItem
+              v-for="notification in notifications"
+              :key="notification.id"
+              class="notification-item mb-2"
+              rounded
+            >
+              <template #prepend>
+                <VAvatar
+                  rounded
+                  size="40"
+                  :class="`bg-${notification.color}`"
+                >
+                  <VIcon color="white">
+                    {{ notification.icon }}
+                  </VIcon>
+                </VAvatar>
+              </template>
+              <VListItemTitle class="text-body-2">
+                {{ notification.title }}
+              </VListItemTitle>
+            </VListItem>
+          </VList>
+        </VCardText>
+      </VCard>
+    </VDialog>
     <!-- Statistik Cards -->
     <!--
       <VRow class="mt-2">
@@ -342,6 +362,23 @@ const shipments = [
           <div class="text-h6 font-weight-bold mb-3">
             Data Pengiriman Barang
           </div>
+          <VTextField
+            v-model="trackingNumber"
+            label="Enter Tracking Number"
+            placeholder="TRK123456789"
+            class="mb-3"
+            append-inner-icon="ri-search-line"
+            @click:append-inner="trackShipment"
+            @keyup.enter="trackShipment"
+          />
+          <VAlert
+            v-if="searchError"
+            type="error"
+            class="mb-3"
+            density="compact"
+          >
+            Tracking number not found.
+          </VAlert>
           <VList>
             <VListItem
               v-for="(ship, i) in shipments"
@@ -355,11 +392,65 @@ const shipments = [
               <VListItemSubtitle>
                 <span :class="ship.status === 'Delivered' ? 'text-success' : ship.status === 'In Transit' ? 'text-warning' : 'text-error'">{{ ship.status }}</span>
               </VListItemSubtitle>
+              <template #append>
+                <VBtn
+                  variant="text"
+                  color="primary"
+                  size="small"
+                  @click="trackingNumber = ship.trackingNumber; trackShipment()"
+                >
+                  Track
+                </VBtn>
+              </template>
             </VListItem>
           </VList>
         </VCard>
       </VCol>
     </VRow>
+    <!-- Tracking Modal -->
+    <VDialog
+      v-model="showTrackingModal"
+      max-width="600"
+    >
+      <VCard class="pa-6 rounded-lg">
+        <VCardTitle class="d-flex align-center justify-space-between pe-4">
+          Tracking Details: {{ trackingResults ? trackingResults.trackingNumber : '' }}
+          <VBtn
+            icon="ri-close-line"
+            variant="text"
+            size="small"
+            @click="showTrackingModal = false"
+          />
+        </VCardTitle>
+        <VDivider />
+        <VCardText v-if="trackingResults">
+          <VTimeline
+            density="compact"
+            align="start"
+            line-inset="8"
+          >
+            <VTimelineItem
+              v-for="(event, i) in trackingResults.history"
+              :key="i"
+              :dot-color="event.status === 'Delivered' ? 'success' : event.status === 'In Transit' ? 'warning' : 'info'"
+              size="small"
+            >
+              <div class="d-flex justify-space-between flex-wrap text-no-wrap mb-2">
+                <div class="text-body-2 font-weight-bold">
+                  {{ event.status }}
+                </div>
+                <small class="text-caption text-no-wrap text-grey">
+                  {{ event.timestamp }}
+                </small>
+              </div>
+              <p class="text-caption mb-0">
+                {{ event.location }}
+              </p>
+            </VTimelineItem>
+          </VTimeline>
+        </VCardText>
+      </VCard>
+    </VDialog>
     <!--
       <VRow class="match-height">
       <VCol
@@ -454,20 +545,14 @@ const shipments = [
   transition: background 0.3s;
 }
 
-.welcome-card {
-  padding: 1.5rem;
-  border-radius: 24px;
-  background: var(--v-theme-surface);
-  transition: background 0.3s;
-}
-
-/* .welcome-card,
+.welcome-card,
 .notification-card,
 .stat-card {
-  border-radius: 24px;
-  background: var(--v-theme-surface);
+  padding: 24px;
+  border-radius: 8px;
+  background-color: var(--v-theme-surface) !important;
   transition: background 0.3s;
-} */
+}
 
 .card-title,
 .text-dark,
@@ -526,7 +611,67 @@ const shipments = [
 }
 
 .notification-scroll {
-  max-block-size: 190px;
+  max-block-size: 250px; /* Limit height to 3 notifications */
   overflow-y: auto;
+}
+
+.notification-list {
+  background-color: transparent !important;
+}
+
+.notification-item {
+  background-color: var(--v-theme-background);
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: rgba(var(--v-theme-on-surface), 0.05);
+  }
+}
+
+.v-dialog .v-card {
+  background-color: var(--v-theme-surface) !important;
+  color: var(--v-theme-on-surface);
+  transition: background 0.3s;
+}
+
+.v-dialog .v-card-title,
+.v-dialog .v-card-text {
+  color: var(--v-theme-on-surface);
+}
+
+.v-dialog .v-btn__content .v-icon {
+  color: var(--v-theme-on-surface);
+}
+
+.v-timeline-item__body {
+  color: var(--v-theme-on-surface);
+}
+
+.v-timeline-item__opposite {
+  color: var(--v-theme-on-surface);
+}
+
+.v-timeline-item__subtitle {
+  color: var(--v-theme-on-surface);
+}
+
+.v-input__control {
+  color: var(--v-theme-on-surface) !important;
+}
+
+.v-label.v-field-label {
+  color: var(--v-theme-on-surface) !important;
+}
+
+.v-field__input {
+  color: var(--v-theme-on-surface) !important;
+}
+
+.v-input__details {
+  color: var(--v-theme-on-surface) !important;
+}
+
+.v-overlay__scrim {
+  background-color: rgba(0, 0, 0, 60%) !important;
 }
 </style>

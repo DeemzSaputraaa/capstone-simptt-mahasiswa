@@ -1,5 +1,4 @@
 <script setup>
-import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue'
 import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
 </script>
 
@@ -19,7 +18,7 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
   <VerticalNavLink
     :item="{
       title: 'Pra Yudisium',
-      icon: 'ri-file-copy-line',
+      icon: 'ri-graduation-cap-line',
       to: '/pra-yudisium',
     }"
   />
@@ -28,7 +27,7 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
   <VerticalNavLink
     :item="{
       title: 'Validasi Ijazah',
-      icon: 'ri-file-copy-line',
+      icon: 'ri-file-check-line',
       to: '/validasi-ijazah',
     }"
   />
@@ -37,7 +36,7 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
   <VerticalNavLink
     :item="{
       title: 'Pendaftaran Legalisasi',
-      icon: 'ri-file-copy-line',
+      icon: 'ri-settings-line',
       to: '/pendaftaran-legalisasi',
     }"
   />
@@ -61,43 +60,45 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
     </VerticalNavGroup> 
   -->
 
-  <VerticalNavGroup
+  <!--
+    <VerticalNavGroup
     :item="{
-      title: 'Validasi Ijazah',
-      icon: 'ri-file-copy-line',
-      // to: '/fitur-satu',
-      // href: 'FiturSatu',
-      // target: '_blank',
-      // path: '/fitur-satu',
+    title: 'Validasi Ijazah',
+    icon: 'ri-file-copy-line',
+    to: '/fitur-satu',
+    href: 'FiturSatu',
+    target: '_blank',
+    path: '/fitur-satu',
     }"
-  >
+    >
     <VerticalNavLink 
-      :item="{
-        title: 'Pembayaran',
-        href: 'https://demos.themeselection.com/materio-vuetify-vuejs-laravel-admin-template/demo-1/front-pages/landing-page',
-        // target: '_blank',
-      }"
+    :item="{
+    title: 'Pembayaran',
+    href: 'https://demos.themeselection.com/materio-vuetify-vuejs-laravel-admin-template/demo-1/front-pages/landing-page',
+    // target: '_blank',
+    }"
     />
     <VerticalNavLink 
-      :item="{
-        title: 'Pengiriman',
-        href: 'https://demos.themeselection.com/materio-vuetify-vuejs-laravel-admin-template/demo-1/front-pages/landing-page',
-        // target: '_blank',
-      }"
+    :item="{
+    title: 'Pengiriman',
+    href: 'https://demos.themeselection.com/materio-vuetify-vuejs-laravel-admin-template/demo-1/front-pages/landing-page',
+    // target: '_blank',
+    }"
     />
-  </VerticalNavGroup>
-  <VerticalNavLink
+    </VerticalNavGroup>
+    <VerticalNavLink
     :item="{
-      title: 'Pendaftaran Ijazah',
-      icon: 'ri-file-copy-line',
-      to: '',
+    title: 'Pendaftaran Ijazah',
+    icon: 'ri-file-copy-line',
+    to: '',
     }"
-  />
-  <VerticalNavLink
+    />
+    <VerticalNavLink
     :item="{
-      title: 'Pendaftaran Legalisir',
-      icon: 'ri-file-copy-line',
-      to: '',
+    title: 'Pendaftaran Legalisir',
+    icon: 'ri-file-copy-line',
+    to: '',
     }"
-  />
+    />
+  -->
 </template>

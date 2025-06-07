@@ -151,6 +151,15 @@
         &:not(.router-link-active, .router-link-exact-active) {
           @include vuetifyStates.states($active: false);
         }
+
+        .nav-item-icon {
+          display: inline-block !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+
+          // Atur ukuran ikon jika perlu, misal:
+          // Atur ukuran ikon jika perlu,;Aturukuranikonjikaperlu,misal misal:
+        }
       }
     }
 
