@@ -14,7 +14,7 @@ body {
 
   flex-grow: 1;
 
-  // TODO: Use grid gutter variable here
+  // TODO: Use grid gutter variable here;TODO
   padding-block: 1.5rem;
 }
 
@@ -32,4 +32,8 @@ body {
   .layout-footer-hidden & {
     display: none;
   }
+}
+
+.layout-vertical-nav {
+  background-color: #fff !important;
 }

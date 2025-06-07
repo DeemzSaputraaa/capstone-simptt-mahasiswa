@@ -43,7 +43,45 @@ const props = defineProps({
   .nav-link a {
     display: flex;
     align-items: center;
+    border-radius: 8px;
+    color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
     cursor: pointer;
+    padding-block: 10px;
+    padding-inline: 16px;
+    transition: all 0.3s ease-in-out;
+
+    .nav-item-icon {
+      color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+      margin-inline-end: 12px;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .nav-item-title {
+      color: rgba(var(--v-theme-on-surface), var(--v-medium-emphasis-opacity));
+      transition: all 0.3s ease-in-out;
+    }
+
+    &:hover {
+      background-color: rgba(var(--v-theme-primary), 0.1); /* Light background for hover */
+      .nav-item-icon,
+      .nav-item-title {
+        color: rgb(var(--v-theme-primary)); /* Primary color for text/icon on hover */
+      }
+    }
+
+    &.router-link-active,
+    &.router-link-exact-active {
+      background-color: rgb(var(--v-theme-primary)); /* Primary color for active background */
+      .nav-item-icon,
+      .nav-item-title {
+        color: rgb(var(--v-theme-on-primary)); /* On-primary color for active text/icon */
+      }
+    }
+
+    &.disabled {
+      opacity: var(--v-disabled-opacity);
+      pointer-events: none;
+    }
   }
 }
 </style>

@@ -117,6 +117,7 @@ const handleNavScroll = evt => {
   z-index: variables.$layout-vertical-nav-z-index;
   display: flex;
   flex-direction: column;
+  background-color: #fff !important;
   block-size: 100%;
   inline-size: variables.$layout-vertical-nav-width;
   inset-block-start: 0;
