@@ -611,7 +611,7 @@ const showNotificationsModal = ref(false)
 }
 
 .notification-scroll {
-  max-block-size: 250px; /* Limit height to 3 notifications */
+  max-block-size: 250px;
   overflow-y: auto;
 }
 
@@ -620,7 +620,7 @@ const showNotificationsModal = ref(false)
 }
 
 .notification-item {
-  background-color: var(--v-theme-background);
+  background-color: var(--v-theme-surface);
   transition: all 0.2s ease-in-out;
 
   &:hover {
@@ -628,19 +628,20 @@ const showNotificationsModal = ref(false)
   }
 }
 
-.v-dialog .v-card {
-  background-color: var(--v-theme-surface) !important;
-  color: var(--v-theme-on-surface);
-  transition: background 0.3s;
-}
+.v-dialog {
+  .v-card {
+    color: var(--v-theme-on-surface);
+    transition: background 0.3s;
+  }
 
-.v-dialog .v-card-title,
-.v-dialog .v-card-text {
-  color: var(--v-theme-on-surface);
-}
+  .v-card-title,
+  .v-card-text {
+    color: var(--v-theme-on-surface);
+  }
 
-.v-dialog .v-btn__content .v-icon {
-  color: var(--v-theme-on-surface);
+  .v-btn__content .v-icon {
+    color: var(--v-theme-on-surface);
+  }
 }
 
 .v-timeline-item__body {
@@ -672,6 +673,7 @@ const showNotificationsModal = ref(false)
 }
 
 .v-overlay__scrim {
-  background-color: rgba(0, 0, 0, 60%) !important;
+  backdrop-filter: blur(4px);
+  background-color: rgba(var(--v-theme-on-surface), 40%) !important;
 }
 </style>

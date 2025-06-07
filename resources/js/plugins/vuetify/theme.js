@@ -114,9 +114,9 @@ export const themes = {
     },
     variables: {
       'code-color': '#d400ff',
-      'overlay-scrim-background': '#312D4B',
+      'overlay-scrim-background': '0,0,0',
       'tooltip-background': '#F7F4FF',
-      'overlay-scrim-opacity': 0.5,
+      'overlay-scrim-opacity': 0.7,
       'hover-opacity': 0.04,
       'focus-opacity': 0.1,
       'selected-opacity': 0.08,
