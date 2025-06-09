@@ -19,7 +19,7 @@
       }
     }
 
-    background-color: variables.$vertical-nav-background-color;
+    background-color: rgb(var(--v-theme-surface));
 
     // 👉 Nav header
     .nav-header {
@@ -158,7 +158,7 @@
           visibility: visible !important;
 
           // Atur ukuran ikon jika perlu, misal:
-          // Atur ukuran ikon jika perlu,;Aturukuranikonjikaperlu,misal misal:
+          // Atur ukuran ikon jika perlu,;Aturukuranikonjikaperlu,misalAturukuranikonjikaperlu,misal misal:misal
         }
       }
     }
