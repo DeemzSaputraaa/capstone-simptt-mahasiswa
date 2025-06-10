@@ -5,21 +5,46 @@ import authV1MaskDark from '@images/pages/auth-v1-mask-dark.png'
 import authV1MaskLight from '@images/pages/auth-v1-mask-light.png'
 import authV1Tree2 from '@images/pages/auth-v1-tree-2.png'
 import authV1Tree from '@images/pages/auth-v1-tree.png'
+import { useRouter } from 'vue-router'
 import { useTheme } from 'vuetify'
 
 const form = ref({
-  email: '',
+  nim: '',
   password: '',
+  tahunAkademik: null,
   remember: false,
 })
 
+const tahunAkademikOptions = [
+  '2023/2024',
+  '2022/2023',
+  '2021/2022',
+  '2020/2021',
+]
+
+const showLoginErrorModal = ref(false)
+
 const vuetifyTheme = useTheme()
+const router = useRouter()
 
 const authThemeMask = computed(() => {
   return vuetifyTheme.global.name.value === 'light' ? authV1MaskLight : authV1MaskDark
 })
 
 const isPasswordVisible = ref(false)
+
+const handleLogin = () => {
+  console.log('Attempting login...')
+
+  // Contoh validasi sederhana
+  if (form.value.nim === '12345678' && form.value.password === 'password123') {
+    console.log('Login successful! Redirecting to dashboard.')
+    router.push('/dashboard')
+  } else {
+    console.log('Login failed: Incorrect credentials.')
+    showLoginErrorModal.value = true
+  }
+}
 </script>
 
 <template>
@@ -56,14 +81,15 @@ const isPasswordVisible = ref(false)
       </VCardText>
 
       <VCardText>
-        <VForm @submit.prevent="() => {}">
+        <VForm @submit.prevent="handleLogin">
           <VRow>
-            <!-- email -->
+            <!-- nim -->
             <VCol cols="12">
               <VTextField
-                v-model="form.email"
-                label="Email"
-                type="email"
+                v-model="form.nim"
+                label="NIM"
+                type="text"
+                placeholder="Contoh: 12345678"
               />
             </VCol>
 
@@ -72,37 +98,47 @@ const isPasswordVisible = ref(false)
               <VTextField
                 v-model="form.password"
                 label="Password"
-                placeholder="············"
+                placeholder="Contoh: password123"
                 :type="isPasswordVisible ? 'text' : 'password'"
                 autocomplete="password"
                 :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
                 @click:append-inner="isPasswordVisible = !isPasswordVisible"
               />
-
-              <!-- remember me checkbox -->
-              <div class="d-flex align-center justify-space-between flex-wrap my-6">
-                <VCheckbox
-                  v-model="form.remember"
-                  label="Remember me"
-                />
-
-                <a
-                  class="text-primary"
-                  href="javascript:void(0)"
-                >
-                  Forgot Password?
-                </a>
-              </div>
-
-              <!-- login button -->
-              <VBtn
-                block
-                type="submit"
-                to="/"
-              >
-                Login
-              </VBtn>
             </VCol>
+
+            <!-- tahun akademik -->
+            <VCol cols="12">
+              <VSelect
+                v-model="form.tahunAkademik"
+                :items="tahunAkademikOptions"
+                label="Tahun Akademik"
+                placeholder="Pilih Tahun Akademik"
+              />
+            </VCol>
+
+            <!-- remember me checkbox -->
+            <div class="d-flex align-center justify-space-between flex-wrap my-6">
+              <VCheckbox
+                v-model="form.remember"
+                label="Remember me"
+              />
+
+              <a
+                class="text-primary"
+                href="javascript:void(0)"
+              >
+                Forgot Password?
+              </a>
+            </div>
+
+            <!-- login button -->
+            <VBtn
+              block
+              type="submit"
+              to="/dashboard"
+            >
+              Login
+            </VBtn>
 
             <!-- create account -->
             <VCol
@@ -156,6 +192,28 @@ const isPasswordVisible = ref(false)
       class="auth-footer-mask d-none d-md-block"
       :src="authThemeMask"
     />
+
+    <!-- Error Modal -->
+    <VDialog
+      v-model="showLoginErrorModal"
+      max-width="500"
+    >
+      <VCard>
+        <VCardTitle class="text-h5">
+          Login Gagal
+        </VCardTitle>
+        <VCardText>NIM atau Kata Sandi salah. Mohon coba lagi.</VCardText>
+        <VCardActions>
+          <VSpacer />
+          <VBtn
+            color="primary"
+            @click="showLoginErrorModal = false"
+          >
+            Oke
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
   </div>
 </template>
 
