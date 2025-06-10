@@ -1,10 +1,8 @@
 <script setup>
 import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
-import logo from '@images/logo.svg?raw'
 import authV1MaskDark from '@images/pages/auth-v1-mask-dark.png'
 import authV1MaskLight from '@images/pages/auth-v1-mask-light.png'
-import authV1Tree2 from '@images/pages/auth-v1-tree-2.png'
-import authV1Tree from '@images/pages/auth-v1-tree.png'
+import logoUnisa from '@images/unisa_tulisan.png'
 import { useRouter } from 'vue-router'
 import { useTheme } from 'vuetify'
 
@@ -61,19 +59,25 @@ const handleLogin = () => {
           class="d-flex align-center gap-3"
         >
           <!-- eslint-disable vue/no-v-html -->
-          <div
-            class="d-flex"
-            v-html="logo"
-          />
-          <h2 class="font-weight-medium text-2xl text-uppercase">
+          <div class="d-flex">
+            <img
+              :src="logoUnisa"
+              alt="Logo Unisa"
+              width="140"
+              height="50"
+            >
+          </div>
+          <!--
+            <h2 class="font-weight-medium text-2xl text-uppercase">
             Materio
-          </h2>
+            </h2> 
+          -->
         </RouterLink>
       </VCardItem>
 
       <VCardText class="pt-2">
         <h4 class="text-h4 mb-1">
-          Welcome to Materio! 👋🏻
+          Welcome to SIMPTT Mahasiswa
         </h4>
         <p class="mb-0">
           Please sign-in to your account and start the adventure
@@ -83,13 +87,12 @@ const handleLogin = () => {
       <VCardText>
         <VForm @submit.prevent="handleLogin">
           <VRow>
-            <!-- nim -->
+            <!-- email -->
             <VCol cols="12">
               <VTextField
                 v-model="form.nim"
                 label="NIM"
-                type="text"
-                placeholder="Contoh: 12345678"
+                placeholder="Masukkan NIM"
               />
             </VCol>
 
@@ -98,70 +101,72 @@ const handleLogin = () => {
               <VTextField
                 v-model="form.password"
                 label="Password"
-                placeholder="Contoh: password123"
+                placeholder="············"
                 :type="isPasswordVisible ? 'text' : 'password'"
-                autocomplete="password"
                 :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
                 @click:append-inner="isPasswordVisible = !isPasswordVisible"
               />
-            </VCol>
 
-            <!-- tahun akademik -->
-            <VCol cols="12">
               <VSelect
                 v-model="form.tahunAkademik"
                 :items="tahunAkademikOptions"
                 label="Tahun Akademik"
                 placeholder="Pilih Tahun Akademik"
-              />
-            </VCol>
-
-            <!-- remember me checkbox -->
-            <div class="d-flex align-center justify-space-between flex-wrap my-6">
-              <VCheckbox
-                v-model="form.remember"
-                label="Remember me"
+                class="mt-4"
               />
 
-              <a
-                class="text-primary"
-                href="javascript:void(0)"
+              <!-- remember me checkbox -->
+              <div class="d-flex align-center justify-space-between flex-wrap mt-1 mb-4">
+                <VCheckbox
+                  v-model="form.remember"
+                  label="Remember Me"
+                />
+
+                <!--
+                  <RouterLink
+                  class="text-primary text-body-1"
+                  to="/forgot-password"
+                  >
+                  Forgot Password?
+                  </RouterLink> 
+                -->
+              </div>
+
+              <!-- login button -->
+              <VBtn
+                block
+                type="submit"
               >
-                Forgot Password?
-              </a>
-            </div>
-
-            <!-- login button -->
-            <VBtn
-              block
-              type="submit"
-              to="/dashboard"
-            >
-              Login
-            </VBtn>
+                Login
+              </VBtn>
+            </VCol>
 
             <!-- create account -->
-            <VCol
+            <!--
+              <VCol
               cols="12"
               class="text-center text-base"
-            >
+              >
               <span>New on our platform?</span>
               <RouterLink
-                class="text-primary ms-2"
-                to="/register"
+              class="text-primary ms-2"
+              to="/register"
               >
-                Create an account
+              Create an account
               </RouterLink>
-            </VCol>
+              </VCol> 
+            -->
 
-            <VCol
+            <!--
+              <VCol
               cols="12"
               class="d-flex align-center"
-            >
+              >
               <VDivider />
-              <span class="mx-4">or</span>
+              <span class="mx-4 text-high-emphasis">or</span>
               <VDivider />
-            </VCol>
+              </VCol> 
+            -->
 
             <!-- auth providers -->
             <VCol
@@ -173,47 +178,51 @@ const handleLogin = () => {
           </VRow>
         </VForm>
       </VCardText>
+
+      <VDialog
+        v-model="showLoginErrorModal"
+        max-width="500"
+      >
+        <VCard>
+          <VCardTitle class="headline">
+            Login Gagal
+          </VCardTitle>
+          <VCardText>
+            NIM atau Password yang Anda masukkan salah. Silakan coba lagi.
+          </VCardText>
+          <VCardActions>
+            <VSpacer />
+            <VBtn
+              color="primary"
+              text
+              @click="showLoginErrorModal = false"
+            >
+              Tutup
+            </VBtn>
+          </VCardActions>
+        </VCard>
+      </VDialog>
     </VCard>
 
-    <VImg
+    <!--
+      <VImg
       class="auth-footer-start-tree d-none d-md-block"
       :src="authV1Tree"
       :width="250"
-    />
+      />
 
-    <VImg
+      <VImg
       :src="authV1Tree2"
       class="auth-footer-end-tree d-none d-md-block"
       :width="350"
-    />
+      /> 
+    -->
 
     <!-- bg img -->
     <VImg
       class="auth-footer-mask d-none d-md-block"
       :src="authThemeMask"
     />
-
-    <!-- Error Modal -->
-    <VDialog
-      v-model="showLoginErrorModal"
-      max-width="500"
-    >
-      <VCard>
-        <VCardTitle class="text-h5">
-          Login Gagal
-        </VCardTitle>
-        <VCardText>NIM atau Kata Sandi salah. Mohon coba lagi.</VCardText>
-        <VCardActions>
-          <VSpacer />
-          <VBtn
-            color="primary"
-            @click="showLoginErrorModal = false"
-          >
-            Oke
-          </VBtn>
-        </VCardActions>
-      </VCard>
-    </VDialog>
   </div>
 </template>
 

@@ -1,5 +1,5 @@
 <script setup>
-import logo from '@images/logo.svg?raw'
+import logo from '@images/logo_unisa.png'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { useDisplay } from 'vuetify'
 
@@ -61,10 +61,12 @@ const handleNavScroll = evt => {
           to="/"
           class="app-logo app-title-wrapper"
         >
-          <div
+          <img
+            :src="logo"
+            alt="logo"
             class="d-flex"
-            v-html="logo"
-          />
+            style="max-block-size: 30px;"
+          >
 
           <h1 class="font-weight-medium leading-normal text-xl text-uppercase">
             Materio
