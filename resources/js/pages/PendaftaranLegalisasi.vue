@@ -44,30 +44,20 @@
             <div class="text-subtitle-1 font-weight-bold mb-2">
               Upload Dokumen yang Akan Dilegalisasi
             </div>
-            <VFileInput
-              v-model="form.document"
-              accept=".pdf,.doc,.docx"
-              outlined
-              dense
-              hide-details
-              class="upload-field mb-2 custom-upload-box"
-              prepend-icon=""
-              :show-size="false"
-            >
-              <template #default>
-                <div class="upload-center-content">
-                  <VIcon
-                    size="40"
-                    color="success"
-                  >
-                    ri-upload-cloud-2-line
-                  </VIcon>
-                  <div class="upload-label">
-                    Browse Files to upload
-                  </div>
-                </div>
-              </template>
-            </VFileInput>
+            <div class="file-upload mb-4">
+              <VIcon class="file-upload-icon">
+                ri-attachment-2
+              </VIcon>
+              <VFileInput
+                v-model="form.document"
+                accept=".pdf,.doc,.docx"
+                variant="outlined"
+                hide-details
+                placeholder="Upload Dokumen yang Akan Dilegalisasi"
+                prepend-icon=""
+                class="file-upload-input"
+              />
+            </div>
             <div class="text-caption grey--text">
               {{ fileStatus.document || 'No selected file' }}
             </div>
@@ -76,38 +66,63 @@
             <div class="text-subtitle-1 font-weight-bold mb-2 mt-6">
               Upload Foto KTP
             </div>
-            <VFileInput
-              v-model="form.photoCtp"
-              accept="image/*"
-              outlined
-              dense
-              hide-details
-              class="upload-field mb-2 custom-upload-box"
-              prepend-icon=""
-              :show-size="false"
-            >
-              <template #default>
-                <div class="upload-center-content">
-                  <VIcon
-                    size="40"
-                    color="success"
-                  >
-                    ri-upload-cloud-2-line
-                  </VIcon>
-                  <div class="upload-label">
-                    Browse Files to upload
-                  </div>
-                </div>
-              </template>
-            </VFileInput>
+            <div class="file-upload mb-4 mt-6">
+              <VIcon class="file-upload-icon">
+                ri-attachment-2
+              </VIcon>
+              <VFileInput
+                v-model="form.photoCtp"
+                accept="image/*"
+                variant="outlined"
+                hide-details
+                placeholder="Upload Foto KTP"
+                prepend-icon=""
+                class="file-upload-input"
+              />
+            </div>
             <div class="text-caption grey--text">
               {{ fileStatus.photoCtp || 'No selected file' }}
             </div>
           </VCardText>
+          <!-- Submit Button -->
+          <VCardActions>
+            <VSpacer />
+            <VBtn
+              block
+              type="submit"
+              color="#17a2a6"
+              style="border-radius: 10px; background: rgb(var(--v-theme-primary)); color: #fff; font-size: 1.1rem; font-weight: 500; min-block-size: 48px;"
+              @click="handleSubmit"
+            >
+              Submit
+            </VBtn>
+          </VCardActions>
         </VCard>
       </VContainer>
     </VMain>
   </VApp>
+  <VDialog
+    v-model="showValidationModal"
+    max-width="400"
+  >
+    <VCard>
+      <VCardTitle class="text-h5">
+        {{ validationMessage.includes('berhasil') ? 'Sukses' : 'Peringatan' }}
+      </VCardTitle>
+      <VCardText>
+        {{ validationMessage }}
+      </VCardText>
+      <VCardActions>
+        <VSpacer />
+        <VBtn
+          color="primary"
+          @click="showValidationModal = false"
+        >
+          OK
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
 </template>
 
 <script>
@@ -128,6 +143,9 @@ export default {
       photoCtp: '',
     })
 
+    const showValidationModal = ref(false)
+    const validationMessage = ref('')
+
     const updateFileStatus = (field, file) => {
       if (file) {
         fileStatus.value[field] = `${file.name} (${formatFileSize(file.size)})`
@@ -145,10 +163,31 @@ export default {
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
     }
 
+    const handleSubmit = () => {
+      // Validasi contoh, sesuaikan dengan kebutuhan
+      if (!form.value.nik || !form.value.phone) {
+        validationMessage.value = 'Mohon lengkapi NIK dan nomor telepon'
+        showValidationModal.value = true
+        
+        return
+      }
+      if (!form.value.document || !form.value.photoCtp) {
+        validationMessage.value = 'Mohon lengkapi semua file yang diperlukan'
+        showValidationModal.value = true
+        
+        return
+      }
+      validationMessage.value = 'Form berhasil dikirim'
+      showValidationModal.value = true
+    }
+
     return {
       form,
       fileStatus,
       updateFileStatus,
+      showValidationModal,
+      validationMessage,
+      handleSubmit,
     }
   },
 }
@@ -209,5 +248,54 @@ export default {
 
 .upload-field .v-input__prepend-inner {
   display: none;
+}
+
+/* File upload style (theme aware) */
+.file-upload {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgb(var(--v-theme-surface));
+  transition: background 0.2s;
+}
+
+.file-upload-icon {
+  color: rgb(var(--v-theme-primary));
+  font-size: 22px;
+  margin-inline-end: 10px;
+  transition: color 0.2s;
+}
+
+.file-upload-input {
+  flex: 1;
+  background: transparent !important;
+  color: rgb(var(--v-theme-on-surface)) !important;
+
+  --v-field-border-color: rgb(var(--v-theme-primary));
+  --v-field-label-color: rgb(var(--v-theme-on-surface));
+  --v-field-placeholder-color: rgb(var(--v-theme-on-surface));
+  --v-field-bg-color: rgb(var(--v-theme-surface));
+}
+
+.v-file-input__text {
+  display: flex;
+  align-items: center;
+  border-radius: 0 0 10px 10px;
+  background: rgb(var(--v-theme-surface)) !important;
+  color: rgb(var(--v-theme-on-surface));
+  font-size: 1rem;
+  padding-block: 8px;
+  padding-inline: 12px;
+}
+
+.v-file-input__text .v-icon {
+  color: rgb(var(--v-theme-primary)) !important;
+  margin-inline-end: 8px;
+}
+
+.v-file-input__text .v-btn {
+  color: rgb(var(--v-theme-on-surface)) !important;
+  margin-inline-start: 8px;
 }
 </style> 
