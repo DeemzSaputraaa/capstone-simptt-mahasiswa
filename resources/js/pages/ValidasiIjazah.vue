@@ -7,253 +7,416 @@
       >
         <VCard
           flat
-          class="form-card"
+          class="form-card position-relative"
         >
-          <VCardTitle class="text-h5 mb-4">
-            Formulir Validasi Ijazah
+          <VCardTitle class="text-h5 mb-4 d-flex justify-space-between align-center">
+            Draft Ijazah
+            <VBtn
+              icon
+              title="Buka di tab baru"
+              style="margin-inline-start: auto;"
+              @click="openInNewTab"
+            >
+              <VIcon>ri-external-link-line</VIcon>
+            </VBtn>
           </VCardTitle>
           
           <!-- Section 1: NIK -->
+          <VCardText style="padding: 0;">
+            <div style="inline-size: 100%; overflow-x: auto;">
+              <div style="margin: auto; max-inline-size: 1130px; min-inline-size: 1130px; padding-block: 2rem; padding-inline: 0;">
+                <div
+                  class="draft-ijazah-preview"
+                  style="box-sizing: border-box; border-radius: 0; margin: auto; background: #fff; font-size: 0.95rem; max-inline-size: 100%; min-block-size: 600px; min-inline-size: 100%; overflow-y: auto; padding-block: 0; padding-inline: 16px;"
+                >
+                  <!-- Nomor Ijazah Nasional di kanan atas -->
+                  <div
+                    class="d-flex justify-end"
+                    style="inline-size: 100%;"
+                  >
+                    <div
+                      class="text-right"
+                      style="max-inline-size: 380px;"
+                    >
+                      <div
+                        class="font-weight-bold"
+                        style="font-size: 1rem;"
+                      >
+                        Nomor Ijazah Nasional:
+                      </div>
+                      <div style="font-size: 0.85rem; font-style: italic; margin-block-end: 2px;">
+                        National Certificate Number
+                      </div>
+                      <div
+                        class="font-weight-bold"
+                        style="font-size: 1rem;"
+                      >
+                        051022592012025100002
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Dua kolom utama -->
+                  <div class="mt-6">
+                    <div class="d-flex mb-2">
+                      <div style="flex-shrink: 0; min-inline-size: 270px;">
+                        <span class="font-weight-bold">Memberikan Kepada</span><br><span style="font-size: 0.85rem;font-style: italic;">Awarded to</span>
+                      </div>
+                      <div style="flex: 1; min-inline-size: 0;">
+                        : <span class="font-weight-bold">{{ user.name }}<br><span style="font-size: 0.85rem;font-style: italic;">IRWANDA BUDI PANGESTU</span></span>
+                      </div>
+                    </div>
+                    <div class="d-flex mb-2">
+                      <div style="flex-shrink: 0; min-inline-size: 270px;">
+                        <span class="font-weight-bold">Tempat dan Tanggal Lahir</span><br><span style="font-size: 0.85rem;font-style: italic;">Place and Date of Birth</span>
+                      </div>
+                      <div style="flex: 1; min-inline-size: 0;">
+                        : <span>{{ user.birthPlace }}, {{ user.birthDate }}<br><span style="font-size: 0.85rem;font-style: italic;">ASTRA KSETRA, DECEMBER 17, 2000</span></span>
+                      </div>
+                    </div>
+                    <div class="d-flex mb-2">
+                      <div style="flex-shrink: 0; min-inline-size: 270px;">
+                        <span class="font-weight-bold">Nomor Induk Kependudukan</span><br><span style="font-size: 0.85rem;font-style: italic;">Identity Number</span>
+                      </div>
+                      <div style="flex: 1; min-inline-size: 0;">
+                        : <div style="display: inline-block; background-color: black; min-block-size: 18px; min-inline-size: 200px; vertical-align: middle;" />
+                      </div>
+                    </div>
+                    <div class="d-flex mb-2">
+                      <div style="flex-shrink: 0; min-inline-size: 270px;">
+                        <span class="font-weight-bold">N I M</span><br><span style="font-size: 0.85rem;font-style: italic;">Student Number</span>
+                      </div>
+                      <div style="flex: 1; min-inline-size: 0;">
+                        : <span>{{ user.nim }}<br><span style="font-size: 0.85rem;font-style: italic;">1911501007</span></span>
+                      </div>
+                    </div>
+                    <div class="d-flex mb-2">
+                      <div style="flex-shrink: 0; min-inline-size: 270px;">
+                        <span class="font-weight-bold">Program Studi</span><br><span style="font-size: 0.85rem;font-style: italic;">Study Program</span>
+                      </div>
+                      <div style="flex: 1; min-inline-size: 0;">
+                        : <span>{{ user.studyProgram }}<br><span style="font-size: 0.85rem;font-style: italic;">INFORMATION TECHNOLOGY</span></span>
+                      </div>
+                    </div>
+                    <div class="d-flex mb-2">
+                      <div style="flex-shrink: 0; min-inline-size: 270px;">
+                        <span class="font-weight-bold">Jenjang Pendidikan</span><br><span style="font-size: 0.85rem;font-style: italic;">Degree</span>
+                      </div>
+                      <div style="flex: 1; min-inline-size: 0;">
+                        : <span>{{ user.degree }}<br><span style="font-size: 0.85rem;font-style: italic;">BACHELOR</span></span>
+                      </div>
+                    </div>
+                    <div class="d-flex mb-2">
+                      <div style="flex-shrink: 0; min-inline-size: 270px;">
+                        <span class="font-weight-bold">Tanggal Kelulusan</span><br><span style="font-size: 0.85rem;font-style: italic;">Date of Graduation</span>
+                      </div>
+                      <div style="flex: 1; min-inline-size: 0;">
+                        : <span>{{ user.graduationDate }}<br><span style="font-size: 0.85rem;font-style: italic;">MARCH 22, 2025</span></span>
+                      </div>
+                    </div>
+                    <div class="d-flex mb-2">
+                      <div style="flex-shrink: 0; min-inline-size: 270px;">
+                        <span class="font-weight-bold">Status</span><br><span style="font-size: 0.85rem;font-style: italic;">Status</span>
+                      </div>
+                      <div style="flex: 1; min-inline-size: 0;">
+                        : <span>Akreditasi LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 tanggal 19 Maret 2024 dengan peringkat "Baik Sekali".<br><span style="font-size: 0.85rem;font-style: italic;">Accredited "Very Good" by LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 on March 19, 2024.</span></span>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Penjelasan ijazah -->
+                  <div
+                    class="mt-4"
+                    style="inline-size: 100%;"
+                  >
+                    <div style="font-size: 1rem;">
+                      Ijazah ini diserahkan setelah yang bersangkutan memenuhi semua persyaratan yang ditentukan, dan kepadanya dilimpahkan segala wewenang dan hak yang berhubungan dengan ijazah yang dimilikinya, serta berhak memakai gelar Sarjana Komputer (S.Kom.).<br><span style="font-size: 0.95rem;font-style: italic;">This certificate is awarded in recognition of fulfillment of the requirements for the degree. Therefore, the person has been awarded the degree of Bachelor of Computer Science with all rights and privileges associated with the degree.</span>
+                    </div>
+                  </div>
+                  <!-- Tanda tangan -->
+                  <div
+                    class="d-flex mt-12 justify-space-between"
+                    style="align-items: flex-end; inline-size: 100%;"
+                  >
+                    <!-- Left: REKTOR -->
+                    <div style="display: flex; flex-direction: column;">
+                      <div style="flex-grow: 1;" /> <!-- Spacer to align titles -->
+                      <div class="mb-8">
+                        REKTOR,<br><span style="font-size: 0.95rem;font-style: italic;">RECTOR,</span>
+                      </div>
+                      <div style="min-block-size: 60px;" />
+                      <div class="font-weight-bold">
+                        Dr. WARSITI, S.Kp., M.Kep., Sp.Mat.
+                      </div>
+                    </div>
+
+                    <!-- Right Group: Photo Slot + DEKAN -->
+                    <div style="display: flex; align-items: flex-end; gap: 14px;">
+                      <!-- Photo Slot -->
+                      <div style="border: 2px dashed #888; min-block-size: 180px; min-inline-size: 150px;" />
+
+                      <!-- DEKAN -->
+                      <div class="d-flex flex-column">
+                        <div style="flex-grow: 1;" /> <!-- Spacer to align titles -->
+                        <div class="mb-2">
+                          YOGYAKARTA, {{ user.graduationDate }}<br><span style="font-size: 0.95rem;font-style: italic;">YOGYAKARTA, MARCH 22, 2025</span>
+                        </div>
+                        <div style="min-block-size: 12px;" />
+                        <div class="mb-8">
+                          DEKAN FAKULTAS SAINS DAN TEKNOLOGI,<br><span style="font-size: 0.95rem;font-style: italic;">DEAN OF FACULTY OF SCIENCE AND TECHNOLOGY,</span>
+                        </div>
+                        <div style="min-block-size: 60px;" />
+                        <div class="font-weight-bold">
+                          Ar. TIKA AINUNNISA FITRIA, S.T., M.T., Ph.D
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- End Draft Ijazah Layout -->
+          </VCardText>
+        </VCard>
+
+        <!-- Komentar -->
+        <div class="text-subtitle-1 font-weight-bold mb-4 mt-8">
+          Komentar
+        </div>
+        <VCard
+          flat
+          class="mb-6 comment-form-card"
+        >
           <VCardText>
-            <div class="text-subtitle-1 font-weight-bold mb-2">
-              Masukkan NIK
-            </div>
             <VTextField
-              v-model="form.nik"
-              label="NIK"
+              v-model="newComment"
+              label="Tulis komentar..."
               outlined
               dense
               hide-details
-              class="mb-4"
+              class="mb-3"
+              @keyup.enter="addComment"
             />
-            
-            <!-- Section 2: Nomor Telepon -->
-            <div class="text-subtitle-1 font-weight-bold mb-2">
-              Masukkan No Telepon
-            </div>
-            <VTextField
-              v-model="form.phone"
-              label="No Telepon"
-              outlined
-              dense
-              hide-details
-              class="mb-4"
-            />
-            
-            <!-- Section 3: Upload Foto Ijazah -->
-            <div class="text-subtitle-1 font-weight-bold mb-2 mt-6">
-              Upload Foto Ijazah
-            </div>
-            <div class="file-upload mb-4 mt-6">
-              <VIcon class="file-upload-icon">
-                ri-attachment-2
-              </VIcon>
-              <VFileInput
-                v-model="form.photoIjazah"
-                accept="image/*"
-                variant="outlined"
-                hide-details
-                placeholder="Upload Foto Ijazah"
-                prepend-icon=""
-                class="file-upload-input"
-              />
-            </div>
-            <div class="text-caption grey--text">
-              {{ fileStatus.photoIjazah || 'No selected file' }}
-            </div>
-            
-            <!-- Section 4: Upload Foto KTP -->
-            <div class="text-subtitle-1 font-weight-bold mb-2 mt-6">
-              Upload Foto KTP
-            </div>
-            <div class="file-upload mb-4 mt-6">
-              <VIcon class="file-upload-icon">
-                ri-attachment-2
-              </VIcon>
-              <VFileInput
-                v-model="form.photoCtp"
-                accept="image/*"
-                variant="outlined"
-                hide-details
-                placeholder="Upload Foto KTP"
-                prepend-icon=""
-                class="file-upload-input"
-              />
-            </div>
-            <div class="text-caption grey--text">
-              {{ fileStatus.photoCtp || 'No selected file' }}
-            </div>
+            <VBtn
+              color="primary"
+              size="small"
+              @click="addComment"
+            >
+              Kirim Komentar
+            </VBtn>
+          </VCardText>
+        </VCard>
 
-            <!-- Submit Button -->
-            <VCardActions>
-              <VSpacer />
-              <VBtn
-                block
-                type="submit"
-                color="#17a2a6"
-                style="border-radius: 10px; background: rgb(var(--v-theme-primary)); color: #fff; font-size: 1.1rem; font-weight: 500; min-block-size: 48px;"
-                @click="handleSubmit"
-              >
-                Submit
-              </VBtn>
-            </VCardActions>
-
-            <!-- Section 5: Komentar -->
-            <div class="text-subtitle-1 font-weight-bold mb-4 mt-8">
-              Komentar
-            </div>
-            
-            <!-- Form Komentar Baru -->
+        <!-- Daftar Komentar -->
+        <div class="comments-list">
+          <template
+            v-for="comment in comments"
+            :key="comment.id"
+          >
+            <!-- Parent Comment -->
             <VCard
               flat
-              class="mb-6 comment-form-card"
+              class="mb-4 comment-card"
             >
               <VCardText>
+                <div class="d-flex align-center mb-3 comment-header">
+                  <VAvatar
+                    size="36"
+                    color="primary"
+                    class="avatar-mr"
+                  >
+                    <span class="white--text">{{ comment.user.charAt(0) }}</span>
+                  </VAvatar>
+                  <div>
+                    <div class="font-weight-bold">
+                      {{ comment.user }}
+                    </div>
+                    <div class="text-caption grey--text">
+                      {{ formatDate(comment.date) }}
+                    </div>
+                  </div>
+                </div>
+                <div class="comment-text mb-3">
+                  {{ comment.text }}
+                </div>
+                <VBtn
+                  text
+                  small
+                  color="primary"
+                  class="reply-btn-mr"
+                  @click="showReplyForm(comment.id)"
+                >
+                  <VIcon
+                    small
+                    class="reply-icon-mr"
+                  >
+                    ri-reply-line
+                  </VIcon>
+                  Balas
+                </VBtn>
+              </VCardText>
+
+              <!-- Reply Form -->
+              <VCardText
+                v-if="activeReplyForm === comment.id"
+                class="pt-0 pb-0"
+              >
                 <VTextField
-                  v-model="newComment"
-                  label="Tulis komentar..."
+                  v-model="newReply"
+                  label="Tulis balasan..."
                   outlined
                   dense
                   hide-details
                   class="mb-3"
-                  @keyup.enter="addComment"
+                  @keyup.enter="addReply(comment.id)"
                 />
-                <VBtn
-                  color="primary"
-                  size="small"
-                  @click="addComment"
-                >
-                  Kirim Komentar
-                </VBtn>
+                <div class="d-flex">
+                  <VBtn
+                    color="primary"
+                    size="small"
+                    class="reply-btn-mr"
+                    @click="addReply(comment.id)"
+                  >
+                    Kirim Balasan
+                  </VBtn>
+                  <VBtn
+                    text
+                    size="small"
+                    @click="cancelReply"
+                  >
+                    Batal
+                  </VBtn>
+                </div>
               </VCardText>
-            </VCard>
 
-            <!-- Daftar Komentar -->
-            <div class="comments-list">
-              <template
-                v-for="comment in comments"
-                :key="comment.id"
+              <!-- Replies -->
+              <VCardText
+                v-if="comment.replies && comment.replies.length > 0"
+                class="pt-0"
               >
-                <!-- Parent Comment -->
-                <VCard
-                  flat
-                  class="mb-4 comment-card"
+                <div
+                  v-for="reply in comment.replies"
+                  :key="reply.id"
+                  class="nested-reply-container mb-4"
                 >
-                  <VCardText>
-                    <div class="d-flex align-center mb-3 comment-header">
-                      <VAvatar
-                        size="36"
-                        color="primary"
-                        class="avatar-mr"
-                      >
-                        <span class="white--text">{{ comment.user.charAt(0) }}</span>
-                      </VAvatar>
-                      <div>
-                        <div class="font-weight-bold">
-                          {{ comment.user }}
-                        </div>
-                        <div class="text-caption grey--text">
-                          {{ formatDate(comment.date) }}
+                  <VCard
+                    flat
+                    class="reply-card"
+                  >
+                    <VCardText>
+                      <div class="d-flex align-center mb-3 comment-header">
+                        <VAvatar
+                          size="28"
+                          color="primary"
+                          class="avatar-mr"
+                        >
+                          <span class="white--text">{{ reply.user.charAt(0) }}</span>
+                        </VAvatar>
+                        <div>
+                          <div class="font-weight-bold">
+                            {{ reply.user }}
+                          </div>
+                          <div class="text-caption grey--text">
+                            {{ formatDate(reply.date) }}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div class="comment-text mb-3">
-                      {{ comment.text }}
-                    </div>
-                    <VBtn
-                      text
-                      small
-                      color="primary"
-                      class="reply-btn-mr"
-                      @click="showReplyForm(comment.id)"
+                      <div class="reply-text mb-3">
+                        {{ reply.text }}
+                      </div>
+                      
+                      <!-- Reply Actions -->
+                      <div class="d-flex align-center">
+                        <VBtn
+                          text
+                          x-small
+                          color="primary"
+                          class="reply-btn-mr"
+                          @click="showReplyForm(reply.id)"
+                        >
+                          <VIcon
+                            x-small
+                            class="reply-icon-mr"
+                          >
+                            ri-reply-line
+                          </VIcon>
+                          Balas
+                        </VBtn>
+                      </div>
+                    </VCardText>
+
+                    <!-- Nested Reply Form -->
+                    <VCardText
+                      v-if="activeReplyForm === reply.id"
+                      class="pt-0 pb-0"
                     >
-                      <VIcon
-                        small
-                        class="reply-icon-mr"
-                      >
-                        ri-reply-line
-                      </VIcon>
-                      Balas
-                    </VBtn>
-                  </VCardText>
+                      <VTextField
+                        v-model="newReply"
+                        label="Tulis balasan..."
+                        outlined
+                        dense
+                        hide-details
+                        class="mb-3"
+                        @keyup.enter="addNestedReply(comment.id, reply.id)"
+                      />
+                      <div class="d-flex">
+                        <VBtn
+                          color="primary"
+                          size="small"
+                          class="reply-btn-mr"
+                          @click="addNestedReply(comment.id, reply.id)"
+                        >
+                          Kirim Balasan
+                        </VBtn>
+                        <VBtn
+                          text
+                          size="small"
+                          @click="cancelReply"
+                        >
+                          Batal
+                        </VBtn>
+                      </div>
+                    </VCardText>
 
-                  <!-- Reply Form -->
-                  <VCardText
-                    v-if="activeReplyForm === comment.id"
-                    class="pt-0 pb-0"
-                  >
-                    <VTextField
-                      v-model="newReply"
-                      label="Tulis balasan..."
-                      outlined
-                      dense
-                      hide-details
-                      class="mb-3"
-                      @keyup.enter="addReply(comment.id)"
-                    />
-                    <div class="d-flex">
-                      <VBtn
-                        color="primary"
-                        size="small"
-                        class="reply-btn-mr"
-                        @click="addReply(comment.id)"
-                      >
-                        Kirim Balasan
-                      </VBtn>
-                      <VBtn
-                        text
-                        size="small"
-                        @click="cancelReply"
-                      >
-                        Batal
-                      </VBtn>
-                    </div>
-                  </VCardText>
-
-                  <!-- Replies -->
-                  <VCardText
-                    v-if="comment.replies && comment.replies.length > 0"
-                    class="pt-0"
-                  >
+                    <!-- Nested Replies -->
                     <div
-                      v-for="reply in comment.replies"
-                      :key="reply.id"
-                      class="nested-reply-container mb-4"
+                      v-if="reply.replies && reply.replies.length > 0"
+                      class="nested-reply-container"
                     >
                       <VCard
+                        v-for="nestedReply in reply.replies"
+                        :key="nestedReply.id"
                         flat
                         class="reply-card"
                       >
                         <VCardText>
                           <div class="d-flex align-center mb-3 comment-header">
                             <VAvatar
-                              size="28"
+                              size="24"
                               color="primary"
                               class="avatar-mr"
                             >
-                              <span class="white--text">{{ reply.user.charAt(0) }}</span>
+                              <span class="white--text">{{ nestedReply.user.charAt(0) }}</span>
                             </VAvatar>
                             <div>
                               <div class="font-weight-bold">
-                                {{ reply.user }}
+                                {{ nestedReply.user }}
                               </div>
                               <div class="text-caption grey--text">
-                                {{ formatDate(reply.date) }}
+                                {{ formatDate(nestedReply.date) }}
                               </div>
                             </div>
                           </div>
                           <div class="reply-text mb-3">
-                            {{ reply.text }}
+                            {{ nestedReply.text }}
                           </div>
                           
-                          <!-- Reply Actions -->
+                          <!-- Nested Reply Actions -->
                           <div class="d-flex align-center">
                             <VBtn
                               text
                               x-small
                               color="primary"
                               class="reply-btn-mr"
-                              @click="showReplyForm(reply.id)"
+                              @click="showReplyForm(nestedReply.id)"
                             >
                               <VIcon
                                 x-small
@@ -266,9 +429,9 @@
                           </div>
                         </VCardText>
 
-                        <!-- Nested Reply Form -->
+                        <!-- Deep Nested Reply Form -->
                         <VCardText
-                          v-if="activeReplyForm === reply.id"
+                          v-if="activeReplyForm === nestedReply.id"
                           class="pt-0 pb-0"
                         >
                           <VTextField
@@ -278,14 +441,14 @@
                             dense
                             hide-details
                             class="mb-3"
-                            @keyup.enter="addNestedReply(comment.id, reply.id)"
+                            @keyup.enter="addNestedReply(comment.id, nestedReply.id)"
                           />
                           <div class="d-flex">
                             <VBtn
                               color="primary"
                               size="small"
                               class="reply-btn-mr"
-                              @click="addNestedReply(comment.id, reply.id)"
+                              @click="addNestedReply(comment.id, nestedReply.id)"
                             >
                               Kirim Balasan
                             </VBtn>
@@ -299,14 +462,14 @@
                           </div>
                         </VCardText>
 
-                        <!-- Nested Replies -->
+                        <!-- Deep Nested Replies -->
                         <div
-                          v-if="reply.replies && reply.replies.length > 0"
+                          v-if="nestedReply.replies && nestedReply.replies.length > 0"
                           class="nested-reply-container"
                         >
                           <VCard
-                            v-for="nestedReply in reply.replies"
-                            :key="nestedReply.id"
+                            v-for="deepReply in nestedReply.replies"
+                            :key="deepReply.id"
                             flat
                             class="reply-card"
                           >
@@ -317,119 +480,31 @@
                                   color="primary"
                                   class="avatar-mr"
                                 >
-                                  <span class="white--text">{{ nestedReply.user.charAt(0) }}</span>
+                                  <span class="white--text">{{ deepReply.user.charAt(0) }}</span>
                                 </VAvatar>
                                 <div>
                                   <div class="font-weight-bold">
-                                    {{ nestedReply.user }}
+                                    {{ deepReply.user }}
                                   </div>
                                   <div class="text-caption grey--text">
-                                    {{ formatDate(nestedReply.date) }}
+                                    {{ formatDate(deepReply.date) }}
                                   </div>
                                 </div>
                               </div>
-                              <div class="reply-text mb-3">
-                                {{ nestedReply.text }}
-                              </div>
-                              
-                              <!-- Nested Reply Actions -->
-                              <div class="d-flex align-center">
-                                <VBtn
-                                  text
-                                  x-small
-                                  color="primary"
-                                  class="reply-btn-mr"
-                                  @click="showReplyForm(nestedReply.id)"
-                                >
-                                  <VIcon
-                                    x-small
-                                    class="reply-icon-mr"
-                                  >
-                                    ri-reply-line
-                                  </VIcon>
-                                  Balas
-                                </VBtn>
+                              <div class="reply-text">
+                                {{ deepReply.text }}
                               </div>
                             </VCardText>
-
-                            <!-- Deep Nested Reply Form -->
-                            <VCardText
-                              v-if="activeReplyForm === nestedReply.id"
-                              class="pt-0 pb-0"
-                            >
-                              <VTextField
-                                v-model="newReply"
-                                label="Tulis balasan..."
-                                outlined
-                                dense
-                                hide-details
-                                class="mb-3"
-                                @keyup.enter="addNestedReply(comment.id, nestedReply.id)"
-                              />
-                              <div class="d-flex">
-                                <VBtn
-                                  color="primary"
-                                  size="small"
-                                  class="reply-btn-mr"
-                                  @click="addNestedReply(comment.id, nestedReply.id)"
-                                >
-                                  Kirim Balasan
-                                </VBtn>
-                                <VBtn
-                                  text
-                                  size="small"
-                                  @click="cancelReply"
-                                >
-                                  Batal
-                                </VBtn>
-                              </div>
-                            </VCardText>
-
-                            <!-- Deep Nested Replies -->
-                            <div
-                              v-if="nestedReply.replies && nestedReply.replies.length > 0"
-                              class="nested-reply-container"
-                            >
-                              <VCard
-                                v-for="deepReply in nestedReply.replies"
-                                :key="deepReply.id"
-                                flat
-                                class="reply-card"
-                              >
-                                <VCardText>
-                                  <div class="d-flex align-center mb-3 comment-header">
-                                    <VAvatar
-                                      size="24"
-                                      color="primary"
-                                      class="avatar-mr"
-                                    >
-                                      <span class="white--text">{{ deepReply.user.charAt(0) }}</span>
-                                    </VAvatar>
-                                    <div>
-                                      <div class="font-weight-bold">
-                                        {{ deepReply.user }}
-                                      </div>
-                                      <div class="text-caption grey--text">
-                                        {{ formatDate(deepReply.date) }}
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div class="reply-text">
-                                    {{ deepReply.text }}
-                                  </div>
-                                </VCardText>
-                              </VCard>
-                            </div>
                           </VCard>
                         </div>
                       </VCard>
                     </div>
-                  </VCardText>
-                </VCard>
-              </template>
-            </div>
-          </VCardText>
-        </VCard>
+                  </VCard>
+                </div>
+              </VCardText>
+            </VCard>
+          </template>
+        </div>
       </VContainer>
     </VMain>
   </VApp>
@@ -517,6 +592,17 @@ export default {
 
     const showValidationModal = ref(false)
     const validationMessage = ref('')
+
+    // Dummy user login data (ganti dengan data user login sebenarnya jika sudah ada mekanisme login)
+    const user = ref({
+      name: 'IRWANDA BUDI PANGESTU',
+      nim: '1911501007',
+      birthPlace: 'ASTRA KSETRA',
+      birthDate: '17 DESEMBER 2000',
+      studyProgram: 'TEKNOLOGI INFORMASI',
+      degree: 'SARJANA',
+      graduationDate: '22 MARET 2025',
+    })
 
     const updateFileStatus = (field, file) => {
       if (file) {
@@ -646,6 +732,142 @@ export default {
       showValidationModal.value = true
     }
 
+    // Fungsi untuk membuka draft di tab baru
+    const openInNewTab = () => {
+      const newWindow = window.open('', '_blank')
+      if (newWindow) {
+        newWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>Preview Ijazah</title>
+              <style>
+                body {
+                  margin: 0;
+                  padding: 0;
+                  font-family: Arial, sans-serif;
+                  background: #f5f5f5;
+                }
+                .draft-ijazah-preview {
+                  margin: 0 auto;
+                  max-width: 1130px;
+                  min-width: 1130px;
+                  padding: 2rem 0;
+                  background: white;
+                  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+                .draft-ijazah-preview img {
+                  width: 100%;
+                  height: auto;
+                  display: block;
+                }
+                .draft-ijazah-preview .content {
+                  position: relative;
+                  padding: 20px;
+                }
+                .draft-ijazah-preview .content p {
+                  margin: 0;
+                  line-height: 1.5;
+                }
+                .draft-ijazah-preview .content .nomor-ijazah {
+                  position: absolute;
+                  top: 20px;
+                  right: 20px;
+                  font-weight: bold;
+                }
+                .draft-ijazah-preview .content .nama {
+                  font-size: 1.2em;
+                  font-weight: bold;
+                  margin-top: 20px;
+                }
+                .draft-ijazah-preview .content .detail {
+                  margin-top: 10px;
+                }
+                .draft-ijazah-preview .content .ttd {
+                  margin-top: 20px;
+                  text-align: right;
+                }
+                .draft-ijazah-preview .content .ttd p {
+                  margin-bottom: 5px;
+                }
+                .draft-ijazah-preview .content .ttd .nama-ttd {
+                  font-weight: bold;
+                }
+                .draft-ijazah-preview .content .ttd .jabatan {
+                  font-size: 0.9em;
+                }
+                .draft-ijazah-preview .content .ttd .nip {
+                  font-size: 0.9em;
+                }
+                .draft-ijazah-preview .content .ttd .stempel {
+                  margin-top: 10px;
+                }
+                .draft-ijazah-preview .content .ttd .stempel img {
+                  width: 100px;
+                  height: auto;
+                }
+                @media print {
+                  body {
+                    padding: 0;
+                    margin: 0;
+                    background: white;
+                  }
+                  .draft-ijazah-preview {
+                    width: 100%;
+                    max-width: none;
+                    min-width: auto;
+                    padding: 0;
+                    box-shadow: none;
+                  }
+                }
+              </style>
+            </head>
+            <body>
+              <div class="draft-ijazah-preview">
+                <img src="/images/ijazah-bg.png" alt="Background Ijazah" />
+                <div class="content">
+                  <p class="nomor-ijazah">Nomor: ${props.data?.nomor_ijazah || '-'}</p>
+                  <p>Yang bertanda tangan di bawah ini:</p>
+                  <p>Nama: ${props.data?.nama_rektor || '-'}</p>
+                  <p>NIP: ${props.data?.nip_rektor || '-'}</p>
+                  <p>Jabatan: Rektor</p>
+                  <p>Universitas: ${props.data?.nama_universitas || '-'}</p>
+                  <p>Alamat: ${props.data?.alamat_universitas || '-'}</p>
+                  <p>Menerangkan bahwa:</p>
+                  <p class="nama">${props.data?.nama_mahasiswa || '-'}</p>
+                  <p class="detail">NIM: ${props.data?.nim || '-'}</p>
+                  <p class="detail">Tempat, Tanggal Lahir: ${props.data?.tempat_lahir || '-'}, ${props.data?.tanggal_lahir || '-'}</p>
+                  <p class="detail">Program Studi: ${props.data?.nama_prodi || '-'}</p>
+                  <p class="detail">Fakultas: ${props.data?.nama_fakultas || '-'}</p>
+                  <p class="detail">Universitas: ${props.data?.nama_universitas || '-'}</p>
+                  <p class="detail">Tahun Masuk: ${props.data?.tahun_masuk || '-'}</p>
+                  <p class="detail">Tahun Lulus: ${props.data?.tahun_lulus || '-'}</p>
+                  <p class="detail">Judul Tugas Akhir: ${props.data?.judul_ta || '-'}</p>
+                  <p class="detail">IPK: ${props.data?.ipk || '-'}</p>
+                  <p class="detail">Predikat: ${props.data?.predikat || '-'}</p>
+                  <p class="detail">Gelar: ${props.data?.gelar || '-'}</p>
+                  <p class="detail">Tanggal Wisuda: ${props.data?.tanggal_wisuda || '-'}</p>
+                  <p class="detail">Nomor Ijazah: ${props.data?.nomor_ijazah || '-'}</p>
+                  <p class="detail">Nomor SK: ${props.data?.nomor_sk || '-'}</p>
+                  <p class="detail">Tanggal SK: ${props.data?.tanggal_sk || '-'}</p>
+                  <div class="ttd">
+                    <p>${props.data?.kota_universitas || '-'}, ${props.data?.tanggal_sk || '-'}</p>
+                    <p class="nama-ttd">${props.data?.nama_rektor || '-'}</p>
+                    <p class="jabatan">Rektor</p>
+                    <p class="nip">NIP. ${props.data?.nip_rektor || '-'}</p>
+                    <div class="stempel">
+                      <img src="/images/stempel.png" alt="Stempel" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </body>
+          </html>
+        `)
+        newWindow.document.close()
+      }
+    }
+
     return {
       form,
       fileStatus,
@@ -663,6 +885,8 @@ export default {
       showValidationModal,
       validationMessage,
       handleSubmit,
+      openInNewTab,
+      user,
     }
   },
 }
@@ -865,5 +1089,19 @@ export default {
 .v-file-input__text .v-btn {
   color: rgb(var(--v-theme-on-surface)) !important;
   margin-inline-start: 8px;
+}
+
+.draft-ijazah-preview {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  margin: auto;
+  background: #fff;
+  box-shadow: 0 2px 8px 0 rgba(33, 150, 243, 5%);
+  max-inline-size: 900px;
+  min-block-size: 400px;
+}
+
+.position-relative {
+  position: relative;
 }
 </style> 
