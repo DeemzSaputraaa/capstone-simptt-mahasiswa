@@ -55,7 +55,10 @@ import avatar1 from '@images/avatars/avatar-1.png'
           <VDivider class="my-2" />
 
           <!-- 👉 Profile -->
-          <VListItem link>
+          <VListItem
+            link
+            @click="$router.push('/edit-profile')"
+          >
             <template #prepend>
               <VIcon
                 class="me-2"
@@ -68,46 +71,52 @@ import avatar1 from '@images/avatars/avatar-1.png'
           </VListItem>
 
           <!-- 👉 Settings -->
-          <VListItem link>
+          <!--
+            <VListItem link>
             <template #prepend>
-              <VIcon
-                class="me-2"
-                icon="ri-settings-4-line"
-                size="22"
-              />
+            <VIcon
+            class="me-2"
+            icon="ri-settings-4-line"
+            size="22"
+            />
             </template>
 
             <VListItemTitle>Settings</VListItemTitle>
-          </VListItem>
+            </VListItem> 
+          -->
 
           <!-- 👉 Pricing -->
-          <VListItem link>
+          <!--
+            <VListItem link>
             <template #prepend>
-              <VIcon
-                class="me-2"
-                icon="ri-money-dollar-circle-line"
-                size="22"
-              />
+            <VIcon
+            class="me-2"
+            icon="ri-money-dollar-circle-line"
+            size="22"
+            />
             </template>
 
             <VListItemTitle>Pricing</VListItemTitle>
-          </VListItem>
+            </VListItem> 
+          -->
 
           <!-- 👉 FAQ -->
-          <VListItem link>
+          <!--
+            <VListItem link>
             <template #prepend>
-              <VIcon
-                class="me-2"
-                icon="ri-question-line"
-                size="22"
-              />
+            <VIcon
+            class="me-2"
+            icon="ri-question-line"
+            size="22"
+            />
             </template>
 
             <VListItemTitle>FAQ</VListItemTitle>
-          </VListItem>
+            </VListItem> 
+          -->
 
           <!-- Divider -->
-          <VDivider class="my-2" />
+          <!-- <VDivider class="my-2" /> -->
 
           <!-- 👉 Logout -->
           <VListItem to="/login">

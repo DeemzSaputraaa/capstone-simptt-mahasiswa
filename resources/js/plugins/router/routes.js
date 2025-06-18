@@ -46,6 +46,10 @@ export const routes = [
         path: 'pendaftaran-legalisasi',
         component: () => import('@/pages/PendaftaranLegalisasi.vue'),
       },
+      {
+        path: 'edit-profile',
+        component: () => import('@/pages/EditProfile.vue'),
+      },
     ],
   },
   {

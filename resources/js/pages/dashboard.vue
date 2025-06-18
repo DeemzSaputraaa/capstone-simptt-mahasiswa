@@ -175,7 +175,7 @@ const showNotificationsModal = ref(false)
               class="d-flex flex-column justify-center"
             >
               <div class="welcome-title mb-2">
-                Hi, Sadr!
+                Hi, Mahasiswa!
               </div>
               <div class="welcome-subtitle mb-2">
                 What are we doing today?
