@@ -24,12 +24,8 @@
           <!-- Section 1: NIK -->
           <VCardText style="padding: 0;">
             <div style="inline-size: 100%; overflow-x: auto;">
-              <div
-                ref="printableContent"
-                style="margin: auto; max-inline-size: 1130px; min-inline-size: 1130px; padding-block: 2rem; padding-inline: 0;"
-              >
+              <div style="margin: auto; max-inline-size: 1130px; min-inline-size: 1130px; padding-block: 2rem; padding-inline: 0;">
                 <div
-                  ref="ijazahPreview"
                   class="draft-ijazah-preview"
                   style="box-sizing: border-box; border-radius: 0; margin: auto; background: #fff; font-size: 0.95rem; max-inline-size: 100%; min-block-size: 600px; min-inline-size: 100%; overflow-y: auto; padding-block: 0; padding-inline: 16px;"
                 >
@@ -177,7 +173,6 @@
                 </div>
                 <!-- nilai -->
                 <div
-                  ref="transcriptPreview"
                   class="transcript-preview mt-8"
                   style="box-sizing: border-box; border-radius: 0; margin: auto; background: #fff; font-size: 0.95rem; max-inline-size: 100%; min-block-size: 600px; min-inline-size: 100%; overflow-y: auto; padding-block: 0; padding-inline: 16px;"
                 >
@@ -233,27 +228,15 @@
                   <div class="d-flex justify-space-between mt-8">
                     <!-- Column 1 -->
                     <div style="flex: 1; margin-inline-end: 16px;">
-                      <VTable class="text-caption fixed-header">
+                      <VTable class="text-caption">
                         <thead>
                           <tr>
-                            <th class="no-col">
-                              NO<br>NO
-                            </th>
-                            <th class="kode-col">
-                              KODE<br>CODE
-                            </th>
-                            <th class="matkul-col">
-                              MATA KULIAH<br>SUBJECTS
-                            </th>
-                            <th class="vertical-header sks-col">
-                              SKS<br>CREDITS
-                            </th>
-                            <th class="vertical-header nilai-col">
-                              NILAI<br>GRADE
-                            </th>
-                            <th class="vertical-header ekuivalen-col">
-                              EKUIVALEN<br>EQUIVALENT
-                            </th>
+                            <th>NO<br>NO</th>
+                            <th>KODE<br>CODE</th>
+                            <th>MATA KULIAH<br>SUBJECTS</th>
+                            <th>SKS<br>CREDITS</th>
+                            <th>NILAI<br>GRADE</th>
+                            <th>EKUIVALEN<br>EQUIVALENT</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -479,30 +462,19 @@
 
                     <!-- Column 2 -->
                     <div style="flex: 1; margin-inline-end: 16px;">
-                      <VTable class="text-caption fixed-header">
+                      <VTable class="text-caption">
                         <thead>
                           <tr>
-                            <th class="no-col">
-                              NO<br>NO
-                            </th>
-                            <th class="kode-col">
-                              KODE<br>CODE
-                            </th>
-                            <th class="matkul-col">
-                              MATA KULIAH<br>SUBJECTS
-                            </th>
-                            <th class="vertical-header sks-col">
-                              SKS<br>CREDITS
-                            </th>
-                            <th class="vertical-header nilai-col">
-                              NILAI<br>GRADE
-                            </th>
-                            <th class="vertical-header ekuivalen-col">
-                              EKUIVALEN<br>EQUIVALENT
-                            </th>
+                            <th>NO<br>NO</th>
+                            <th>KODE<br>CODE</th>
+                            <th>MATA KULIAH<br>SUBJECTS</th>
+                            <th>SKS<br>CREDITS</th>
+                            <th>NILAI<br>GRADE</th>
+                            <th>EKUIVALEN<br>EQUIVALENT</th>
                           </tr>
                         </thead>
                         <tbody>
+                          <!-- Example Row -->
                           <tr>
                             <td>28</td>
                             <td>TIK4025</td>
@@ -725,30 +697,19 @@
 
                     <!-- Column 3 -->
                     <div style="flex: 1;">
-                      <VTable class="text-caption fixed-header">
+                      <VTable class="text-caption">
                         <thead>
                           <tr>
-                            <th class="no-col">
-                              NO<br>NO
-                            </th>
-                            <th class="kode-col">
-                              KODE<br>CODE
-                            </th>
-                            <th class="matkul-col">
-                              MATA KULIAH<br>SUBJECTS
-                            </th>
-                            <th class="vertical-header sks-col">
-                              SKS<br>CREDITS
-                            </th>
-                            <th class="vertical-header nilai-col">
-                              NILAI<br>GRADE
-                            </th>
-                            <th class="vertical-header ekuivalen-col">
-                              EKUIVALEN<br>EQUIVALENT
-                            </th>
+                            <th>NO<br>NO</th>
+                            <th>KODE<br>CODE</th>
+                            <th>MATA KULIAH<br>SUBJECTS</th>
+                            <th>SKS<br>CREDITS</th>
+                            <th>NILAI<br>GRADE</th>
+                            <th>EKUIVALEN<br>EQUIVALENT</th>
                           </tr>
                         </thead>
                         <tbody>
+                          <!-- Example Row -->
                           <tr>
                             <td>55</td>
                             <td>UNI0009</td>
@@ -789,6 +750,7 @@
                             <td>C</td>
                             <td>2.0</td>
                           </tr>
+                          <!-- Add more rows as needed -->
                         </tbody>
                       </VTable>
                     </div>
@@ -1230,9 +1192,6 @@ export default {
     const showValidationModal = ref(false)
     const validationMessage = ref('')
 
-    const ijazahPreview = ref(null)
-    const transcriptPreview = ref(null)
-
     // Dummy user login data (ganti dengan data user login sebenarnya jika sudah ada mekanisme login)
     const user = ref({
       name: 'IRWANDA BUDI PANGESTU',
@@ -1374,119 +1333,132 @@ export default {
 
     // Fungsi untuk membuka draft di tab baru
     const openInNewTab = () => {
-      if (!ijazahPreview.value || !transcriptPreview.value) return
-
-      const ijazahHTML = ijazahPreview.value.outerHTML
-      const transcriptHTML = transcriptPreview.value.outerHTML
-
-      const styles = `
-        <style>
-          body {
-            font-family: 'Times New Roman', Times, serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-          }
-          .page {
-            background: white;
-            width: 210mm;
-            height: 297mm;
-            margin: 20mm auto;
-            padding: 20mm;
-            box-sizing: border-box;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            page-break-after: always;
-          }
-          .page:last-child {
-            page-break-after: auto;
-          }
-
-          /* Copy relevant styles from the component */
-          .draft-ijazah-preview, .transcript-preview {
-            border: none !important;
-            box-shadow: none !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            font-size: 12pt !important;
-            max-inline-size: 100% !important;
-            min-block-size: initial !important;
-          }
-           .d-flex { display: flex; }
-          .justify-end { justify-content: flex-end; }
-          .justify-space-between { justify-content: space-between; }
-          .align-center { align-items: center; }
-          .align-items-flex-end { align-items: flex-end; }
-          .mt-6 { margin-top: 1.5rem; }
-          .mt-4 { margin-top: 1rem; }
-          .mt-8 { margin-top: 2rem; }
-          .mt-12 { margin-top: 3rem; }
-          .mb-2 { margin-bottom: 0.5rem; }
-          .text-right { text-align: right; }
-          .font-weight-bold { font-weight: bold; }
-          .text-center { text-align: center; }
-          .fixed-header, .v-table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-          .v-table th, .v-table td {
-            border: 1px solid #000;
-            padding: 4px 8px;
-            text-align: left;
-          }
-          .v-table th {
-             font-weight: bold;
-          }
-
-           .no-col { width: 45px; text-align: center; }
-          .kode-col { width: 110px; }
-          .matkul-col { width: 55%; }
-          .vertical-header {
-            writing-mode: vertical-rl;
-            transform: rotate(180deg);
-            text-align: center !important;
-            vertical-align: middle;
-            width: 40px;
-          }
-           .fixed-header th, .fixed-header td {
-            height: auto; /* Let content decide */
-          }
-          
-          /* Hide elements not needed for PDF */
-          .v-application, .v-application__wrap, .v-main, .v-container, .v-card, .v-card-title, .v-card-text, .v-card-actions {
-              all: unset !important;
-          }
-          body > .v-application > .v-application__wrap {
-              min-height: auto !important;
-          }
-
-          @media print {
-            body, .page {
-              margin: 0;
-              box-shadow: none;
-            }
-          }
-        </style>
-      `
-
       const newWindow = window.open('', '_blank')
       if (newWindow) {
         newWindow.document.write(`
           <!DOCTYPE html>
           <html>
             <head>
-              <title>Preview Ijazah & Transkrip</title>
-              ${styles}
+              <title>Preview Ijazah</title>
+              <style>
+                body {
+                  margin: 0;
+                  padding: 0;
+                  font-family: Arial, sans-serif;
+                  background: #f5f5f5;
+                }
+                .draft-ijazah-preview {
+                  margin: 0 auto;
+                  max-width: 1130px;
+                  min-width: 1130px;
+                  padding: 2rem 0;
+                  background: white;
+                  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+                .draft-ijazah-preview img {
+                  width: 100%;
+                  height: auto;
+                  display: block;
+                }
+                .draft-ijazah-preview .content {
+                  position: relative;
+                  padding: 20px;
+                }
+                .draft-ijazah-preview .content p {
+                  margin: 0;
+                  line-height: 1.5;
+                }
+                .draft-ijazah-preview .content .nomor-ijazah {
+                  position: absolute;
+                  top: 20px;
+                  right: 20px;
+                  font-weight: bold;
+                }
+                .draft-ijazah-preview .content .nama {
+                  font-size: 1.2em;
+                  font-weight: bold;
+                  margin-top: 20px;
+                }
+                .draft-ijazah-preview .content .detail {
+                  margin-top: 10px;
+                }
+                .draft-ijazah-preview .content .ttd {
+                  margin-top: 20px;
+                  text-align: right;
+                }
+                .draft-ijazah-preview .content .ttd p {
+                  margin-bottom: 5px;
+                }
+                .draft-ijazah-preview .content .ttd .nama-ttd {
+                  font-weight: bold;
+                }
+                .draft-ijazah-preview .content .ttd .jabatan {
+                  font-size: 0.9em;
+                }
+                .draft-ijazah-preview .content .ttd .nip {
+                  font-size: 0.9em;
+                }
+                .draft-ijazah-preview .content .ttd .stempel {
+                  margin-top: 10px;
+                }
+                .draft-ijazah-preview .content .ttd .stempel img {
+                  width: 100px;
+                  height: auto;
+                }
+                @media print {
+                  body {
+                    padding: 0;
+                    margin: 0;
+                    background: white;
+                  }
+                  .draft-ijazah-preview {
+                    width: 100%;
+                    max-width: none;
+                    min-width: auto;
+                    padding: 0;
+                    box-shadow: none;
+                  }
+                }
+              </style>
             </head>
             <body>
-              <div class="page">
-                ${ijazahHTML}
-              </div>
-              <div class="page">
-                ${transcriptHTML}
+              <div class="draft-ijazah-preview">
+                <img src="/images/ijazah-bg.png" alt="Background Ijazah" />
+                <div class="content">
+                  <p class="nomor-ijazah">Nomor: ${props.data?.nomor_ijazah || '-'}</p>
+                  <p>Yang bertanda tangan di bawah ini:</p>
+                  <p>Nama: ${props.data?.nama_rektor || '-'}</p>
+                  <p>NIP: ${props.data?.nip_rektor || '-'}</p>
+                  <p>Jabatan: Rektor</p>
+                  <p>Universitas: ${props.data?.nama_universitas || '-'}</p>
+                  <p>Alamat: ${props.data?.alamat_universitas || '-'}</p>
+                  <p>Menerangkan bahwa:</p>
+                  <p class="nama">${props.data?.nama_mahasiswa || '-'}</p>
+                  <p class="detail">NIM: ${props.data?.nim || '-'}</p>
+                  <p class="detail">Tempat, Tanggal Lahir: ${props.data?.tempat_lahir || '-'}, ${props.data?.tanggal_lahir || '-'}</p>
+                  <p class="detail">Program Studi: ${props.data?.nama_prodi || '-'}</p>
+                  <p class="detail">Fakultas: ${props.data?.nama_fakultas || '-'}</p>
+                  <p class="detail">Universitas: ${props.data?.nama_universitas || '-'}</p>
+                  <p class="detail">Tahun Masuk: ${props.data?.tahun_masuk || '-'}</p>
+                  <p class="detail">Tahun Lulus: ${props.data?.tahun_lulus || '-'}</p>
+                  <p class="detail">Judul Tugas Akhir: ${props.data?.judul_ta || '-'}</p>
+                  <p class="detail">IPK: ${props.data?.ipk || '-'}</p>
+                  <p class="detail">Predikat: ${props.data?.predikat || '-'}</p>
+                  <p class="detail">Gelar: ${props.data?.gelar || '-'}</p>
+                  <p class="detail">Tanggal Wisuda: ${props.data?.tanggal_wisuda || '-'}</p>
+                  <p class="detail">Nomor Ijazah: ${props.data?.nomor_ijazah || '-'}</p>
+                  <p class="detail">Nomor SK: ${props.data?.nomor_sk || '-'}</p>
+                  <p class="detail">Tanggal SK: ${props.data?.tanggal_sk || '-'}</p>
+                  <div class="ttd">
+                    <p>${props.data?.kota_universitas || '-'}, ${props.data?.tanggal_sk || '-'}</p>
+                    <p class="nama-ttd">${props.data?.nama_rektor || '-'}</p>
+                    <p class="jabatan">Rektor</p>
+                    <p class="nip">NIP. ${props.data?.nip_rektor || '-'}</p>
+                    <div class="stempel">
+                      <img src="/images/stempel.png" alt="Stempel" />
+                    </div>
+                  </div>
+                </div>
               </div>
             </body>
           </html>
@@ -1514,8 +1486,6 @@ export default {
       handleSubmit,
       openInNewTab,
       user,
-      ijazahPreview,
-      transcriptPreview,
     }
   },
 }
@@ -1732,39 +1702,5 @@ export default {
 
 .position-relative {
   position: relative;
-}
-
-.fixed-header th,
-.fixed-header td {
-  block-size: 75px;
-}
-
-.fixed-header thead th {
-  position: sticky;
-  z-index: 1;
-  background-color: white;
-  inset-block-start: 0;
-}
-
-.no-col {
-  inline-size: 45px;
-  text-align: center;
-  writing-mode: vertical-rl;
-}
-
-.kode-col {
-  inline-size: 110px;
-}
-
-.matkul-col {
-  inline-size: 55%;
-}
-
-.vertical-header {
-  inline-size: 40px;
-  text-align: center !important;
-  transform: rotate(180deg);
-  vertical-align: middle;
-  writing-mode: vertical-rl;
 }
 </style> 
