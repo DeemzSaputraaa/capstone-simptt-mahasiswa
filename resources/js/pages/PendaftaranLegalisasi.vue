@@ -13,48 +13,116 @@
           >
             Pengajuan Legalisasi
           </VBtn>
-          <div>
-            <table class="summary-table styled-summary-table">
-              <thead>
-                <tr>
-                  <th>No</th>
-                  <th>Tanggal Pengajuan</th>
-                  <th>Tagihan</th>
-                  <th>Cara Pembayaran</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="(item, idx) in daftarPengajuan"
+          <div class="d-flex flex-row align-start">
+            <!-- Sidebar tanggal pengajuan -->
+            <div class="wizard-date-sidebar">
+              <div
+                v-for="(group, year) in groupedPengajuan"
+                :key="year"
+                class="mb-4"
+              >
+                <div class="wizard-date-year">
+                  {{ year }}
+                </div>
+                <div
+                  v-for="item in group"
                   :key="item.id"
+                  class="wizard-date-item"
                 >
-                  <td>{{ idx + 1 }}</td>
-                  <td>{{ item.tanggal }}</td>
-                  <td>
-                    <span v-if="item.status === 'pending'">Menunggu tagihan</span>
-                    <span v-else-if="item.status === 'proses'">Rp. 20.000,00</span>
-                    <span v-else-if="item.status === 'selesai'">Rp. 20.000,00</span>
-                  </td>
-                  <td>
-                    <span v-if="item.status === 'pending'">-</span>
-                    <span v-else-if="item.status === 'proses'">
-                      <a
-                        href="#"
-                        target="_blank"
-                        @click.prevent="openCaraPembayaran(item)"
-                      >Cara Pembayaran</a>
-                    </span>
-                    <span v-else-if="item.status === 'selesai'">-</span>
-                  </td>
-                  <td>
-                    <span v-if="item.status === 'pending'">Pending</span>
-                    <span v-else-if="item.status === 'proses'">Proses</span>
-                    <span v-else-if="item.status === 'selesai'">Selesai</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                  <button
+                    class="wizard-date-btn"
+                    :class="{active: selectedPengajuan && selectedPengajuan.id === item.id}"
+                    @click="selectPengajuan(item)"
+                  >
+                    {{ item.tanggal.split('-').slice(1).join('/') }}
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Vertical wizard detail -->
+            <div class="wizard-vertical-detail">
+              <div v-if="selectedPengajuan">
+                <!-- Step 1: Tagihan -->
+                <div class="wizard-vertical-step">
+                  <span
+                    class="wizard-vertical-dot"
+                    :class="tagihanColor(selectedPengajuan)"
+                  />
+                  <div class="wizard-vertical-line" />
+                  <div class="wizard-vertical-content">
+                    <div class="wizard-vertical-title">
+                      Tagihan
+                    </div>
+                    <div class="wizard-vertical-desc">
+                      <template v-if="selectedPengajuan.status === 'pending'">
+                        Menunggu Tagihan
+                      </template>
+                      <template v-else>
+                        Rp. {{ selectedPengajuan.tagihan }}
+                      </template>
+                    </div>
+                  </div>
+                </div>
+                <!-- Step 2: Cara Pembayaran -->
+                <div class="wizard-vertical-step">
+                  <span
+                    class="wizard-vertical-dot"
+                    :class="caraBayarColor(selectedPengajuan)"
+                  />
+                  <div class="wizard-vertical-line" />
+                  <div class="wizard-vertical-content">
+                    <div class="wizard-vertical-title">
+                      Cara Pembayaran
+                    </div>
+                    <div class="wizard-vertical-desc">
+                      <template v-if="selectedPengajuan.status === 'pending'">
+                        -
+                      </template>
+                      <template v-else>
+                        Cara Melakukan Pembayaran
+                        <div>
+                          <button
+                            class="wizard-bayar-btn"
+                            @click="openCaraPembayaran(selectedPengajuan)"
+                          >
+                            CARA MELAKUKAN PEMBAYARAN
+                          </button>
+                        </div>
+                      </template>
+                    </div>
+                  </div>
+                </div>
+                <!-- Step 3: Status -->
+                <div class="wizard-vertical-step">
+                  <span
+                    class="wizard-vertical-dot"
+                    :class="statusColor(selectedPengajuan)"
+                  />
+                  <div class="wizard-vertical-content">
+                    <div class="wizard-vertical-title">
+                      Status
+                    </div>
+                    <div class="wizard-vertical-desc">
+                      <template v-if="selectedPengajuan.status === 'pending'">
+                        Pending
+                      </template>
+                      <template v-else-if="selectedPengajuan.status === 'proses'">
+                        Sedang di proses
+                      </template>
+                      <template v-else>
+                        Selesai
+                      </template>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                v-else
+                class="wizard-vertical-empty"
+              >
+                Pilih tanggal pengajuan untuk melihat detail.
+              </div>
+            </div>
           </div>
         </div>
         <div v-else>
@@ -230,7 +298,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 export default {
   name: 'PendaftaranLegalisasi',
@@ -240,10 +308,43 @@ export default {
 
     // Dummy data pengajuan legalisasi
     const daftarPengajuan = ref([
-      { id: 1, tanggal: '2024-06-01', status: 'pending' },
-      { id: 2, tanggal: '2024-06-02', status: 'proses' },
-      { id: 3, tanggal: '2024-06-03', status: 'selesai' },
+      { id: 1, tanggal: '2025-06-05', status: 'pending', tagihan: null },
+      { id: 2, tanggal: '2025-06-01', status: 'proses', tagihan: '20.000,00' },
+      { id: 3, tanggal: '2025-05-26', status: 'selesai', tagihan: '30.000,00' },
+      { id: 4, tanggal: '2024-11-27', status: 'pending', tagihan: null },
+      { id: 5, tanggal: '2024-09-19', status: 'pending', tagihan: null },
+      { id: 6, tanggal: '2024-08-26', status: 'pending', tagihan: null },
     ])
+
+    // Group pengajuan by year
+    const groupedPengajuan = computed(() => {
+      const groups = {}
+
+      daftarPengajuan.value.forEach(item => {
+        const year = item.tanggal.split('-')[0]
+        if (!groups[year]) groups[year] = []
+        groups[year].push(item)
+      })
+
+      // Urutkan tahun dari terbesar ke terkecil
+      const sortedYears = Object.keys(groups).sort((a, b) => parseInt(b) - parseInt(a))
+      const sortedGroups = {}
+
+      sortedYears.forEach(year => {
+        // Urutkan tanggal dalam tahun dari terbaru ke terlama
+        groups[year].sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal))
+        sortedGroups[year] = groups[year]
+      })
+      
+      return sortedGroups
+    })
+
+    // State pengajuan yang dipilih
+    const selectedPengajuan = ref(daftarPengajuan.value[0])
+
+    const selectPengajuan = pengajuan => {
+      selectedPengajuan.value = pengajuan
+    }
 
     const form = ref({
       // Step 1
@@ -279,11 +380,10 @@ export default {
 
     const handleSubmit = () => {
       // Validasi contoh, sesuaikan dengan kebutuhan
-
       if (!form.value.jml || !form.value.alamat || !form.value.namaPenerima || !form.value.noTelpPenerima) {
         validationMessage.value = 'Mohon lengkapi semua data pendaftaran legalisasi'
         showValidationModal.value = true
-
+        
         return
       }
       validationMessage.value = 'Form berhasil dikirim'
@@ -295,10 +395,24 @@ export default {
       window.open('/cara-pembayaran', '_blank')
     }
 
+    // Warna status step
+    const tagihanColor = pengajuan => pengajuan.status === 'pending' ? 'dot-yellow' : 'dot-green'
+    const caraBayarColor = pengajuan => pengajuan.status === 'pending' ? 'dot-grey' : 'dot-blue'
+
+    const statusColor = pengajuan => {
+      if (pengajuan.status === 'pending') return 'dot-grey'
+      if (pengajuan.status === 'proses') return 'dot-blue'
+      
+      return 'dot-green'
+    }
+
     return {
       showWizard,
       currentStep,
       daftarPengajuan,
+      groupedPengajuan,
+      selectedPengajuan,
+      selectPengajuan,
       form,
       fileStatus,
       showValidationModal,
@@ -308,6 +422,9 @@ export default {
       prevStep,
       handleBack,
       openCaraPembayaran,
+      tagihanColor,
+      caraBayarColor,
+      statusColor,
     }
   },
 }
@@ -479,9 +596,12 @@ export default {
 .wizard-line {
   flex: 1;
   align-self: center;
+  margin: 0;
   background: #e0e0e0;
   block-size: 2px;
-  margin-inline: 8px;
+  inline-size: 2px;
+  inset-block-start: 18px;
+  inset-inline-start: 9px;
 }
 
 .wizard-step.done + .wizard-line {
@@ -523,5 +643,131 @@ export default {
   background: #fff;
   color: #222;
   text-align: start;
+}
+
+.wizard-date-sidebar {
+  margin-inline-end: 32px;
+  min-inline-size: 80px;
+}
+
+.wizard-date-year {
+  color: #222;
+  font-weight: bold;
+  margin-block-end: 8px;
+}
+
+.wizard-date-item {
+  margin-block-end: 8px;
+}
+
+.wizard-date-btn {
+  display: block;
+  border: none;
+  border-radius: 8px;
+  margin: 0;
+  background: #bdbdbd;
+  color: #fff;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  inline-size: 100%;
+  padding-block: 6px;
+  padding-inline: 0;
+  transition: background 0.2s;
+}
+
+.wizard-date-btn.active {
+  background: #17a2a6;
+  color: #fff;
+}
+
+.wizard-vertical-detail {
+  flex: 1;
+  min-inline-size: 320px;
+  padding-block: 34px;
+  padding-inline-start: 68px;
+}
+
+.wizard-vertical-step {
+  position: relative;
+  display: flex;
+  align-items: start;
+  margin-block-end: 70px;
+}
+
+.wizard-vertical-dot {
+  flex-shrink: 0;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  block-size: 18px;
+  box-shadow: 0 0 0 2px #e0e0e0;
+  inline-size: 18px;
+  margin-inline-end: 16px;
+}
+
+.dot-yellow {
+  background: #ffe066;
+}
+
+.dot-green {
+  background: #1bc47d;
+}
+
+.dot-grey {
+  background: #bdbdbd;
+}
+
+.dot-blue {
+  background: #4fc3f7;
+}
+
+.wizard-vertical-content {
+  flex: 1;
+}
+
+.wizard-vertical-title {
+  font-size: 17.6px;
+  font-weight: 700;
+  margin-block-end: 2px;
+}
+
+.wizard-vertical-desc {
+  font-size: 16px;
+  margin-block-end: 2px;
+}
+
+.wizard-bayar-btn {
+  border: none;
+  border-radius: 6px;
+  background: #17a2a6;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-block-start: 6px;
+  padding-block: 4px;
+  padding-inline: 12px;
+  transition: background 0.2s;
+}
+
+.wizard-bayar-btn:hover {
+  background: #13918f;
+}
+
+.wizard-vertical-line {
+  position: absolute;
+  z-index: 0;
+  margin: 0;
+  background: #e0e0e0;
+  block-size: 150px;
+  inline-size: 2px;
+  inset-block-start: 18px;
+  inset-inline-start: 9px;
+}
+
+.wizard-vertical-empty {
+  color: #888;
+  font-style: italic;
+  margin-block-start: 32px;
 }
 </style> 
