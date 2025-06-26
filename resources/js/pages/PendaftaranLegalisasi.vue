@@ -5,194 +5,203 @@
         fluid
         class="pa-6"
       >
-        <!-- Stepper Wizard -->
-        <div class="wizard-steps mb-8 d-flex justify-center align-center">
-          <div
-            class="wizard-step"
-            :class="[{active: currentStep === 1, done: currentStep > 1}]"
+        <div v-if="!showWizard">
+          <VBtn
+            color="#17a2a6"
+            style="border-radius: 10px; background: rgb(var(--v-theme-primary)); color: #fff; font-size: 1.1rem; font-weight: 500; margin-block-end: 32px; min-block-size: 48px; min-inline-size: 220px;"
+            @click="showWizard = true"
           >
-            <span class="wizard-circle">1</span>
-            <span class="wizard-label">Pendaftaran Legalisasi</span>
-          </div>
-          <div class="wizard-line" />
-          <div
-            class="wizard-step"
-            :class="[{active: currentStep === 2, done: currentStep > 2}]"
-          >
-            <span class="wizard-circle">2</span>
-            <span class="wizard-label">Detail Data</span>
-          </div>
-          <div class="wizard-line" />
-          <div
-            class="wizard-step"
-            :class="[{active: currentStep === 3}]"
-          >
-            <span class="wizard-circle">3</span>
-            <span class="wizard-label">Pembayaran</span>
+            Pengajuan Legalisasi
+          </VBtn>
+          <div>
+            <table class="summary-table styled-summary-table">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Tanggal Pengajuan</th>
+                  <th>Tagihan</th>
+                  <th>Cara Pembayaran</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(item, idx) in daftarPengajuan"
+                  :key="item.id"
+                >
+                  <td>{{ idx + 1 }}</td>
+                  <td>{{ item.tanggal }}</td>
+                  <td>
+                    <span v-if="item.status === 'pending'">Menunggu tagihan</span>
+                    <span v-else-if="item.status === 'proses'">Rp. 20.000,00</span>
+                    <span v-else-if="item.status === 'selesai'">Rp. 20.000,00</span>
+                  </td>
+                  <td>
+                    <span v-if="item.status === 'pending'">-</span>
+                    <span v-else-if="item.status === 'proses'">
+                      <a
+                        href="#"
+                        target="_blank"
+                        @click.prevent="openCaraPembayaran(item)"
+                      >Cara Pembayaran</a>
+                    </span>
+                    <span v-else-if="item.status === 'selesai'">-</span>
+                  </td>
+                  <td>
+                    <span v-if="item.status === 'pending'">Pending</span>
+                    <span v-else-if="item.status === 'proses'">Proses</span>
+                    <span v-else-if="item.status === 'selesai'">Selesai</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
-        <VCard
-          flat
-          class="form-card"
-        >
-          <VCardTitle class="text-h5 mb-4">
-            Formulir Pendaftaran Legalisasi
-          </VCardTitle>
-          <VCardText>
-            <!-- Step 1: Pendaftaran Legalisasi -->
-            <div v-if="currentStep === 1">
-              <div class="text-subtitle-1 font-weight-bold mb-2">
-                Jumlah (Jml)
-              </div>
-              <VTextField
-                v-model="form.jml"
-                label="Jumlah"
-                outlined
-                dense
-                hide-details
-                class="mb-4"
-              />
-              <div class="text-subtitle-1 font-weight-bold mb-2">
-                Alamat
-              </div>
-              <VTextField
-                v-model="form.alamat"
-                label="Alamat"
-                outlined
-                dense
-                hide-details
-                class="mb-4"
-              />
-              <div class="text-subtitle-1 font-weight-bold mb-2">
-                Nama Penerima
-              </div>
-              <VTextField
-                v-model="form.namaPenerima"
-                label="Nama Penerima"
-                outlined
-                dense
-                hide-details
-                class="mb-4"
-              />
-              <div class="text-subtitle-1 font-weight-bold mb-2">
-                No Telp Penerima
-              </div>
-              <VTextField
-                v-model="form.noTelpPenerima"
-                label="No Telp Penerima"
-                outlined
-                dense
-                hide-details
-                class="mb-4"
-              />
+        <div v-else>
+          <!-- Stepper Wizard -->
+          <div class="wizard-steps mb-8 d-flex justify-center align-center">
+            <div
+              class="wizard-step"
+              :class="[{active: currentStep === 1, done: currentStep > 1}]"
+            >
+              <span class="wizard-circle">1</span>
+              <span class="wizard-label">Pengajuan Legalisasi</span>
             </div>
-            <!-- Step 2: Detail Data (Summary Table) -->
-            <div v-else-if="currentStep === 2">
-              <div class="text-subtitle-1 font-weight-bold mb-4">
-                Ringkasan Data Pendaftaran
-              </div>
-              <table class="summary-table styled-summary-table">
-                <tr>
-                  <td class="label">
-                    Jumlah
-                  </td>
-                  <td class="value">
-                    {{ form.jml || '-' }}
-                  </td>
-                </tr>
-                <tr>
-                  <td class="label">
-                    Alamat
-                  </td>
-                  <td class="value">
-                    {{ form.alamat || '-' }}
-                  </td>
-                </tr>
-                <tr>
-                  <td class="label">
-                    Nama Penerima
-                  </td>
-                  <td class="value">
-                    {{ form.namaPenerima || '-' }}
-                  </td>
-                </tr>
-                <tr>
-                  <td class="label">
-                    No Telp Penerima
-                  </td>
-                  <td class="value">
-                    {{ form.noTelpPenerima || '-' }}
-                  </td>
-                </tr>
-              </table>
+            <div class="wizard-line" />
+            <div
+              class="wizard-step"
+              :class="[{active: currentStep === 2}]"
+            >
+              <span class="wizard-circle">2</span>
+              <span class="wizard-label">Detail Data</span>
             </div>
-            <!-- Step 3: Pembayaran (Dummy) -->
-            <div v-else-if="currentStep === 3">
-              <div class="text-subtitle-1 font-weight-bold mb-2">
-                Pembayaran Legalisasi
-              </div>
-              <div class="mb-4">
-                Silakan lakukan pembayaran ke rekening berikut:<br>
-                <b>Bank UNISA</b><br>
-                No. Rekening: <b>1234567890</b><br>
-                Atas Nama: <b>Universitas Aisyiyah</b>
-              </div>
-              <VTextField
-                v-model="form.buktiPembayaran"
-                label="No. Referensi Pembayaran"
-                outlined
-                dense
-                hide-details
-                class="mb-4"
-              />
-              <div class="file-upload mb-4">
-                <VIcon class="file-upload-icon">
-                  ri-attachment-2
-                </VIcon>
-                <VFileInput
-                  v-model="form.fileBuktiPembayaran"
-                  accept="image/*,application/pdf"
-                  variant="outlined"
+          </div>
+          <VCard
+            flat
+            class="form-card"
+          >
+            <VCardTitle class="text-h5 mb-4">
+              Formulir Pendaftaran Legalisasi
+            </VCardTitle>
+            <VCardText>
+              <!-- Step 1: Pengajuan Legalisasi -->
+              <div v-if="currentStep === 1">
+                <div class="text-subtitle-1 font-weight-bold mb-2">
+                  Jumlah (Jml)
+                </div>
+                <VTextField
+                  v-model="form.jml"
+                  label="Jumlah"
+                  outlined
+                  dense
                   hide-details
-                  placeholder="Upload Bukti Pembayaran"
-                  prepend-icon=""
-                  class="file-upload-input"
+                  class="mb-4"
+                />
+                <div class="text-subtitle-1 font-weight-bold mb-2">
+                  Alamat
+                </div>
+                <VTextField
+                  v-model="form.alamat"
+                  label="Alamat"
+                  outlined
+                  dense
+                  hide-details
+                  class="mb-4"
+                />
+                <div class="text-subtitle-1 font-weight-bold mb-2">
+                  Nama Penerima
+                </div>
+                <VTextField
+                  v-model="form.namaPenerima"
+                  label="Nama Penerima"
+                  outlined
+                  dense
+                  hide-details
+                  class="mb-4"
+                />
+                <div class="text-subtitle-1 font-weight-bold mb-2">
+                  No Telp Penerima
+                </div>
+                <VTextField
+                  v-model="form.noTelpPenerima"
+                  label="No Telp Penerima"
+                  outlined
+                  dense
+                  hide-details
+                  class="mb-4"
                 />
               </div>
-              <div class="text-caption grey--text">
-                {{ fileStatus.fileBuktiPembayaran || 'No selected file' }}
+              <!-- Step 2: Detail Data (Summary Table) -->
+              <div v-else-if="currentStep === 2">
+                <div class="text-subtitle-1 font-weight-bold mb-4">
+                  Ringkasan Data Pendaftaran
+                </div>
+                <table class="summary-table styled-summary-table">
+                  <tr>
+                    <td class="label">
+                      Jumlah
+                    </td>
+                    <td class="value">
+                      {{ form.jml || '-' }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label">
+                      Alamat
+                    </td>
+                    <td class="value">
+                      {{ form.alamat || '-' }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label">
+                      Nama Penerima
+                    </td>
+                    <td class="value">
+                      {{ form.namaPenerima || '-' }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label">
+                      No Telp Penerima
+                    </td>
+                    <td class="value">
+                      {{ form.noTelpPenerima || '-' }}
+                    </td>
+                  </tr>
+                </table>
               </div>
-            </div>
-          </VCardText>
-          <!-- Wizard Navigation Buttons -->
-          <VCardActions>
-            <VBtn
-              :disabled="currentStep === 1"
-              color="grey"
-              style="border-radius: 10px; min-block-size: 48px; min-inline-size: 120px;"
-              @click="prevStep"
-            >
-              Kembali
-            </VBtn>
-            <VSpacer />
-            <VBtn
-              v-if="currentStep < 3"
-              color="#17a2a6"
-              style="border-radius: 10px; background: rgb(var(--v-theme-primary)); color: #fff; font-size: 1.1rem; font-weight: 500; min-block-size: 48px; min-inline-size: 120px;"
-              @click="nextStep"
-            >
-              Lanjut
-            </VBtn>
-            <VBtn
-              v-else
-              color="#17a2a6"
-              style="border-radius: 10px; background: rgb(var(--v-theme-primary)); color: #fff; font-size: 1.1rem; font-weight: 500; min-block-size: 48px; min-inline-size: 120px;"
-              @click="handleSubmit"
-            >
-              Kirim
-            </VBtn>
-          </VCardActions>
-        </VCard>
+            </VCardText>
+            <!-- Wizard Navigation Buttons -->
+            <VCardActions>
+              <VBtn
+                color="grey"
+                style="border-radius: 10px; min-block-size: 48px; min-inline-size: 120px;"
+                :disabled="false"
+                @click="handleBack"
+              >
+                Kembali
+              </VBtn>
+              <VSpacer />
+              <VBtn
+                v-if="currentStep < 2"
+                color="#17a2a6"
+                style="border-radius: 10px; background: rgb(var(--v-theme-primary)); color: #fff; font-size: 1.1rem; font-weight: 500; min-block-size: 48px; min-inline-size: 120px;"
+                @click="nextStep"
+              >
+                Lanjut
+              </VBtn>
+              <VBtn
+                v-else
+                color="#17a2a6"
+                style="border-radius: 10px; background: rgb(var(--v-theme-primary)); color: #fff; font-size: 1.1rem; font-weight: 500; min-block-size: 48px; min-inline-size: 120px;"
+                @click="handleSubmit"
+              >
+                Kirim
+              </VBtn>
+            </VCardActions>
+          </VCard>
+        </div>
       </VContainer>
     </VMain>
   </VApp>
@@ -226,7 +235,15 @@ import { ref } from 'vue'
 export default {
   name: 'PendaftaranLegalisasi',
   setup() {
+    const showWizard = ref(false)
     const currentStep = ref(1)
+
+    // Dummy data pengajuan legalisasi
+    const daftarPengajuan = ref([
+      { id: 1, tanggal: '2024-06-01', status: 'pending' },
+      { id: 2, tanggal: '2024-06-02', status: 'proses' },
+      { id: 3, tanggal: '2024-06-03', status: 'selesai' },
+    ])
 
     const form = ref({
       // Step 1
@@ -234,48 +251,30 @@ export default {
       alamat: '',
       namaPenerima: '',
       noTelpPenerima: '',
-
-      // Step 2
-      nama: '',
-      prodi: '',
-      tahunLulus: '',
-
-      // Step 3
-      buktiPembayaran: '',
-      fileBuktiPembayaran: null,
     })
 
-    const fileStatus = ref({
-      fileBuktiPembayaran: '',
-    })
+    const fileStatus = ref({})
 
     const showValidationModal = ref(false)
     const validationMessage = ref('')
 
-    const updateFileStatus = (field, file) => {
-      if (file) {
-        fileStatus.value[field] = `${file.name} (${formatFileSize(file.size)})`
-      } else {
-        fileStatus.value[field] = ''
-      }
-    }
-
-    const formatFileSize = bytes => {
-      if (bytes === 0) return '0 Bytes'
-      const k = 1024
-      const sizes = ['Bytes', 'KB', 'MB', 'GB']
-      const i = Math.floor(Math.log(bytes) / Math.log(k))
-      
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-    }
-
     // Wizard navigation
     const nextStep = () => {
-      if (currentStep.value < 3) currentStep.value++
+      if (currentStep.value < 2) currentStep.value++
     }
 
     const prevStep = () => {
       if (currentStep.value > 1) currentStep.value--
+    }
+
+    // Handler tombol kembali
+    const handleBack = () => {
+      if (currentStep.value === 1) {
+        showWizard.value = false
+        currentStep.value = 1
+      } else {
+        prevStep()
+      }
     }
 
     const handleSubmit = () => {
@@ -287,29 +286,28 @@ export default {
 
         return
       }
-
-      // Validasi step 3
-
-      if (!form.value.buktiPembayaran || !form.value.fileBuktiPembayaran) {
-        validationMessage.value = 'Mohon lengkapi data pembayaran'
-        showValidationModal.value = true
-
-        return
-      }
       validationMessage.value = 'Form berhasil dikirim'
       showValidationModal.value = true
     }
 
+    // Fungsi untuk membuka cara pembayaran di tab baru
+    const openCaraPembayaran = item => {
+      window.open('/cara-pembayaran', '_blank')
+    }
+
     return {
+      showWizard,
       currentStep,
+      daftarPengajuan,
       form,
       fileStatus,
-      updateFileStatus,
       showValidationModal,
       validationMessage,
       handleSubmit,
       nextStep,
       prevStep,
+      handleBack,
+      openCaraPembayaran,
     }
   },
 }
