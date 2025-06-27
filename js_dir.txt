@@ -1,0 +1,307 @@
+ Volume in drive D is Deemz
+ Volume Serial Number is 3A30-79B1
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js
+
+06/18/2025  11:14 PM    <DIR>          .
+06/10/2025  10:35 AM    <DIR>          ..
+05/26/2025  08:22 PM    <DIR>          @core
+05/26/2025  08:22 PM    <DIR>          @layouts
+06/10/2025  10:40 AM                93 App.vue
+06/18/2025  11:08 PM    <DIR>          components
+05/26/2025  08:22 PM    <DIR>          layouts
+06/18/2025  11:15 PM    <DIR>          locales
+06/18/2025  11:33 PM               377 main.js
+06/27/2025  03:12 PM    <DIR>          pages
+06/18/2025  11:15 PM    <DIR>          plugins
+05/26/2025  08:22 PM    <DIR>          utils
+05/26/2025  08:22 PM    <DIR>          views
+               2 File(s)            470 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\@core
+
+05/26/2025  08:22 PM    <DIR>          .
+06/18/2025  11:14 PM    <DIR>          ..
+05/26/2025  08:22 PM    <DIR>          components
+05/26/2025  08:22 PM    <DIR>          utils
+               0 File(s)              0 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\@core\components
+
+05/26/2025  08:22 PM    <DIR>          .
+05/26/2025  08:22 PM    <DIR>          ..
+05/26/2025  08:22 PM    <DIR>          cards
+01/01/2025  04:43 AM               525 MoreBtn.vue
+01/01/2025  04:43 AM               900 ThemeSwitcher.vue
+               2 File(s)           1425 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\@core\components\cards
+
+05/26/2025  08:22 PM    <DIR>          .
+05/26/2025  08:22 PM    <DIR>          ..
+01/01/2025  04:43 AM              1409 CardStatisticsHorizontal.vue
+01/01/2025  04:43 AM              1633 CardStatisticsVertical.vue
+01/01/2025  04:43 AM              1603 CardStatisticsWithImages.vue
+               3 File(s)           4645 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\@core\utils
+
+05/26/2025  08:22 PM    <DIR>          .
+05/26/2025  08:22 PM    <DIR>          ..
+01/01/2025  04:43 AM              1204 colorConverter.js
+01/01/2025  04:43 AM               311 formatters.js
+01/01/2025  04:43 AM               768 helpers.js
+01/01/2025  04:43 AM              1350 plugins.js
+               4 File(s)           3633 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\@layouts
+
+05/26/2025  08:22 PM    <DIR>          .
+06/18/2025  11:14 PM    <DIR>          ..
+06/10/2025  04:57 PM    <DIR>          components
+01/01/2025  04:43 AM               254 components.js
+01/01/2025  04:43 AM               436 enums.js
+01/01/2025  04:43 AM                29 index.js
+06/09/2025  01:48 PM    <DIR>          styles
+01/01/2025  04:43 AM                10 types.js
+01/01/2025  04:43 AM               511 utils.js
+               5 File(s)           1240 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\@layouts\components
+
+06/10/2025  04:57 PM    <DIR>          .
+05/26/2025  08:22 PM    <DIR>          ..
+01/01/2025  04:43 AM              2121 TransitionExpand.vue
+06/10/2025  04:57 PM              4475 VerticalNav.vue
+01/01/2025  04:43 AM              1307 VerticalNavGroup.vue
+06/10/2025  03:37 PM              4965 VerticalNavLayout.vue
+06/08/2025  12:33 AM              2133 VerticalNavLink.vue
+01/01/2025  04:43 AM               420 VerticalNavSectionTitle.vue
+               6 File(s)          15421 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\@layouts\styles
+
+06/09/2025  01:48 PM    <DIR>          .
+05/26/2025  08:22 PM    <DIR>          ..
+01/01/2025  04:43 AM                72 index.scss
+01/01/2025  04:43 AM                39 _classes.scss
+06/09/2025  01:48 PM               807 _default-layout.scss
+01/01/2025  04:43 AM               116 _global.scss
+01/01/2025  04:43 AM               576 _mixins.scss
+01/01/2025  04:43 AM              1122 _placeholders.scss
+01/01/2025  04:43 AM               119 _rtl.scss
+01/01/2025  04:43 AM               895 _variables.scss
+               8 File(s)           3746 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\components
+
+06/18/2025  11:08 PM    <DIR>          .
+06/18/2025  11:14 PM    <DIR>          ..
+01/01/2025  04:43 AM               815 ErrorHeader.vue
+06/03/2025  12:16 PM              2880 UpgradeToPro.vue
+               2 File(s)           3695 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\layouts
+
+05/26/2025  08:22 PM    <DIR>          .
+06/18/2025  11:14 PM    <DIR>          ..
+01/01/2025  04:43 AM               203 blank.vue
+06/27/2025  12:18 AM    <DIR>          components
+01/01/2025  04:43 AM               363 default.vue
+               2 File(s)            566 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\layouts\components
+
+06/27/2025  12:18 AM    <DIR>          .
+05/26/2025  08:22 PM    <DIR>          ..
+06/18/2025  11:55 PM              3438 DefaultLayoutWithVerticalNav.vue
+06/27/2025  12:18 AM              1262 Footer.vue
+01/01/2025  04:43 AM               217 NavbarThemeSwitcher.vue
+06/11/2025  12:30 AM              2400 NavItems.vue
+06/18/2025  11:55 PM              3405 UserProfile.vue
+               5 File(s)          10722 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\locales
+
+06/18/2025  11:15 PM    <DIR>          .
+06/18/2025  11:14 PM    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\pages
+
+06/27/2025  03:12 PM    <DIR>          .
+06/18/2025  11:14 PM    <DIR>          ..
+01/01/2025  04:43 AM              1566 account-settings.vue
+06/27/2025  03:12 PM             71061 barangCopyan.vue
+06/18/2025  11:55 PM             17187 dashboard.vue
+06/18/2025  11:55 PM              2928 EditProfile.vue
+01/01/2025  04:43 AM              2383 icons.vue
+06/11/2025  12:30 AM              6141 login.vue
+06/27/2025  01:59 AM             20914 PendaftaranLegalisasi.vue
+06/12/2025  08:39 AM              9766 PraYudisium.vue
+06/10/2025  04:57 PM              4834 register.vue
+06/23/2025  09:32 PM             71364 ValidasiIjazah.vue
+01/01/2025  04:43 AM              1320 [...error].vue
+              11 File(s)         209464 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\plugins
+
+06/18/2025  11:15 PM    <DIR>          .
+06/18/2025  11:14 PM    <DIR>          ..
+05/26/2025  08:22 PM    <DIR>          iconify
+01/01/2025  04:43 AM               123 pinia.js
+06/24/2025  12:38 AM    <DIR>          router
+06/09/2025  01:27 PM    <DIR>          vuetify
+01/01/2025  04:43 AM               456 webfontloader.js
+               2 File(s)            579 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\plugins\iconify
+
+05/26/2025  08:22 PM    <DIR>          .
+06/18/2025  11:15 PM    <DIR>          ..
+01/01/2025  04:43 AM              6578 build-icons.js
+06/11/2025  12:10 AM           1381648 icons.css
+01/01/2025  04:43 AM                99 index.js
+01/01/2025  04:43 AM                25 package.json
+               4 File(s)        1388350 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\plugins\router
+
+06/24/2025  12:38 AM    <DIR>          .
+06/18/2025  11:15 PM    <DIR>          ..
+01/01/2025  04:43 AM               264 index.js
+06/24/2025  12:38 AM              1858 routes.js
+               2 File(s)           2122 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\plugins\vuetify
+
+06/09/2025  01:27 PM    <DIR>          .
+06/18/2025  11:15 PM    <DIR>          ..
+01/01/2025  04:43 AM              2728 defaults.js
+01/01/2025  04:43 AM              2232 icons.js
+01/01/2025  04:43 AM               499 index.js
+06/09/2025  01:27 PM              4436 theme.js
+               4 File(s)           9895 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\utils
+
+05/26/2025  08:22 PM    <DIR>          .
+06/18/2025  11:14 PM    <DIR>          ..
+01/01/2025  04:43 AM               262 paginationMeta.js
+               1 File(s)            262 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\views
+
+05/26/2025  08:22 PM    <DIR>          .
+06/18/2025  11:14 PM    <DIR>          ..
+06/03/2025  12:16 PM    <DIR>          dashboard
+05/26/2025  08:22 PM    <DIR>          pages
+05/26/2025  08:22 PM    <DIR>          user-interface
+               0 File(s)              0 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\views\dashboard
+
+06/03/2025  12:16 PM    <DIR>          .
+05/26/2025  08:22 PM    <DIR>          ..
+06/03/2025  12:16 PM               934 AnalyticsAward.vue
+06/03/2025  12:31 AM              2477 AnalyticsBarCharts.vue
+01/01/2025  04:43 AM              4683 AnalyticsDepositWithdraw.vue
+01/01/2025  04:43 AM              2785 AnalyticsSalesByCountries.vue
+01/01/2025  04:43 AM              2453 AnalyticsTotalEarning.vue
+01/01/2025  04:43 AM              1883 AnalyticsTotalProfitLineCharts.vue
+01/01/2025  04:43 AM              1850 AnalyticsTransactions.vue
+01/01/2025  04:43 AM              5761 AnalyticsUserTable.vue
+01/01/2025  04:43 AM              3267 AnalyticsWeeklyOverview.vue
+               9 File(s)          26093 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\views\pages
+
+05/26/2025  08:22 PM    <DIR>          .
+05/26/2025  08:22 PM    <DIR>          ..
+05/26/2025  08:22 PM    <DIR>          account-settings
+05/26/2025  08:22 PM    <DIR>          authentication
+05/26/2025  08:22 PM    <DIR>          cards
+05/26/2025  08:22 PM    <DIR>          form-layouts
+06/27/2025  02:50 PM    <DIR>          tables
+               0 File(s)              0 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\views\pages\account-settings
+
+05/26/2025  08:22 PM    <DIR>          .
+05/26/2025  08:22 PM    <DIR>          ..
+01/01/2025  04:43 AM              9409 AccountSettingsAccount.vue
+01/01/2025  04:43 AM              2294 AccountSettingsNotification.vue
+01/01/2025  04:43 AM             10422 AccountSettingsSecurity.vue
+               3 File(s)          22125 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\views\pages\authentication
+
+05/26/2025  08:22 PM    <DIR>          .
+05/26/2025  08:22 PM    <DIR>          ..
+01/01/2025  04:43 AM               657 AuthProvider.vue
+               1 File(s)            657 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\views\pages\cards
+
+05/26/2025  08:22 PM    <DIR>          .
+05/26/2025  08:22 PM    <DIR>          ..
+06/27/2025  02:45 PM    <DIR>          card-basic
+               0 File(s)              0 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\views\pages\cards\card-basic
+
+06/27/2025  02:45 PM    <DIR>          .
+05/26/2025  08:22 PM    <DIR>          ..
+01/01/2025  04:43 AM              2032 CardNavigation.vue
+01/01/2025  04:43 AM              2615 CardSolid.vue
+               2 File(s)           4647 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\views\pages\form-layouts
+
+05/26/2025  08:22 PM    <DIR>          .
+05/26/2025  08:22 PM    <DIR>          ..
+01/01/2025  04:43 AM              3338 DemoFormLayoutHorizontalForm.vue
+01/01/2025  04:43 AM              3637 DemoFormLayoutHorizontalFormWithIcons.vue
+01/01/2025  04:43 AM              2017 DemoFormLayoutMultipleColumn.vue
+01/01/2025  04:43 AM              1403 DemoFormLayoutVerticalForm.vue
+01/01/2025  04:43 AM              1572 DemoFormLayoutVerticalFormWithIcons.vue
+               5 File(s)          11967 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\views\pages\tables
+
+06/27/2025  02:50 PM    <DIR>          .
+05/26/2025  08:22 PM    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\views\user-interface
+
+05/26/2025  08:22 PM    <DIR>          .
+05/26/2025  08:22 PM    <DIR>          ..
+06/27/2025  02:49 PM    <DIR>          form-layouts
+06/27/2025  02:50 PM    <DIR>          tables
+05/26/2025  08:22 PM    <DIR>          typography
+               0 File(s)              0 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\views\user-interface\form-layouts
+
+06/27/2025  02:49 PM    <DIR>          .
+05/26/2025  08:22 PM    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\views\user-interface\tables
+
+06/27/2025  02:50 PM    <DIR>          .
+05/26/2025  08:22 PM    <DIR>          ..
+               0 File(s)              0 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\js\views\user-interface\typography
+
+05/26/2025  08:22 PM    <DIR>          .
+05/26/2025  08:22 PM    <DIR>          ..
+01/01/2025  04:43 AM              1161 TypographyHeadlines.vue
+01/01/2025  04:43 AM              3000 TypographyTexts.vue
+               2 File(s)           4161 bytes
+
+     Total Files Listed:
+              85 File(s)        1725885 bytes
+              92 Dir(s)     85713100800 bytes free

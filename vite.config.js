@@ -1,10 +1,11 @@
-import laravel from 'laravel-vite-plugin'
-import { fileURLToPath } from 'node:url'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
+import laravel from 'laravel-vite-plugin'
+import { fileURLToPath } from 'node:url'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { defineConfig } from 'vite'
+import purgecss from 'vite-plugin-purgecss'
 import vuetify from 'vite-plugin-vuetify'
 import svgLoader from 'vite-svg-loader'
 
@@ -50,7 +51,16 @@ export default defineConfig({
       filepath: './.eslintrc-auto-import.json',
     },
   }),
-  svgLoader()],
+  svgLoader(),
+  purgecss({
+    content: [
+      './resources/js/**/*.vue',
+      './resources/js/**/*.js',
+      './resources/js/**/*.ts',
+      './resources/views/**/*.blade.php',
+    ],
+    safelist: [/^v-/, /^theme--/, /^bg-/, /^text-/, /^mdi-/, /^icon-/], // pastikan class penting tidak terhapus
+  })],
   define: { 'process.env': {} },
   resolve: {
     alias: {

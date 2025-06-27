@@ -1,0 +1,146 @@
+ Volume in drive D is Deemz
+ Volume Serial Number is 3A30-79B1
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\public
+
+06/23/2025  10:07 PM    <DIR>          .
+06/28/2025  12:12 AM    <DIR>          ..
+01/01/2025  04:43 AM               603 .htaccess
+06/23/2025  10:06 PM    <DIR>          build
+01/01/2025  04:43 AM              1809 favicon.ico
+06/27/2025  11:57 PM                17 hot
+05/27/2025  01:58 AM    <DIR>          images
+01/01/2025  04:43 AM               468 index.php
+01/01/2025  04:43 AM              1264 loader.css
+01/01/2025  04:43 AM              5148 logo.png
+06/03/2025  12:16 PM            123704 logo_unisa.png
+01/01/2025  04:43 AM                24 robots.txt
+               8 File(s)         133037 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\public\build
+
+06/23/2025  10:06 PM    <DIR>          .
+06/23/2025  10:07 PM    <DIR>          ..
+06/23/2025  10:06 PM    <DIR>          assets
+06/23/2025  10:06 PM             20404 manifest.json
+               1 File(s)          20404 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\public\build\assets
+
+06/23/2025  10:06 PM    <DIR>          .
+06/23/2025  10:06 PM    <DIR>          ..
+06/23/2025  10:06 PM             36771 404-KybqypYR.png
+06/23/2025  10:06 PM             55841 account-settings-B93AMToP.js
+06/23/2025  10:06 PM              8689 account-settings-ByDDVJi1.css
+06/23/2025  10:06 PM              1491 auth-v1-mask-dark-COP1dbjf.png
+06/23/2025  10:06 PM               777 auth-v1-mask-light-BdT2D9c5.png
+06/23/2025  10:06 PM               679 auth-v1-mask-light-r9uNTGW6.js
+06/23/2025  10:06 PM              3667 auth-v1-tree-2-Cg13PFRH.png
+06/23/2025  10:06 PM              2130 auth-v1-tree-XwsB2ezL.png
+06/23/2025  10:06 PM                57 avatar-1-BpD18F9D.js
+06/23/2025  10:06 PM             16340 avatar-1-CxOKCzdw.png
+06/23/2025  10:06 PM               262 blank-B_v7iZWR.js
+06/23/2025  10:06 PM                52 blank-CExWZhJD.css
+06/23/2025  10:06 PM             15735 dashboard-BnBbBeWr.js
+06/23/2025  10:06 PM             19726 dashboard-Dw_FCwCK.css
+06/23/2025  10:06 PM             33339 default-DgwfXBxC.js
+06/23/2025  10:06 PM              7311 default-DqtOKZtm.css
+06/23/2025  10:06 PM                63 EditProfile-AgyOMmR-.css
+06/23/2025  10:06 PM              2359 EditProfile-DaQXdDVn.js
+06/23/2025  10:06 PM              2330 icons-D6U_4m96.js
+06/23/2025  10:06 PM              1015 login-4zZS4kTD.css
+06/23/2025  10:06 PM              3880 login-DJQym6OW.js
+06/23/2025  10:06 PM            123704 logo_unisa-CDHvw8ph.png
+06/23/2025  10:06 PM           2005155 main-B0hXweQg.css
+06/23/2025  10:06 PM            190310 main-ByNdAwFh.js
+06/23/2025  10:06 PM           1307660 materialdesignicons-webfont-B7mPwVP_.ttf
+06/23/2025  10:06 PM           1307880 materialdesignicons-webfont-CSr8KVlo.eot
+06/23/2025  10:06 PM            403216 materialdesignicons-webfont-Dp5v-WZN.woff2
+06/23/2025  10:06 PM            587984 materialdesignicons-webfont-PXm3-2wK.woff
+06/23/2025  10:06 PM              1537 misc-mask-dark-EDTHQMEO.png
+06/23/2025  10:06 PM              2151 misc-mask-light-PdlO0S62.png
+06/23/2025  10:06 PM              6027 PendaftaranLegalisasi-3lqNvbL_.js
+06/23/2025  10:06 PM              2015 PendaftaranLegalisasi-CNSYTw5u.css
+06/23/2025  10:06 PM              2516 PraYudisium-Bb0_ZoVq.css
+06/23/2025  10:06 PM              5060 PraYudisium-CQSwXPt1.js
+06/23/2025  10:06 PM              5956 register-4hMeoN0q.js
+06/23/2025  10:06 PM              2398 ssrBoot-D7gLx0Ub.js
+06/23/2025  10:06 PM              2637 tree-3HmZpwoD.png
+06/23/2025  10:06 PM            497532 unisa_tulisan-BFRM9ymA.png
+06/23/2025  10:06 PM              4127 ValidasiIjazah-Cj7MpsHL.css
+06/23/2025  10:06 PM             40929 ValidasiIjazah-ClR6OX3x.js
+06/23/2025  10:06 PM              4338 VAvatar-BCv8VgHZ.js
+06/23/2025  10:06 PM              2299 VAvatar-DC_c2-y8.css
+06/23/2025  10:06 PM              5141 VCard-Cao9lqMy.js
+06/23/2025  10:06 PM              6086 VCard-D1KR0KdB.css
+06/23/2025  10:06 PM              2440 VCheckboxBtn-BLCWyCrT.css
+06/23/2025  10:06 PM              5747 VCheckboxBtn-osk48aHo.js
+06/23/2025  10:06 PM             10551 VChip-BkulJAC9.js
+06/23/2025  10:06 PM             10915 VChip-C9AaI807.css
+06/23/2025  10:06 PM               457 VContainer--KCT50DO.js
+06/23/2025  10:06 PM              2241 VDialog-BlLgmx5I.js
+06/23/2025  10:06 PM              2462 VDialog-CecNtsIw.css
+06/23/2025  10:06 PM               875 VDivider-BI3KGmL4.css
+06/23/2025  10:06 PM              1128 VDivider-B_eEfHZR.js
+06/23/2025  10:06 PM               902 VFileInput-ClWPh7bn.css
+06/23/2025  10:06 PM              3711 VFileInput-JqS4wMyK.js
+06/23/2025  10:06 PM              1703 VForm-BEdFVlaf.js
+06/23/2025  10:06 PM               126 VForm-BelOsTLn.css
+06/23/2025  10:06 PM              3062 VGrid-B8_zkkfv.js
+06/23/2025  10:06 PM              9563 VGrid-CY4YuTXI.css
+06/23/2025  10:06 PM              6330 VImg-D5KV9sM_.js
+06/23/2025  10:06 PM              1031 VImg-DPhT_SK2.css
+06/23/2025  10:06 PM             13612 VList-DNO_GY7a.css
+06/23/2025  10:06 PM             20636 VList-DYQLAq-P.js
+06/23/2025  10:06 PM               546 VMain-B5CV26Wp.css
+06/23/2025  10:06 PM               645 VMain-C7H8pJ9s.js
+06/23/2025  10:06 PM               551 VMenu-Ceirw4NI.css
+06/23/2025  10:06 PM              3454 VMenu-CVxe1Qt3.js
+06/23/2025  10:06 PM             20906 VOverlay-Blj2-YJ9.js
+06/23/2025  10:06 PM               885 VOverlay-RJvHv5ph.css
+06/23/2025  10:06 PM              2855 VRow-DaPj1xL4.js
+06/23/2025  10:06 PM              1293 VSelect-7zKq4xId.css
+06/23/2025  10:06 PM             13207 VSelect-B1QWikWj.js
+06/23/2025  10:06 PM               124 VSpacer-lFvzPlas.js
+06/23/2025  10:06 PM               906 VTable-Cp8rWEft.js
+06/23/2025  10:06 PM              3804 VTable-JmRIugUr.css
+06/23/2025  10:06 PM             18177 VTextField-Cb_4b8T2.js
+06/23/2025  10:06 PM             22640 VTextField-Co6lxZN9.css
+06/23/2025  10:06 PM               606 VTooltip-DXZ38ohU.css
+06/23/2025  10:06 PM              1520 VTooltip-jnMTg7Eu.js
+06/23/2025  10:06 PM              6071 VWindowItem-CJRszpeh.js
+06/23/2025  10:06 PM              1876 VWindowItem-Cs7y7uPx.css
+06/23/2025  10:06 PM             12768 webfontloader-C3eWIkoe.js
+06/23/2025  10:06 PM              5130 WizardLegalisasi-6akneESm.css
+06/23/2025  10:06 PM             11895 WizardLegalisasi-BzKRK0SH.js
+06/23/2025  10:06 PM               788 _..-B3p0QPCU.css
+06/23/2025  10:06 PM              1541 _...error_-O2pSfLJG.js
+              86 File(s)        6958852 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\public\images
+
+05/27/2025  01:58 AM    <DIR>          .
+06/23/2025  10:07 PM    <DIR>          ..
+06/18/2025  11:55 PM    <DIR>          avatars
+               0 File(s)              0 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\public\images\avatars
+
+06/18/2025  11:55 PM    <DIR>          .
+05/27/2025  01:58 AM    <DIR>          ..
+01/01/2025  04:43 AM             16340 avatar-1.png
+06/18/2025  11:55 PM             24530 avatar-10.png
+06/18/2025  11:55 PM             35923 avatar-11.png
+06/18/2025  11:55 PM             27280 avatar-2.png
+06/18/2025  11:55 PM             33392 avatar-3.png
+06/18/2025  11:55 PM             36097 avatar-4.png
+06/18/2025  11:55 PM             38218 avatar-5.png
+06/18/2025  11:55 PM             37186 avatar-6.png
+06/18/2025  11:55 PM             36689 avatar-7.png
+06/18/2025  11:55 PM             36640 avatar-8.png
+06/18/2025  11:55 PM             33344 avatar-9.png
+              11 File(s)         355639 bytes
+
+     Total Files Listed:
+             106 File(s)        7467932 bytes
+              14 Dir(s)     85713125376 bytes free

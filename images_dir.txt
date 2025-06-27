@@ -1,0 +1,107 @@
+ Volume in drive D is Deemz
+ Volume Serial Number is 3A30-79B1
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\images
+
+06/10/2025  04:57 PM    <DIR>          .
+06/10/2025  10:35 AM    <DIR>          ..
+05/26/2025  08:22 PM    <DIR>          avatars
+05/26/2025  08:22 PM    <DIR>          eCommerce
+01/01/2025  04:43 AM              2313 logo.svg
+05/26/2025  08:22 PM    <DIR>          logos
+06/10/2025  04:57 PM            123704 logo_unisa.png
+05/26/2025  08:22 PM    <DIR>          misc
+06/03/2025  12:16 PM    <DIR>          pages
+05/26/2025  08:22 PM    <DIR>          svg
+06/10/2025  04:57 PM            497532 unisa_tulisan.png
+               3 File(s)         623549 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\images\avatars
+
+05/26/2025  08:22 PM    <DIR>          .
+06/10/2025  04:57 PM    <DIR>          ..
+01/01/2025  04:43 AM             16340 avatar-1.png
+01/01/2025  04:43 AM             35995 avatar-10.png
+01/01/2025  04:43 AM             48673 avatar-11.png
+01/01/2025  04:43 AM             46618 avatar-12.png
+01/01/2025  04:43 AM             18787 avatar-13.png
+01/01/2025  04:43 AM             18661 avatar-14.png
+01/01/2025  04:43 AM             18500 avatar-15.png
+01/01/2025  04:43 AM             23136 avatar-2.png
+01/01/2025  04:43 AM             11845 avatar-3.png
+01/01/2025  04:43 AM             21231 avatar-4.png
+01/01/2025  04:43 AM             18787 avatar-5.png
+01/01/2025  04:43 AM             18661 avatar-6.png
+01/01/2025  04:43 AM             18500 avatar-7.png
+01/01/2025  04:43 AM             16783 avatar-8.png
+01/01/2025  04:43 AM             44169 avatar-9.png
+              15 File(s)         376686 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\images\eCommerce
+
+05/26/2025  08:22 PM    <DIR>          .
+06/10/2025  04:57 PM    <DIR>          ..
+01/01/2025  04:43 AM             28102 2.png
+               1 File(s)          28102 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\images\logos
+
+05/26/2025  08:22 PM    <DIR>          .
+06/10/2025  04:57 PM    <DIR>          ..
+01/01/2025  04:43 AM              1247 american-bank.png
+01/01/2025  04:43 AM              1740 aviato.png
+01/01/2025  04:43 AM              1730 aws.png
+01/01/2025  04:43 AM              1447 bitbank.png
+01/01/2025  04:43 AM              7651 chrome.png
+01/01/2025  04:43 AM              1201 citi-bank.png
+01/01/2025  04:43 AM               934 digital-ocean.png
+01/01/2025  04:43 AM              5070 github.png
+01/01/2025  04:43 AM              4502 google.png
+01/01/2025  04:43 AM              2110 gumroad.png
+01/01/2025  04:43 AM              1517 mastercard-label.png
+01/01/2025  04:43 AM              1281 slack.png
+01/01/2025  04:43 AM               826 stripe.png
+01/01/2025  04:43 AM              1414 zipcar.png
+              14 File(s)          32670 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\images\misc
+
+05/26/2025  08:22 PM    <DIR>          .
+06/10/2025  04:57 PM    <DIR>          ..
+01/01/2025  04:43 AM             22300 trophy.png
+               1 File(s)          22300 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\images\pages
+
+06/03/2025  12:16 PM    <DIR>          .
+06/10/2025  04:57 PM    <DIR>          ..
+01/01/2025  04:43 AM            320358 1.png
+01/01/2025  04:43 AM            231124 2.png
+01/01/2025  04:43 AM             88154 3.png
+01/01/2025  04:43 AM             36771 404.png
+01/01/2025  04:43 AM              6790 5.jpg
+01/01/2025  04:43 AM            259380 6.jpg
+01/01/2025  04:43 AM              1491 auth-v1-mask-dark.png
+01/01/2025  04:43 AM               777 auth-v1-mask-light.png
+01/01/2025  04:43 AM              3667 auth-v1-tree-2.png
+01/01/2025  04:43 AM              2130 auth-v1-tree.png
+06/03/2025  12:16 PM            123704 logo_unisa.png
+01/01/2025  04:43 AM              1537 misc-mask-dark.png
+01/01/2025  04:43 AM              2151 misc-mask-light.png
+01/01/2025  04:43 AM              2637 tree.png
+              14 File(s)        1080671 bytes
+
+ Directory of D:\laragon\www\capstone-simptt-mahasiswa\resources\images\svg
+
+05/26/2025  08:22 PM    <DIR>          .
+06/10/2025  04:57 PM    <DIR>          ..
+01/01/2025  04:43 AM               335 checkbox-checked.svg
+01/01/2025  04:43 AM               292 checkbox-indeterminate.svg
+01/01/2025  04:43 AM               280 checkbox-unchecked.svg
+01/01/2025  04:43 AM               245 radio-checked.svg
+01/01/2025  04:43 AM               214 radio-unchecked.svg
+               5 File(s)           1366 bytes
+
+     Total Files Listed:
+              53 File(s)        2165344 bytes
+              20 Dir(s)     85713117184 bytes free
