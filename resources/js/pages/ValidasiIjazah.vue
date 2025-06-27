@@ -5,6 +5,16 @@
         fluid
         class="pa-6"
       >
+        <VAlert
+          v-if="showNotifAlert"
+          type="success"
+          variant="tonal"
+          class="mb-4"
+          border="start"
+          prominent
+        >
+          <span v-html="notifMessage" />
+        </VAlert>
         <VCard
           flat
           class="form-card position-relative"
@@ -1173,6 +1183,7 @@
 
 <script>
 import { ref } from 'vue'
+import { useRoute } from 'vue-router'
 
 export default {
   name: 'ValidasiIjazah',
@@ -1243,6 +1254,15 @@ export default {
       degree: 'SARJANA',
       graduationDate: '22 MARET 2025',
     })
+
+    const route = useRoute()
+    const notifId = route.query.notif
+    const showNotifAlert = ref(false)
+    const notifMessage = ref('')
+    if (notifId) {
+      showNotifAlert.value = true
+      notifMessage.value = 'Ada komentar baru dari admin di Validasi Ijazah Anda. Silakan cek detail di bawah ini.'
+    }
 
     const updateFileStatus = (field, file) => {
       if (file) {
@@ -1516,6 +1536,8 @@ export default {
       user,
       ijazahPreview,
       transcriptPreview,
+      showNotifAlert,
+      notifMessage,
     }
   },
 }

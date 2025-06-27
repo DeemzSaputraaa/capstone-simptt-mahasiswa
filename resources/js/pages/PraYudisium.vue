@@ -5,6 +5,16 @@
         fluid
         class="pa-6"
       >
+        <VAlert
+          v-if="showNotifAlert"
+          type="success"
+          variant="tonal"
+          class="mb-4"
+          border="start"
+          prominent
+        >
+          <span v-html="notifMessage" />
+        </VAlert>
         <VCard
           flat
           class="form-card"
@@ -163,6 +173,7 @@
 
 <script>
 import { ref } from 'vue'
+import { useRoute } from 'vue-router'
 
 export default {
   name: 'PraYudisium',
@@ -183,6 +194,15 @@ export default {
 
     const showValidationModal = ref(false)
     const validationMessage = ref('')
+
+    const route = useRoute()
+    const notifId = route.query.notif
+    const showNotifAlert = ref(false)
+    const notifMessage = ref('')
+    if (notifId) {
+      showNotifAlert.value = true
+      notifMessage.value = 'Ada notifikasi baru terkait data Pra Yudisium Anda. Silakan cek detail di bawah ini.'
+    }
 
     const updateFileStatus = (field, file) => {
       if (file) {
@@ -230,6 +250,8 @@ export default {
       handleSubmit,
       showValidationModal,
       validationMessage,
+      showNotifAlert,
+      notifMessage,
     }
   },
 }

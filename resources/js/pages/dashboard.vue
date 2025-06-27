@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const totalProfit = {
   title: 'Total Profit',
@@ -116,41 +117,47 @@ const notifications = ref([
     id: 1,
     icon: 'ri-calendar-event-line',
     color: 'warning',
-    title: 'You\'ve added new project recently, with no deadline.',
+    title: 'Ada data Pra Yudisium yang masih salah.',
+    type: 'pra-yudisium',
+    route: '/pra-yudisium',
+    dataId: 123,
   },
   {
     id: 2,
-    icon: 'ri-refund-2-line',
-    color: 'error',
-    title: 'Project owner Adam requested a refund',
+    icon: 'ri-user-3-line',
+    color: 'info',
+    title: 'Komentar baru dari admin di Validasi Ijazah.',
+    type: 'validasi-ijazah',
+    route: '/validasi-ijazah',
+    dataId: 456,
   },
   {
     id: 3,
-    icon: 'ri-user-3-line',
-    color: 'info',
-    title: 'Today, it\'s Tatia\'s anniversary! Wish her Happy Birthday!',
+    icon: 'ri-file-copy-line',
+    color: 'success',
+    title: 'Pengajuan legalisasi Anda telah di-ACC.',
+    type: 'legalisasi',
+    route: '/pendaftaran-legalisasi',
+    dataId: 789,
   },
   {
     id: 4,
-    icon: 'ri-calendar-event-line',
-    color: 'warning',
-    title: 'Another project added without a deadline.',
-  },
-  {
-    id: 5,
-    icon: 'ri-refund-2-line',
-    color: 'error',
-    title: 'Another refund request from client Z.',
-  },
-  {
-    id: 6,
-    icon: 'ri-user-3-line',
-    color: 'info',
-    title: 'John Doe\'s birthday is next week.',
+    icon: 'ri-truck-line',
+    color: 'primary',
+    title: 'Informasi pengiriman legalisasi Anda telah diperbarui.',
+    type: 'legalisasi',
+    route: '/pendaftaran-legalisasi',
+    dataId: 790,
   },
 ])
 
 const showNotificationsModal = ref(false)
+const router = useRouter()
+function goToNotification(notification) {
+  if (notification.route) {
+    router.push({ path: notification.route, query: { notif: notification.id, dataId: notification.dataId } })
+  }
+}
 </script>
 
 <template>
@@ -233,6 +240,8 @@ const showNotificationsModal = ref(false)
                 :key="notification.id"
                 class="notification-item mb-2"
                 rounded
+                style="cursor: pointer;"
+                @click="goToNotification(notification)"
               >
                 <template #prepend>
                   <VAvatar
@@ -277,6 +286,8 @@ const showNotificationsModal = ref(false)
               :key="notification.id"
               class="notification-item mb-2"
               rounded
+              style="cursor: pointer;"
+              @click="goToNotification(notification)"
             >
               <template #prepend>
                 <VAvatar

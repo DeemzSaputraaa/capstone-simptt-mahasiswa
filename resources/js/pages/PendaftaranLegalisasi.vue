@@ -13,6 +13,16 @@
           >
             Pengajuan Legalisasi
           </VBtn>
+          <VAlert
+            v-if="showNotifAlert"
+            type="success"
+            variant="tonal"
+            class="mb-4"
+            border="start"
+            prominent
+          >
+            <span v-html="notifMessage" />
+          </VAlert>
           <div class="d-flex flex-row align-start">
             <!-- Sidebar tanggal pengajuan -->
             <div class="wizard-date-sidebar">
@@ -299,6 +309,7 @@
 
 <script>
 import { computed, ref } from 'vue'
+import { useRoute } from 'vue-router'
 
 export default {
   name: 'PendaftaranLegalisasi',
@@ -359,6 +370,9 @@ export default {
     const showValidationModal = ref(false)
     const validationMessage = ref('')
 
+    const showNotifAlert = ref(false)
+    const notifMessage = ref('')
+
     // Wizard navigation
     const nextStep = () => {
       if (currentStep.value < 2) currentStep.value++
@@ -406,6 +420,13 @@ export default {
       return 'dot-green'
     }
 
+    const route = useRoute()
+    const notifId = route.query.notif
+    if (notifId) {
+      showNotifAlert.value = true
+      notifMessage.value = 'Ada update status legalisasi atau pengiriman legalisasi Anda. Silakan cek detail di bawah ini.'
+    }
+
     return {
       showWizard,
       currentStep,
@@ -425,6 +446,8 @@ export default {
       tagihanColor,
       caraBayarColor,
       statusColor,
+      showNotifAlert,
+      notifMessage,
     }
   },
 }
