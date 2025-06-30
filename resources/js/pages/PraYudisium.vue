@@ -13,7 +13,7 @@
           border="start"
           prominent
         >
-          <span v-html="notifMessage" />
+          <span>{{ notifMessage }}</span>
         </VAlert>
         <VCard
           flat

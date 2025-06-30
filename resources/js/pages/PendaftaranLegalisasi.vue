@@ -21,7 +21,7 @@
             border="start"
             prominent
           >
-            <span v-html="notifMessage" />
+            <span>{{ notifMessage }}</span>
           </VAlert>
           <div class="d-flex flex-row align-start">
             <!-- Sidebar tanggal pengajuan -->
@@ -121,6 +121,15 @@
                       </template>
                       <template v-else>
                         Selesai
+                        <div style="margin-block-start: 10px;">
+                          <VBtn
+                            color="primary"
+                            style="border-radius: 6px; font-size: 0.95rem; font-weight: 600; margin-inline-start: 0;"
+                            @click="trackingResi(selectedPengajuan)"
+                          >
+                            Tracking
+                          </VBtn>
+                        </div>
                       </template>
                     </div>
                   </div>
@@ -305,6 +314,107 @@
       </VCardActions>
     </VCard>
   </VDialog>
+  <VDialog
+    v-model="showCaraBayarDialog"
+    max-width="700"
+  >
+    <VCard>
+      <VCardTitle class="text-h5">
+        Cara Melakukan Pembayaran
+      </VCardTitle>
+      <VCardText>
+        <div style="border-radius: 8px; background: #fcf8ee; color: #7a7652; font-family: Georgia, serif; padding-block: 1rem; padding-inline: 1rem;">
+          <div style="font-size: 2.5rem; font-style: italic; font-weight: 600;">
+            Tagihan Pembayaran 2211501033
+          </div>
+          <div style="font-size: 1.2rem; font-style: italic; margin-block-end: 1rem;">
+            Timestamp: 30 Juni 2025 13:21:51
+          </div>
+          <div style="margin-block-end: 1rem;">
+            Klik tombol di bawah ini untuk menampilkan metode pembayaran menggunakan Bank Terpilih.
+          </div>
+          <div style="border-radius: 16px 16px 0 0; background: yellow; color: #7a7652; font-size: 1.7rem; font-weight: 500; padding-block: 0.5rem; padding-inline: 1rem;">
+            Melalui ATM BPD DIY
+          </div>
+          <div style="padding-block: 1rem; padding-inline: 1rem;">
+            <div style="font-size: 1.1rem; margin-block-end: 0.5rem;">
+              Catatan:
+            </div>
+            <ol style="font-size: 1.2rem;">
+              <li>Siapkan Kartu ATM Bank BPD DIY</li>
+              <li>Masukkan PIN dan pilih bahasa</li>
+              <li>Pilih menu Pembayaran</li>
+              <li>Pilih layanan Pendidikan</li>
+              <li>Pilih Universitas</li>
+              <li>Masukan ID Peserta <b>2211501033</b></li>
+              <li>Masukkan nominal <b>400.000</b></li>
+              <li>Lakukan pembayaran</li>
+            </ol>
+          </div>
+          <div style="border-radius: 16px 16px 0 0; background: orange; color: #5a4a2a; font-size: 1.7rem; font-weight: 500; margin-block-start: 1.5rem; padding-block: 0.5rem; padding-inline: 1rem;">
+            Melalui Internet Banking Bank BSI
+          </div>
+          <div style="padding-block: 1rem; padding-inline: 1rem;">
+            <div style="font-size: 1.1rem; margin-block-end: 0.5rem;">
+              Catatan: Nominal pembayaran otomatis muncul di Ibanking.
+            </div>
+            <ol style="font-size: 1.2rem;">
+              <li>Pilih menu Pembayaran</li>
+              <li>
+                Pada menu pembayaran pilih:
+                <ul>
+                  <li>Jenis Pembayaran: Institusi</li>
+                  <li>Nama Lembaga: UNISA Yogya</li>
+                  <li>Nomor Pembayaran: <b>2211501033</b></li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+          <div style="border-radius: 16px 16px 0 0; background: orange; color: #5a4a2a; font-size: 1.7rem; font-weight: 500; margin-block-start: 1.5rem; padding-block: 0.5rem; padding-inline: 1rem;">
+            Melalui Mobile Banking Bank BSI
+          </div>
+          <div style="padding-block: 1rem; padding-inline: 1rem;">
+            <div style="font-size: 1.1rem; margin-block-end: 0.5rem;">
+              Catatan: Nominal pembayaran otomatis muncul di Mbanking.
+            </div>
+            <ol style="font-size: 1.2rem;">
+              <li>Pilih menu Pembayaran</li>
+              <li>
+                Pada menu pembayaran pilih:
+                <ul>
+                  <li>Jenis Pembayaran: Akademik</li>
+                  <li>Nama Akademik: 9032 - UNISA Yogya</li>
+                  <li>Kode Bayar: <b>2211501033</b></li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+          <div style="border-radius: 16px 16px 0 0; background: orange; color: #5a4a2a; font-size: 1.7rem; font-weight: 500; margin-block-start: 1.5rem; padding-block: 0.5rem; padding-inline: 1rem;">
+            Melalui ATM Bank BSI
+          </div>
+          <div style="padding-block: 1rem; padding-inline: 1rem;">
+            <div style="font-size: 1.1rem; margin-block-end: 0.5rem;">
+              Catatan: Nominal pembayaran otomatis muncul di ATM.
+            </div>
+            <ol style="font-size: 1.2rem;">
+              <li>Pilih menu Pembayaran/Pembelian</li>
+              <li>Pilih menu Akademik</li>
+              <li>Masukkan kode 9032-<b>2211501033</b></li>
+            </ol>
+          </div>
+        </div>
+      </VCardText>
+      <VCardActions>
+        <VSpacer />
+        <VBtn
+          color="primary"
+          @click="showCaraBayarDialog = false"
+        >
+          Tutup
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
 </template>
 
 <script>
@@ -373,6 +483,8 @@ export default {
     const showNotifAlert = ref(false)
     const notifMessage = ref('')
 
+    const showCaraBayarDialog = ref(false)
+
     // Wizard navigation
     const nextStep = () => {
       if (currentStep.value < 2) currentStep.value++
@@ -404,9 +516,9 @@ export default {
       showValidationModal.value = true
     }
 
-    // Fungsi untuk membuka cara pembayaran di tab baru
+    // Fungsi untuk membuka cara pembayaran dalam dialog/modal
     const openCaraPembayaran = item => {
-      window.open('/cara-pembayaran', '_blank')
+      showCaraBayarDialog.value = true
     }
 
     // Warna status step
@@ -425,6 +537,18 @@ export default {
     if (notifId) {
       showNotifAlert.value = true
       notifMessage.value = 'Ada update status legalisasi atau pengiriman legalisasi Anda. Silakan cek detail di bawah ini.'
+    }
+
+    // Nomor resi dummy, bisa diganti sesuai data pengajuan
+    const defaultResi = 'P2303300137522'
+
+
+    // Fungsi untuk tracking
+    const trackingResi = item => {
+      // Ganti dengan item.resi jika ada field resi di data pengajuan
+      const resi = item.resi || defaultResi
+
+      window.open(`https://www.posindonesia.co.id/en/tracking/${resi}`, '_blank')
     }
 
     return {
@@ -448,6 +572,8 @@ export default {
       statusColor,
       showNotifAlert,
       notifMessage,
+      showCaraBayarDialog,
+      trackingResi,
     }
   },
 }
