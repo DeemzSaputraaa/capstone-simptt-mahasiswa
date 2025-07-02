@@ -102,6 +102,13 @@ const searchError = ref(false)
 function trackShipment() {
   searchError.value = false
 
+  // Jika tracking number format Pos Indonesia (misal: P2303300137522)
+  if (/^P\d+$/i.test(trackingNumber.value)) {
+    window.open(`https://www.posindonesia.co.id/en/tracking/${trackingNumber.value}`, '_blank')
+    
+    return
+  }
+
   const result = shipments.find(s => s.trackingNumber === trackingNumber.value)
   if (result) {
     trackingResults.value = result
@@ -166,7 +173,7 @@ function goToNotification(notification) {
     class="pa-4 dashboard-bg"
   >
     <VRow>
-      <!-- Welcome Card -->
+      <!-- Welcome Card, Search, Riwayat Pembayaran -->
       <VCol
         cols="12"
         md="8"
@@ -209,6 +216,44 @@ function goToNotification(notification) {
             </VCol>
           </VRow>
         </VCard>
+        <VCard
+          class="pa-4 mb-4"
+          style=" margin-block: 18px 16px; max-inline-size: 1000px;"
+        >
+          <VTextField
+            v-model="trackingNumber"
+            label="Search"
+            placeholder="Input Tracking Number"
+            append-inner-icon="ri-search-line"
+            dense
+            hide-details
+            @click:append-inner="trackShipment"
+            @keyup.enter="trackShipment"
+          />
+        </VCard>
+        <VCard
+          class="pa-4 mb-4"
+          style="margin-block-start: 0;"
+        >
+          <div class="text-h6 font-weight-bold mb-3">
+            Riwayat Pembayaran
+          </div>
+          <VList>
+            <VListItem
+              v-for="(pay, i) in payments"
+              :key="i"
+              class="mb-2"
+              rounded
+            >
+              <VListItemTitle>
+                <span class="font-weight-bold">{{ pay.amount }}</span> - {{ pay.date }}
+              </VListItemTitle>
+              <VListItemSubtitle>
+                <span :class="pay.status === 'Success' ? 'text-success' : pay.status === 'Pending' ? 'text-warning' : 'text-error'">{{ pay.status }}</span>
+              </VListItemSubtitle>
+            </VListItem>
+          </VList>
+        </VCard>
       </VCol>
       <!-- Notifications -->
       <VCol
@@ -218,6 +263,7 @@ function goToNotification(notification) {
         <VCard
           class="pa-4 notification-card"
           elevation="2"
+          style="block-size: 625px;"
         >
           <div class="d-flex align-center justify-space-between mb-2">
             <div class="text-h6 font-weight-bold">
@@ -308,116 +354,6 @@ function goToNotification(notification) {
         </VCardText>
       </VCard>
     </VDialog>
-    <!-- Statistik Cards -->
-    <!--
-      <VRow class="mt-2">
-      <VCol
-      v-for="stat in stats"
-      :key="stat.title"
-      cols="12"
-      md="3"
-      >
-      <VCard
-      class="pa-4 stat-card"
-      elevation="1"
-      >
-      <div class="d-flex align-center mb-2">
-      <div :style="`width:36px;height:36px;border-radius:8px;background:${stat.color === 'error' ? '#ff5252' : stat.color === 'info' ? '#40a9ff' : stat.color === 'warning' ? '#ffc107' : '#4caf50'};`" />
-      <VSpacer />
-      <VIcon color="grey">
-      ri-information-line
-      </VIcon>
-      </div>
-      <div class="text-body-2 text-grey mb-1">
-      {{ stat.title }}
-      </div>
-      <div class="text-h6 font-weight-bold">
-      {{ stat.value }}
-      </div>
-      </VCard>
-      </VCol>
-      </VRow> 
-    -->
-    <!-- 2 Kolom: Pembayaran & Pengiriman -->
-    <VRow class="mt-4">
-      <VCol
-        cols="12"
-        md="6"
-      >
-        <VCard class="pa-4 mb-4">
-          <div class="text-h6 font-weight-bold mb-3">
-            Riwayat Pembayaran
-          </div>
-          <VList>
-            <VListItem
-              v-for="(pay, i) in payments"
-              :key="i"
-              class="mb-2"
-              rounded
-            >
-              <VListItemTitle>
-                <span class="font-weight-bold">{{ pay.amount }}</span> - {{ pay.date }}
-              </VListItemTitle>
-              <VListItemSubtitle>
-                <span :class="pay.status === 'Success' ? 'text-success' : pay.status === 'Pending' ? 'text-warning' : 'text-error'">{{ pay.status }}</span>
-              </VListItemSubtitle>
-            </VListItem>
-          </VList>
-        </VCard>
-      </VCol>
-      <VCol
-        cols="12"
-        md="6"
-      >
-        <VCard class="pa-4 mb-4">
-          <div class="text-h6 font-weight-bold mb-3">
-            Data Pengiriman Barang
-          </div>
-          <VTextField
-            v-model="trackingNumber"
-            label="Enter Tracking Number"
-            placeholder="TRK123456789"
-            class="mb-3"
-            append-inner-icon="ri-search-line"
-            @click:append-inner="trackShipment"
-            @keyup.enter="trackShipment"
-          />
-          <VAlert
-            v-if="searchError"
-            type="error"
-            class="mb-3"
-            density="compact"
-          >
-            Tracking number not found.
-          </VAlert>
-          <VList>
-            <VListItem
-              v-for="(ship, i) in shipments"
-              :key="i"
-              class="mb-2"
-              rounded
-            >
-              <VListItemTitle>
-                <span class="font-weight-bold">{{ ship.item }}</span> - {{ ship.date }}
-              </VListItemTitle>
-              <VListItemSubtitle>
-                <span :class="ship.status === 'Delivered' ? 'text-success' : ship.status === 'In Transit' ? 'text-warning' : 'text-error'">{{ ship.status }}</span>
-              </VListItemSubtitle>
-              <template #append>
-                <VBtn
-                  variant="text"
-                  color="primary"
-                  size="small"
-                  @click="trackingNumber = ship.trackingNumber; trackShipment()"
-                >
-                  Track
-                </VBtn>
-              </template>
-            </VListItem>
-          </VList>
-        </VCard>
-      </VCol>
-    </VRow>
     <!-- Tracking Modal -->
     <VDialog
       v-model="showTrackingModal"
@@ -552,7 +488,8 @@ function goToNotification(notification) {
 <style scoped>
 .dashboard-bg {
   background: var(--v-theme-background);
-  min-block-size: 100vh;
+
+  /* min-block-size: 100vh; */
   transition: background 0.3s;
 }
 
@@ -561,8 +498,6 @@ function goToNotification(notification) {
 .stat-card {
   padding: 24px;
   border-radius: 8px;
-  background-color: var(--v-theme-surface) !important;
-  transition: background 0.3s;
 }
 
 .card-title,

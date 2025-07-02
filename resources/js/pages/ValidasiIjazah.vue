@@ -15,9 +15,11 @@
         >
           <span>{{ notifMessage }}</span>
         </VAlert>
+
+        <!-- Card 1: Draft Ijazah -->
         <VCard
           flat
-          class="form-card position-relative"
+          class="form-card position-relative mb-6"
         >
           <VCardTitle class="text-h5 mb-4 d-flex justify-space-between align-center">
             Draft Ijazah
@@ -30,8 +32,6 @@
               <VIcon>ri-external-link-line</VIcon>
             </VBtn>
           </VCardTitle>
-          
-          <!-- Section 1: NIK -->
           <VCardText style="padding: 0;">
             <div style="inline-size: 100%; overflow-x: auto;">
               <div
@@ -185,7 +185,33 @@
                     </div>
                   </div>
                 </div>
-                <!-- nilai -->
+              </div>
+            </div>
+          </VCardText>
+        </VCard>
+
+        <!-- Card 2: Transkrip Nilai -->
+        <VCard
+          flat
+          class="form-card position-relative mb-6"
+        >
+          <VCardTitle class="text-h5 mb-4 d-flex justify-space-between align-center">
+            Transkrip Nilai
+            <VBtn
+              icon
+              title="Buka di tab baru"
+              style="margin-inline-start: auto;"
+              @click="openInNewTab"
+            >
+              <VIcon>ri-external-link-line</VIcon>
+            </VBtn>
+          </VCardTitle>
+          <VCardText style="padding: 0;">
+            <div style="inline-size: 100%; overflow-x: auto;">
+              <div
+                ref="printableContent"
+                style="margin: auto; max-inline-size: 1130px; min-inline-size: 1130px; padding-block: 2rem; padding-inline: 0;"
+              >
                 <div
                   ref="transcriptPreview"
                   class="transcript-preview mt-8"
@@ -820,19 +846,19 @@
                 </div>
               </div>
             </div>
-            <!-- End Draft Ijazah Layout -->
           </VCardText>
         </VCard>
 
-        <!-- Komentar -->
-        <div class="text-subtitle-1 font-weight-bold mb-4 mt-8">
-          Komentar
-        </div>
+        <!-- Card 3: Komentar -->
         <VCard
           flat
           class="mb-6 comment-form-card"
         >
+          <VCardTitle class="text-h5 mb-4">
+            Komentar
+          </VCardTitle>
           <VCardText>
+            <!-- Form komentar -->
             <VTextField
               v-model="newComment"
               label="Tulis komentar..."
@@ -845,225 +871,137 @@
             <VBtn
               color="primary"
               size="small"
+              class="mb-4"
               @click="addComment"
             >
               Kirim Komentar
             </VBtn>
-          </VCardText>
-        </VCard>
-
-        <!-- Daftar Komentar -->
-        <div class="comments-list">
-          <template
-            v-for="comment in comments"
-            :key="comment.id"
-          >
-            <!-- Parent Comment -->
-            <VCard
-              flat
-              class="mb-4 comment-card"
-            >
-              <VCardText>
-                <div class="d-flex align-center mb-3 comment-header">
-                  <VAvatar
-                    size="36"
-                    color="primary"
-                    class="avatar-mr"
-                  >
-                    <span class="white--text">{{ comment.user.charAt(0) }}</span>
-                  </VAvatar>
-                  <div>
-                    <div class="font-weight-bold">
-                      {{ comment.user }}
-                    </div>
-                    <div class="text-caption grey--text">
-                      {{ formatDate(comment.date) }}
-                    </div>
-                  </div>
-                </div>
-                <div class="comment-text mb-3">
-                  {{ comment.text }}
-                </div>
-                <VBtn
-                  text
-                  small
-                  color="primary"
-                  class="reply-btn-mr"
-                  @click="showReplyForm(comment.id)"
-                >
-                  <VIcon
-                    small
-                    class="reply-icon-mr"
-                  >
-                    ri-reply-line
-                  </VIcon>
-                  Balas
-                </VBtn>
-              </VCardText>
-
-              <!-- Reply Form -->
-              <VCardText
-                v-if="activeReplyForm === comment.id"
-                class="pt-0 pb-0"
+            <!-- Daftar Komentar -->
+            <div class="comments-list">
+              <template
+                v-for="comment in comments"
+                :key="comment.id"
               >
-                <VTextField
-                  v-model="newReply"
-                  label="Tulis balasan..."
-                  outlined
-                  dense
-                  hide-details
-                  class="mb-3"
-                  @keyup.enter="addReply(comment.id)"
-                />
-                <div class="d-flex">
-                  <VBtn
-                    color="primary"
-                    size="small"
-                    class="reply-btn-mr"
-                    @click="addReply(comment.id)"
-                  >
-                    Kirim Balasan
-                  </VBtn>
-                  <VBtn
-                    text
-                    size="small"
-                    @click="cancelReply"
-                  >
-                    Batal
-                  </VBtn>
-                </div>
-              </VCardText>
-
-              <!-- Replies -->
-              <VCardText
-                v-if="comment.replies && comment.replies.length > 0"
-                class="pt-0"
-              >
-                <div
-                  v-for="reply in comment.replies"
-                  :key="reply.id"
-                  class="nested-reply-container mb-4"
+                <!-- Parent Comment -->
+                <VCard
+                  flat
+                  class="mb-4 comment-card"
                 >
-                  <VCard
-                    flat
-                    class="reply-card"
-                  >
-                    <VCardText>
-                      <div class="d-flex align-center mb-3 comment-header">
-                        <VAvatar
-                          size="28"
-                          color="primary"
-                          class="avatar-mr"
-                        >
-                          <span class="white--text">{{ reply.user.charAt(0) }}</span>
-                        </VAvatar>
-                        <div>
-                          <div class="font-weight-bold">
-                            {{ reply.user }}
-                          </div>
-                          <div class="text-caption grey--text">
-                            {{ formatDate(reply.date) }}
-                          </div>
+                  <VCardText>
+                    <div class="d-flex align-center mb-3 comment-header">
+                      <VAvatar
+                        size="36"
+                        color="primary"
+                        class="avatar-mr"
+                      >
+                        <span class="white--text">{{ comment.user.charAt(0) }}</span>
+                      </VAvatar>
+                      <div>
+                        <div class="font-weight-bold">
+                          {{ comment.user }}
+                        </div>
+                        <div class="text-caption grey--text">
+                          {{ formatDate(comment.date) }}
                         </div>
                       </div>
-                      <div class="reply-text mb-3">
-                        {{ reply.text }}
-                      </div>
-                      
-                      <!-- Reply Actions -->
-                      <div class="d-flex align-center">
-                        <VBtn
-                          text
-                          x-small
-                          color="primary"
-                          class="reply-btn-mr"
-                          @click="showReplyForm(reply.id)"
-                        >
-                          <VIcon
-                            x-small
-                            class="reply-icon-mr"
-                          >
-                            ri-reply-line
-                          </VIcon>
-                          Balas
-                        </VBtn>
-                      </div>
-                    </VCardText>
-
-                    <!-- Nested Reply Form -->
-                    <VCardText
-                      v-if="activeReplyForm === reply.id"
-                      class="pt-0 pb-0"
+                    </div>
+                    <div class="comment-text mb-3">
+                      {{ comment.text }}
+                    </div>
+                    <VBtn
+                      text
+                      small
+                      color="primary"
+                      class="reply-btn-mr"
+                      @click="showReplyForm(comment.id)"
                     >
-                      <VTextField
-                        v-model="newReply"
-                        label="Tulis balasan..."
-                        outlined
-                        dense
-                        hide-details
-                        class="mb-3"
-                        @keyup.enter="addNestedReply(comment.id, reply.id)"
-                      />
-                      <div class="d-flex">
-                        <VBtn
-                          color="primary"
-                          size="small"
-                          class="reply-btn-mr"
-                          @click="addNestedReply(comment.id, reply.id)"
-                        >
-                          Kirim Balasan
-                        </VBtn>
-                        <VBtn
-                          text
-                          size="small"
-                          @click="cancelReply"
-                        >
-                          Batal
-                        </VBtn>
-                      </div>
-                    </VCardText>
+                      <VIcon
+                        small
+                        class="reply-icon-mr"
+                      >
+                        ri-reply-line
+                      </VIcon>
+                      Balas
+                    </VBtn>
+                  </VCardText>
 
-                    <!-- Nested Replies -->
+                  <!-- Reply Form -->
+                  <VCardText
+                    v-if="activeReplyForm === comment.id"
+                    class="pt-0 pb-0"
+                  >
+                    <VTextField
+                      v-model="newReply"
+                      label="Tulis balasan..."
+                      outlined
+                      dense
+                      hide-details
+                      class="mb-3"
+                      @keyup.enter="addReply(comment.id)"
+                    />
+                    <div class="d-flex">
+                      <VBtn
+                        color="primary"
+                        size="small"
+                        class="reply-btn-mr"
+                        @click="addReply(comment.id)"
+                      >
+                        Kirim Balasan
+                      </VBtn>
+                      <VBtn
+                        text
+                        size="small"
+                        @click="cancelReply"
+                      >
+                        Batal
+                      </VBtn>
+                    </div>
+                  </VCardText>
+
+                  <!-- Replies -->
+                  <VCardText
+                    v-if="comment.replies && comment.replies.length > 0"
+                    class="pt-0"
+                  >
                     <div
-                      v-if="reply.replies && reply.replies.length > 0"
-                      class="nested-reply-container"
+                      v-for="reply in comment.replies"
+                      :key="reply.id"
+                      class="nested-reply-container mb-4"
                     >
                       <VCard
-                        v-for="nestedReply in reply.replies"
-                        :key="nestedReply.id"
                         flat
                         class="reply-card"
                       >
                         <VCardText>
                           <div class="d-flex align-center mb-3 comment-header">
                             <VAvatar
-                              size="24"
+                              size="28"
                               color="primary"
                               class="avatar-mr"
                             >
-                              <span class="white--text">{{ nestedReply.user.charAt(0) }}</span>
+                              <span class="white--text">{{ reply.user.charAt(0) }}</span>
                             </VAvatar>
                             <div>
                               <div class="font-weight-bold">
-                                {{ nestedReply.user }}
+                                {{ reply.user }}
                               </div>
                               <div class="text-caption grey--text">
-                                {{ formatDate(nestedReply.date) }}
+                                {{ formatDate(reply.date) }}
                               </div>
                             </div>
                           </div>
                           <div class="reply-text mb-3">
-                            {{ nestedReply.text }}
+                            {{ reply.text }}
                           </div>
                           
-                          <!-- Nested Reply Actions -->
+                          <!-- Reply Actions -->
                           <div class="d-flex align-center">
                             <VBtn
                               text
                               x-small
                               color="primary"
                               class="reply-btn-mr"
-                              @click="showReplyForm(nestedReply.id)"
+                              @click="showReplyForm(reply.id)"
                             >
                               <VIcon
                                 x-small
@@ -1076,9 +1014,9 @@
                           </div>
                         </VCardText>
 
-                        <!-- Deep Nested Reply Form -->
+                        <!-- Nested Reply Form -->
                         <VCardText
-                          v-if="activeReplyForm === nestedReply.id"
+                          v-if="activeReplyForm === reply.id"
                           class="pt-0 pb-0"
                         >
                           <VTextField
@@ -1088,14 +1026,14 @@
                             dense
                             hide-details
                             class="mb-3"
-                            @keyup.enter="addNestedReply(comment.id, nestedReply.id)"
+                            @keyup.enter="addNestedReply(comment.id, reply.id)"
                           />
                           <div class="d-flex">
                             <VBtn
                               color="primary"
                               size="small"
                               class="reply-btn-mr"
-                              @click="addNestedReply(comment.id, nestedReply.id)"
+                              @click="addNestedReply(comment.id, reply.id)"
                             >
                               Kirim Balasan
                             </VBtn>
@@ -1109,14 +1047,14 @@
                           </div>
                         </VCardText>
 
-                        <!-- Deep Nested Replies -->
+                        <!-- Nested Replies -->
                         <div
-                          v-if="nestedReply.replies && nestedReply.replies.length > 0"
+                          v-if="reply.replies && reply.replies.length > 0"
                           class="nested-reply-container"
                         >
                           <VCard
-                            v-for="deepReply in nestedReply.replies"
-                            :key="deepReply.id"
+                            v-for="nestedReply in reply.replies"
+                            :key="nestedReply.id"
                             flat
                             class="reply-card"
                           >
@@ -1127,58 +1065,146 @@
                                   color="primary"
                                   class="avatar-mr"
                                 >
-                                  <span class="white--text">{{ deepReply.user.charAt(0) }}</span>
+                                  <span class="white--text">{{ nestedReply.user.charAt(0) }}</span>
                                 </VAvatar>
                                 <div>
                                   <div class="font-weight-bold">
-                                    {{ deepReply.user }}
+                                    {{ nestedReply.user }}
                                   </div>
                                   <div class="text-caption grey--text">
-                                    {{ formatDate(deepReply.date) }}
+                                    {{ formatDate(nestedReply.date) }}
                                   </div>
                                 </div>
                               </div>
-                              <div class="reply-text">
-                                {{ deepReply.text }}
+                              <div class="reply-text mb-3">
+                                {{ nestedReply.text }}
+                              </div>
+                              
+                              <!-- Nested Reply Actions -->
+                              <div class="d-flex align-center">
+                                <VBtn
+                                  text
+                                  x-small
+                                  color="primary"
+                                  class="reply-btn-mr"
+                                  @click="showReplyForm(nestedReply.id)"
+                                >
+                                  <VIcon
+                                    x-small
+                                    class="reply-icon-mr"
+                                  >
+                                    ri-reply-line
+                                  </VIcon>
+                                  Balas
+                                </VBtn>
                               </div>
                             </VCardText>
+
+                            <!-- Deep Nested Reply Form -->
+                            <VCardText
+                              v-if="activeReplyForm === nestedReply.id"
+                              class="pt-0 pb-0"
+                            >
+                              <VTextField
+                                v-model="newReply"
+                                label="Tulis balasan..."
+                                outlined
+                                dense
+                                hide-details
+                                class="mb-3"
+                                @keyup.enter="addNestedReply(comment.id, nestedReply.id)"
+                              />
+                              <div class="d-flex">
+                                <VBtn
+                                  color="primary"
+                                  size="small"
+                                  class="reply-btn-mr"
+                                  @click="addNestedReply(comment.id, nestedReply.id)"
+                                >
+                                  Kirim Balasan
+                                </VBtn>
+                                <VBtn
+                                  text
+                                  size="small"
+                                  @click="cancelReply"
+                                >
+                                  Batal
+                                </VBtn>
+                              </div>
+                            </VCardText>
+
+                            <!-- Deep Nested Replies -->
+                            <div
+                              v-if="nestedReply.replies && nestedReply.replies.length > 0"
+                              class="nested-reply-container"
+                            >
+                              <VCard
+                                v-for="deepReply in nestedReply.replies"
+                                :key="deepReply.id"
+                                flat
+                                class="reply-card"
+                              >
+                                <VCardText>
+                                  <div class="d-flex align-center mb-3 comment-header">
+                                    <VAvatar
+                                      size="24"
+                                      color="primary"
+                                      class="avatar-mr"
+                                    >
+                                      <span class="white--text">{{ deepReply.user.charAt(0) }}</span>
+                                    </VAvatar>
+                                    <div>
+                                      <div class="font-weight-bold">
+                                        {{ deepReply.user }}
+                                      </div>
+                                      <div class="text-caption grey--text">
+                                        {{ formatDate(deepReply.date) }}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="reply-text">
+                                    {{ deepReply.text }}
+                                  </div>
+                                </VCardText>
+                              </VCard>
+                            </div>
                           </VCard>
                         </div>
                       </VCard>
                     </div>
-                  </VCard>
-                </div>
-              </VCardText>
-            </VCard>
-          </template>
-        </div>
+                  </VCardText>
+                </VCard>
+              </template>
+            </div>
+          </VCardText>
+        </VCard>
+
+        <!-- Validation Modal -->
+        <VDialog
+          v-model="showValidationModal"
+          max-width="400"
+        >
+          <VCard>
+            <VCardTitle class="text-h5">
+              {{ validationMessage.includes('berhasil') ? 'Sukses' : 'Peringatan' }}
+            </VCardTitle>
+            <VCardText>
+              {{ validationMessage }}
+            </VCardText>
+            <VCardActions>
+              <VSpacer />
+              <VBtn
+                color="primary"
+                @click="showValidationModal = false"
+              >
+                OK
+              </VBtn>
+            </VCardActions>
+          </VCard>
+        </VDialog>
       </VContainer>
     </VMain>
   </VApp>
-
-  <!-- Validation Modal -->
-  <VDialog
-    v-model="showValidationModal"
-    max-width="400"
-  >
-    <VCard>
-      <VCardTitle class="text-h5">
-        {{ validationMessage.includes('berhasil') ? 'Sukses' : 'Peringatan' }}
-      </VCardTitle>
-      <VCardText>
-        {{ validationMessage }}
-      </VCardText>
-      <VCardActions>
-        <VSpacer />
-        <VBtn
-          color="primary"
-          @click="showValidationModal = false"
-        >
-          OK
-        </VBtn>
-      </VCardActions>
-    </VCard>
-  </VDialog>
 </template>
 
 <script>
