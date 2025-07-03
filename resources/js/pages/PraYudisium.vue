@@ -336,7 +336,7 @@ export default {
   margin-inline-start: 8px;
 }
 
-/* Responsive file upload style (light & dark) */
+/* Responsive file upload style (theme aware, not OS aware) */
 .file-upload {
   display: flex;
   align-items: center;
@@ -362,32 +362,5 @@ export default {
   --v-field-label-color: rgb(var(--v-theme-on-surface));
   --v-field-placeholder-color: rgb(var(--v-theme-on-surface));
   --v-field-bg-color: rgb(var(--v-theme-surface));
-}
-
-@media (prefers-color-scheme: dark) {
-  .file-upload {
-    background: #2d2946;
-  }
-
-  .file-upload-icon {
-    color: #bcb6d6;
-  }
-
-  .file-upload-input {
-    border-color: #4ecdc4 !important;
-    background: #23203a !important;
-    color: #fff !important;
-
-    /* Border dan background input lebih soft di dark mode */
-    --v-field-border-color: #4ecdc4 !important;
-    --v-field-label-color: #bcb6d6 !important;
-    --v-field-placeholder-color: #bcb6d6 !important;
-    --v-field-bg-color: #23203a !important;
-  }
-
-  .file-upload-input input::placeholder {
-    color: #bcb6d6 !important;
-    opacity: 1;
-  }
 }
 </style> 
