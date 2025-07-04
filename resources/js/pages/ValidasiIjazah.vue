@@ -16,838 +16,15 @@
           <span>{{ notifMessage }}</span>
         </VAlert>
 
-        <!-- Card 1: Draft Ijazah -->
-        <VCard
-          flat
-          class="form-card position-relative mb-6"
-        >
-          <VCardTitle class="text-h5 mb-4 d-flex justify-space-between align-center">
-            Draft Ijazah
-            <VBtn
-              icon
-              title="Buka di tab baru"
-              style="margin-inline-start: auto;"
-              @click="openInNewTab"
-            >
-              <VIcon>ri-external-link-line</VIcon>
-            </VBtn>
-          </VCardTitle>
-          <VCardText style="padding: 0;">
-            <div style="inline-size: 100%; overflow-x: auto;">
-              <div
-                ref="printableContent"
-                style="margin: auto; max-inline-size: 1130px; min-inline-size: 1130px; padding-block: 2rem; padding-inline: 0;"
-              >
-                <div
-                  ref="ijazahPreview"
-                  class="draft-ijazah-preview"
-                  style="box-sizing: border-box; border-radius: 0; margin: auto; background: #fff; font-size: 0.95rem; max-inline-size: 100%; min-block-size: 600px; min-inline-size: 100%; overflow-y: auto; padding-block: 0; padding-inline: 16px;"
-                >
-                  <!-- Nomor Ijazah Nasional di kanan atas -->
-                  <div
-                    class="d-flex justify-end"
-                    style="inline-size: 100%;"
-                  >
-                    <div
-                      class="text-right"
-                      style="max-inline-size: 380px;"
-                    >
-                      <div
-                        class="font-weight-bold"
-                        style="font-size: 1rem;"
-                      >
-                        Nomor Ijazah Nasional:
-                      </div>
-                      <div style="font-size: 0.85rem; font-style: italic; margin-block-end: 2px;">
-                        National Certificate Number
-                      </div>
-                      <div
-                        class="font-weight-bold"
-                        style="font-size: 1rem;"
-                      >
-                        051022592012025100002
-                      </div>
-                    </div>
-                  </div>
-                  <!-- Dua kolom utama -->
-                  <div class="mt-6">
-                    <div class="d-flex mb-2">
-                      <div style="flex-shrink: 0; min-inline-size: 270px;">
-                        <span class="font-weight-bold">Memberikan Kepada</span><br><span style="font-size: 0.85rem;font-style: italic;">Awarded to</span>
-                      </div>
-                      <div style="flex: 1; min-inline-size: 0;">
-                        : <span class="font-weight-bold">{{ user.name }}<br><span style="font-size: 0.85rem;font-style: italic;">IRWANDA BUDI PANGESTU</span></span>
-                      </div>
-                    </div>
-                    <div class="d-flex mb-2">
-                      <div style="flex-shrink: 0; min-inline-size: 270px;">
-                        <span class="font-weight-bold">Tempat dan Tanggal Lahir</span><br><span style="font-size: 0.85rem;font-style: italic;">Place and Date of Birth</span>
-                      </div>
-                      <div style="flex: 1; min-inline-size: 0;">
-                        : <span>{{ user.birthPlace }}, {{ user.birthDate }}<br><span style="font-size: 0.85rem;font-style: italic;">ASTRA KSETRA, DECEMBER 17, 2000</span></span>
-                      </div>
-                    </div>
-                    <div class="d-flex mb-2">
-                      <div style="flex-shrink: 0; min-inline-size: 270px;">
-                        <span class="font-weight-bold">Nomor Induk Kependudukan</span><br><span style="font-size: 0.85rem;font-style: italic;">Identity Number</span>
-                      </div>
-                      <div style="flex: 1; min-inline-size: 0;">
-                        : <div style="display: inline-block; background-color: black; min-block-size: 18px; min-inline-size: 200px; vertical-align: middle;" />
-                      </div>
-                    </div>
-                    <div class="d-flex mb-2">
-                      <div style="flex-shrink: 0; min-inline-size: 270px;">
-                        <span class="font-weight-bold">N I M</span><br><span style="font-size: 0.85rem;font-style: italic;">Student Number</span>
-                      </div>
-                      <div style="flex: 1; min-inline-size: 0;">
-                        : <span>{{ user.nim }}<br><span style="font-size: 0.85rem;font-style: italic;">1911501007</span></span>
-                      </div>
-                    </div>
-                    <div class="d-flex mb-2">
-                      <div style="flex-shrink: 0; min-inline-size: 270px;">
-                        <span class="font-weight-bold">Program Studi</span><br><span style="font-size: 0.85rem;font-style: italic;">Study Program</span>
-                      </div>
-                      <div style="flex: 1; min-inline-size: 0;">
-                        : <span>{{ user.studyProgram }}<br><span style="font-size: 0.85rem;font-style: italic;">INFORMATION TECHNOLOGY</span></span>
-                      </div>
-                    </div>
-                    <div class="d-flex mb-2">
-                      <div style="flex-shrink: 0; min-inline-size: 270px;">
-                        <span class="font-weight-bold">Jenjang Pendidikan</span><br><span style="font-size: 0.85rem;font-style: italic;">Degree</span>
-                      </div>
-                      <div style="flex: 1; min-inline-size: 0;">
-                        : <span>{{ user.degree }}<br><span style="font-size: 0.85rem;font-style: italic;">BACHELOR</span></span>
-                      </div>
-                    </div>
-                    <div class="d-flex mb-2">
-                      <div style="flex-shrink: 0; min-inline-size: 270px;">
-                        <span class="font-weight-bold">Tanggal Kelulusan</span><br><span style="font-size: 0.85rem;font-style: italic;">Date of Graduation</span>
-                      </div>
-                      <div style="flex: 1; min-inline-size: 0;">
-                        : <span>{{ user.graduationDate }}<br><span style="font-size: 0.85rem;font-style: italic;">MARCH 22, 2025</span></span>
-                      </div>
-                    </div>
-                    <div class="d-flex mb-2">
-                      <div style="flex-shrink: 0; min-inline-size: 270px;">
-                        <span class="font-weight-bold">Status</span><br><span style="font-size: 0.85rem;font-style: italic;">Status</span>
-                      </div>
-                      <div style="flex: 1; min-inline-size: 0;">
-                        : <span>Akreditasi LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 tanggal 19 Maret 2024 dengan peringkat "Baik Sekali".<br><span style="font-size: 0.85rem;font-style: italic;">Accredited "Very Good" by LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 on March 19, 2024.</span></span>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- Penjelasan ijazah -->
-                  <div
-                    class="mt-4"
-                    style="inline-size: 100%;"
-                  >
-                    <div style="font-size: 1rem;">
-                      Ijazah ini diserahkan setelah yang bersangkutan memenuhi semua persyaratan yang ditentukan, dan kepadanya dilimpahkan segala wewenang dan hak yang berhubungan dengan ijazah yang dimilikinya, serta berhak memakai gelar Sarjana Komputer (S.Kom.).<br><span style="font-size: 0.95rem;font-style: italic;">This certificate is awarded in recognition of fulfillment of the requirements for the degree. Therefore, the person has been awarded the degree of Bachelor of Computer Science with all rights and privileges associated with the degree.</span>
-                    </div>
-                  </div>
-                  <!-- Tanda tangan -->
-                  <div
-                    class="d-flex mt-12 justify-space-between"
-                    style="align-items: flex-end; inline-size: 100%;"
-                  >
-                    <!-- Left: REKTOR -->
-                    <div style="display: flex; flex-direction: column;">
-                      <div style="flex-grow: 1;" /> <!-- Spacer to align titles -->
-                      <div class="mb-8">
-                        REKTOR,<br><span style="font-size: 0.95rem;font-style: italic;">RECTOR,</span>
-                      </div>
-                      <div style="min-block-size: 60px;" />
-                      <div class="font-weight-bold">
-                        Dr. WARSITI, S.Kp., M.Kep., Sp.Mat.
-                      </div>
-                    </div>
-
-                    <!-- Right Group: Photo Slot + DEKAN -->
-                    <div style="display: flex; align-items: flex-end; gap: 14px;">
-                      <!-- Photo Slot -->
-                      <div style="border: 2px dashed #888; min-block-size: 180px; min-inline-size: 150px;" />
-
-                      <!-- DEKAN -->
-                      <div class="d-flex flex-column">
-                        <div style="flex-grow: 1;" /> <!-- Spacer to align titles -->
-                        <div class="mb-2">
-                          YOGYAKARTA, {{ user.graduationDate }}<br><span style="font-size: 0.95rem;font-style: italic;">YOGYAKARTA, MARCH 22, 2025</span>
-                        </div>
-                        <div style="min-block-size: 12px;" />
-                        <div class="mb-8">
-                          DEKAN FAKULTAS SAINS DAN TEKNOLOGI,<br><span style="font-size: 0.95rem;font-style: italic;">DEAN OF FACULTY OF SCIENCE AND TECHNOLOGY,</span>
-                        </div>
-                        <div style="min-block-size: 60px;" />
-                        <div class="font-weight-bold">
-                          Ar. TIKA AINUNNISA FITRIA, S.T., M.T., Ph.D
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </VCardText>
-        </VCard>
-
-        <!-- Card 2: Transkrip Nilai -->
-        <VCard
-          flat
-          class="form-card position-relative mb-6"
-        >
-          <VCardTitle class="text-h5 mb-4 d-flex justify-space-between align-center">
-            Transkrip Nilai
-            <VBtn
-              icon
-              title="Buka di tab baru"
-              style="margin-inline-start: auto;"
-              @click="openInNewTab"
-            >
-              <VIcon>ri-external-link-line</VIcon>
-            </VBtn>
-          </VCardTitle>
-          <VCardText style="padding: 0;">
-            <div style="inline-size: 100%; overflow-x: auto;">
-              <div
-                ref="printableContent"
-                style="margin: auto; max-inline-size: 1130px; min-inline-size: 1130px; padding-block: 2rem; padding-inline: 0;"
-              >
-                <div
-                  ref="transcriptPreview"
-                  class="transcript-preview mt-8"
-                  style="box-sizing: border-box; border-radius: 0; margin: auto; background: #fff; font-size: 0.95rem; max-inline-size: 100%; min-block-size: 600px; min-inline-size: 100%; overflow-y: auto; padding-block: 0; padding-inline: 16px;"
-                >
-                  <!-- Summary of Grades -->
-                  <div class="mt-6">
-                    <div class="d-flex mb-2">
-                      <div style=" flex-shrink: 0;min-inline-size: 270px;">
-                        <span class="font-weight-bold">TOTAL SKS</span><br><span style="font-size: 0.85rem;font-style: italic;">TOTAL CREDITS</span>
-                      </div>
-                      <div style="inline-size: 10px;">
-                        :
-                      </div>
-                      <div style="flex: 1;">
-                        <span>146</span>
-                      </div>
-                    </div>
-                    <div class="d-flex mb-2">
-                      <div style=" flex-shrink: 0;min-inline-size: 270px;">
-                        <span class="font-weight-bold">INDEKS PRESTASI</span><br><span style="font-size: 0.85rem;font-style: italic;">GRADE POINT AVERAGE</span>
-                      </div>
-                      <div style="inline-size: 10px;">
-                        :
-                      </div>
-                      <div style="flex: 1;">
-                        <span>2.94</span>
-                      </div>
-                    </div>
-                    <div class="d-flex mb-2">
-                      <div style=" flex-shrink: 0;min-inline-size: 270px;">
-                        <span class="font-weight-bold">PREDIKAT KELULUSAN</span><br><span style="font-size: 0.85rem;font-style: italic;">QUALIFICATION</span>
-                      </div>
-                      <div style="inline-size: 10px;">
-                        :
-                      </div>
-                      <div style="flex: 1;">
-                        <span>MEMUASKAN<br><span style="font-size: 0.85rem;font-style: italic;">SATISFACTORY</span></span>
-                      </div>
-                    </div>
-                    <div class="d-flex mb-2">
-                      <div style=" flex-shrink: 0;min-inline-size: 270px;">
-                        <span class="font-weight-bold">STATUS</span><br><span style="font-size: 0.85rem;font-style: italic;">STATUS</span>
-                      </div>
-                      <div style="inline-size: 10px;">
-                        :
-                      </div>
-                      <div style="flex: 1;">
-                        <span>Akreditasi LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 tanggal 19 Maret 2024 dengan peringkat "Baik Sekali".<br><span style="font-size: 0.85rem;font-style: italic;">Accredited "Very Good" by LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 on March 19, 2024.</span></span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Tables for Subjects -->
-                  <div class="d-flex justify-space-between mt-8">
-                    <!-- Column 1 -->
-                    <div style="flex: 1; margin-inline-end: 16px;">
-                      <VTable class="text-caption fixed-header">
-                        <thead>
-                          <tr>
-                            <th class="no-col">
-                              NO<br>NO
-                            </th>
-                            <th class="kode-col">
-                              KODE<br>CODE
-                            </th>
-                            <th class="matkul-col">
-                              MATA KULIAH<br>SUBJECTS
-                            </th>
-                            <th class="vertical-header sks-col">
-                              SKS<br>CREDITS
-                            </th>
-                            <th class="vertical-header nilai-col">
-                              NILAI<br>GRADE
-                            </th>
-                            <th class="vertical-header ekuivalen-col">
-                              EKUIVALEN<br>EQUIVALENT
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td>1</td>
-                            <td>TIK0050</td>
-                            <td>PENGUJIAN PERANGKAT LUNAK<br><span style="font-size: 0.75rem;font-style: italic;">Software Testing</span></td>
-                            <td>3</td>
-                            <td>A</td>
-                            <td>4.0</td>
-                          </tr>
-                          <tr>
-                            <td>2</td>
-                            <td>TIK0051</td>
-                            <td>REKAYASA WEB<br><span style="font-size: 0.75rem;font-style: italic;">Distributed System</span></td>
-                            <td>3</td>
-                            <td>C</td>
-                            <td>2.0</td>
-                          </tr>
-                          <tr>
-                            <td>3</td>
-                            <td>TIK0054</td>
-                            <td>INTEGRASI SISTEM<br><span style="font-size: 0.75rem;font-style: italic;">System Integration</span></td>
-                            <td>3</td>
-                            <td>A-</td>
-                            <td>3.75</td>
-                          </tr>
-                          <tr>
-                            <td>4</td>
-                            <td>TIK1001</td>
-                            <td>KALKULUS<br><span style="font-size: 0.75rem;font-style: italic;">Calculus</span></td>
-                            <td>2</td>
-                            <td>BC</td>
-                            <td>2.5</td>
-                          </tr>
-                          <tr>
-                            <td>5</td>
-                            <td>TIK1002</td>
-                            <td>LOGIKA INFORMATIKA<br><span style="font-size: 0.75rem;font-style: italic;">Informatic Logic</span></td>
-                            <td>2</td>
-                            <td>BC</td>
-                            <td>2.5</td>
-                          </tr>
-                          <tr>
-                            <td>6</td>
-                            <td>TIK1003</td>
-                            <td>PENGANTAR TEKNOLOGI INFORMASI<br><span style="font-size: 0.75rem;font-style: italic;">Introduction to Information Technology</span></td>
-                            <td>3</td>
-                            <td>A</td>
-                            <td>4.0</td>
-                          </tr>
-                          <tr>
-                            <td>7</td>
-                            <td>TIK1004</td>
-                            <td>DASAR PEMROGRAMAN<br><span style="font-size: 0.75rem;font-style: italic;">Basic Programming</span></td>
-                            <td>3</td>
-                            <td>B-</td>
-                            <td>2.75</td>
-                          </tr>
-                          <tr>
-                            <td>8</td>
-                            <td>TIK1005</td>
-                            <td>BASIS DATA<br><span style="font-size: 0.75rem;font-style: italic;">Database</span></td>
-                            <td>3</td>
-                            <td>B-</td>
-                            <td>2.75</td>
-                          </tr>
-                          <tr>
-                            <td>9</td>
-                            <td>TIK2006</td>
-                            <td>MATEMATIKA DISKRIT<br><span style="font-size: 0.75rem;font-style: italic;">Discrete Mathematics</span></td>
-                            <td>2</td>
-                            <td>B+</td>
-                            <td>3.25</td>
-                          </tr>
-                          <tr>
-                            <td>10</td>
-                            <td>TIK2007</td>
-                            <td>ALGORITMA PEMROGRAMAN<br><span style="font-size: 0.75rem;font-style: italic;">Programming Algorithm</span></td>
-                            <td>3</td>
-                            <td>A</td>
-                            <td>4.0</td>
-                          </tr>
-                          <tr>
-                            <td>11</td>
-                            <td>TIK2008</td>
-                            <td>STATISTIK DAN PROBABILITAS<br><span style="font-size: 0.75rem;font-style: italic;">Statistics and Probability</span></td>
-                            <td>2</td>
-                            <td>B+</td>
-                            <td>3.25</td>
-                          </tr>
-                          <tr>
-                            <td>12</td>
-                            <td>TIK2009</td>
-                            <td>ORGANISASI DAN ARSITEKTUR KOMPUTER<br><span style="font-size: 0.75rem;font-style: italic;">Computer Organization and Architecture</span></td>
-                            <td>3</td>
-                            <td>A</td>
-                            <td>4.0</td>
-                          </tr>
-                          <tr>
-                            <td>13</td>
-                            <td>TIK2010</td>
-                            <td>JARINGAN KOMPUTER<br><span style="font-size: 0.75rem;font-style: italic;">Computer Network</span></td>
-                            <td>3</td>
-                            <td>B</td>
-                            <td>3.0</td>
-                          </tr>
-                          <tr>
-                            <td>14</td>
-                            <td>TIK2011</td>
-                            <td>PEMROGRAMAN BERORIENTASI OBJEK<br><span style="font-size: 0.75rem;font-style: italic;">Object Oriented Programming</span></td>
-                            <td>3</td>
-                            <td>A</td>
-                            <td>4.0</td>
-                          </tr>
-                          <tr>
-                            <td>15</td>
-                            <td>TIK3012</td>
-                            <td>PEMROGRAMAN WEB<br><span style="font-size: 0.75rem;font-style: italic;">Web Programming</span></td>
-                            <td>3</td>
-                            <td>A</td>
-                            <td>4.0</td>
-                          </tr>
-                          <tr>
-                            <td>16</td>
-                            <td>TIK3013</td>
-                            <td>STRUKTUR DATA<br><span style="font-size: 0.75rem;font-style: italic;">Data Structure</span></td>
-                            <td>3</td>
-                            <td>A</td>
-                            <td>4.0</td>
-                          </tr>
-                          <tr>
-                            <td>17</td>
-                            <td>TIK3014</td>
-                            <td>SISTEM OPERASI<br><span style="font-size: 0.75rem;font-style: italic;">Operating System</span></td>
-                            <td>3</td>
-                            <td>A-</td>
-                            <td>3.75</td>
-                          </tr>
-                          <tr>
-                            <td>18</td>
-                            <td>TIK3015</td>
-                            <td>ANALISIS DAN PERANCANGAN SISTEM INFORMASI<br><span style="font-size: 0.75rem;font-style: italic;">Information System Analysis and Design</span></td>
-                            <td>3</td>
-                            <td>B+</td>
-                            <td>3.25</td>
-                          </tr>
-                          <tr>
-                            <td>19</td>
-                            <td>TIK3016</td>
-                            <td>GRAFIKA KOMPUTER<br><span style="font-size: 0.75rem;font-style: italic;">Computer Graphics</span></td>
-                            <td>2</td>
-                            <td>B</td>
-                            <td>3.0</td>
-                          </tr>
-                          <tr>
-                            <td>20</td>
-                            <td>TIK3017</td>
-                            <td>SISTEM PAKAR<br><span style="font-size: 0.75rem;font-style: italic;">Expert System</span></td>
-                            <td>2</td>
-                            <td>B-</td>
-                            <td>2.75</td>
-                          </tr>
-                          <tr>
-                            <td>21</td>
-                            <td>TIK3018</td>
-                            <td>PEMROGRAMAN PERANGKAT BERGERAK<br><span style="font-size: 0.75rem;font-style: italic;">Mobile Device Programming</span></td>
-                            <td>3</td>
-                            <td>A-</td>
-                            <td>3.75</td>
-                          </tr>
-                          <tr>
-                            <td>22</td>
-                            <td>TIK3019</td>
-                            <td>KEAMANAN INFORMASI<br><span style="font-size: 0.75rem;font-style: italic;">Information Security</span></td>
-                            <td>3</td>
-                            <td>B+</td>
-                            <td>3.25</td>
-                          </tr>
-                          <tr>
-                            <td>23</td>
-                            <td>TIK4020</td>
-                            <td>REKAYASA PERANGKAT LUNAK<br><span style="font-size: 0.75rem;font-style: italic;">Software Engineering</span></td>
-                            <td>3</td>
-                            <td>B</td>
-                            <td>3.0</td>
-                          </tr>
-                          <tr>
-                            <td>24</td>
-                            <td>TIK4021</td>
-                            <td>PEMROGRAMAN VISUAL<br><span style="font-size: 0.75rem;font-style: italic;">Visual Programming</span></td>
-                            <td>3</td>
-                            <td>A</td>
-                            <td>4.0</td>
-                          </tr>
-                          <tr>
-                            <td>25</td>
-                            <td>TIK4022</td>
-                            <td>DATA MINING<br><span style="font-size: 0.75rem;font-style: italic;">Data Mining</span></td>
-                            <td>2</td>
-                            <td>B</td>
-                            <td>3.0</td>
-                          </tr>
-                          <tr>
-                            <td>26</td>
-                            <td>TIK4023</td>
-                            <td>PEMROGRAMAN JARINGAN<br><span style="font-size: 0.75rem;font-style: italic;">Network Programming</span></td>
-                            <td>3</td>
-                            <td>A-</td>
-                            <td>3.75</td>
-                          </tr>
-                          <tr>
-                            <td>27</td>
-                            <td>TIK4024</td>
-                            <td>KECERDASAN BUATAN<br><span style="font-size: 0.75rem;font-style: italic;">Artificial Intelligence</span></td>
-                            <td>3</td>
-                            <td>A</td>
-                            <td>4.0</td>
-                          </tr>
-                        </tbody>
-                      </VTable>
-                    </div>
-
-                    <!-- Column 2 -->
-                    <div style="flex: 1; margin-inline-end: 16px;">
-                      <VTable class="text-caption fixed-header">
-                        <thead>
-                          <tr>
-                            <th class="no-col">
-                              NO<br>NO
-                            </th>
-                            <th class="kode-col">
-                              KODE<br>CODE
-                            </th>
-                            <th class="matkul-col">
-                              MATA KULIAH<br>SUBJECTS
-                            </th>
-                            <th class="vertical-header sks-col">
-                              SKS<br>CREDITS
-                            </th>
-                            <th class="vertical-header nilai-col">
-                              NILAI<br>GRADE
-                            </th>
-                            <th class="vertical-header ekuivalen-col">
-                              EKUIVALEN<br>EQUIVALENT
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td>28</td>
-                            <td>TIK4025</td>
-                            <td>ARSITEKTUR ENTERPRISE<br><span style="font-size: 0.75rem;font-style: italic;">Enterprise Architecture</span></td>
-                            <td>2</td>
-                            <td>C</td>
-                            <td>2.0</td>
-                          </tr>
-                          <tr>
-                            <td>29</td>
-                            <td>TIK5026</td>
-                            <td>TEORI BAHASA DAN OTOMATA<br><span style="font-size: 0.75rem;font-style: italic;">Theory of Formal Language and Automata</span></td>
-                            <td>3</td>
-                            <td>B-</td>
-                            <td>2.75</td>
-                          </tr>
-                          <tr>
-                            <td>30</td>
-                            <td>TIK5027</td>
-                            <td>MANAJEMEN PROYEK TEKNOLOGI INFORMASI<br><span style="font-size: 0.75rem;font-style: italic;">Information Technology Project Management</span></td>
-                            <td>3</td>
-                            <td>B-</td>
-                            <td>2.75</td>
-                          </tr>
-                          <tr>
-                            <td>31</td>
-                            <td>TIK5028</td>
-                            <td>SISTEM INFORMASI GEOGRAFIS<br><span style="font-size: 0.75rem;font-style: italic;">Geographic Information System</span></td>
-                            <td>3</td>
-                            <td>BC</td>
-                            <td>2.5</td>
-                          </tr>
-                          <tr>
-                            <td>32</td>
-                            <td>TIK5029</td>
-                            <td>DESAIN DAN ANALISIS ALGORITMA<br><span style="font-size: 0.75rem;font-style: italic;">Algorithm Design and Analysis</span></td>
-                            <td>3</td>
-                            <td>B-</td>
-                            <td>2.75</td>
-                          </tr>
-                          <tr>
-                            <td>33</td>
-                            <td>TIK5030</td>
-                            <td>SISTEM INFORMASI RUMAH SAKIT<br><span style="font-size: 0.75rem;font-style: italic;">Hospital Information System</span></td>
-                            <td>2</td>
-                            <td>BC</td>
-                            <td>2.5</td>
-                          </tr>
-                          <tr>
-                            <td>34</td>
-                            <td>TIK5031</td>
-                            <td>SISTEM PENDUKUNG KEPUTUSAN<br><span style="font-size: 0.75rem;font-style: italic;">Decision Support System</span></td>
-                            <td>2</td>
-                            <td>C</td>
-                            <td>2.0</td>
-                          </tr>
-                          <tr>
-                            <td>35</td>
-                            <td>TIK5032</td>
-                            <td>PEMROGRAMAN SISTEM DAN JARINGAN<br><span style="font-size: 0.75rem;font-style: italic;">System and Network Programming</span></td>
-                            <td>3</td>
-                            <td>BC</td>
-                            <td>2.5</td>
-                          </tr>
-                          <tr>
-                            <td>36</td>
-                            <td>TIK6033</td>
-                            <td>KERJA PRAKTEK<br><span style="font-size: 0.75rem;font-style: italic;">Internship</span></td>
-                            <td>3</td>
-                            <td>C</td>
-                            <td>2.0</td>
-                          </tr>
-                          <tr>
-                            <td>37</td>
-                            <td>TIK6034</td>
-                            <td>TREND DALAM TEKNOLOGI INFORMASI<br><span style="font-size: 0.75rem;font-style: italic;">Trends in Information Technology</span></td>
-                            <td>2</td>
-                            <td>C-</td>
-                            <td>2.25</td>
-                          </tr>
-                          <tr>
-                            <td>38</td>
-                            <td>TIK6035</td>
-                            <td>SISTEM PAKAR<br><span style="font-size: 0.75rem;font-style: italic;">Expert System</span></td>
-                            <td>3</td>
-                            <td>C+</td>
-                            <td>2.25</td>
-                          </tr>
-                          <tr>
-                            <td>39</td>
-                            <td>TIK6036</td>
-                            <td>TEKNOLOGI INFORMASI KESEHATAN<br><span style="font-size: 0.75rem;font-style: italic;">Health Information Technology</span></td>
-                            <td>3</td>
-                            <td>A</td>
-                            <td>4.0</td>
-                          </tr>
-                          <tr>
-                            <td>40</td>
-                            <td>TIK6037</td>
-                            <td>MANAJEMEN PROYEK SISTEM INFORMASI<br><span style="font-size: 0.75rem;font-style: italic;">Information System Project Management</span></td>
-                            <td>3</td>
-                            <td>B+</td>
-                            <td>3.25</td>
-                          </tr>
-                          <tr>
-                            <td>41</td>
-                            <td>TIK6038</td>
-                            <td>E-BUSINESS<br><span style="font-size: 0.75rem;font-style: italic;">E-Business</span></td>
-                            <td>2</td>
-                            <td>C</td>
-                            <td>2.0</td>
-                          </tr>
-                          <tr>
-                            <td>42</td>
-                            <td>TIK6039</td>
-                            <td>PERANCANGAN DAN IMPLEMENTASI DATABASE<br><span style="font-size: 0.75rem;font-style: italic;">Database Design and Implementation</span></td>
-                            <td>3</td>
-                            <td>B</td>
-                            <td>3.0</td>
-                          </tr>
-                          <tr>
-                            <td>43</td>
-                            <td>TIK6040</td>
-                            <td>PEMROGRAMAN FRAMEWORK<br><span style="font-size: 0.75rem;font-style: italic;">Framework Programming</span></td>
-                            <td>3</td>
-                            <td>A-</td>
-                            <td>3.75</td>
-                          </tr>
-                          <tr>
-                            <td>44</td>
-                            <td>TIK6041</td>
-                            <td>PEMROGRAMAN CLIENT-SERVER<br><span style="font-size: 0.75rem;font-style: italic;">Client-Server Programming</span></td>
-                            <td>3</td>
-                            <td>B+</td>
-                            <td>3.25</td>
-                          </tr>
-                          <tr>
-                            <td>45</td>
-                            <td>TIK6042</td>
-                            <td>AUDIT SISTEM INFORMASI<br><span style="font-size: 0.75rem;font-style: italic;">Information System Audit</span></td>
-                            <td>2</td>
-                            <td>B</td>
-                            <td>3.0</td>
-                          </tr>
-                          <tr>
-                            <td>46</td>
-                            <td>TIK6043</td>
-                            <td>CLOUD COMPUTING<br><span style="font-size: 0.75rem;font-style: italic;">Cloud Computing</span></td>
-                            <td>2</td>
-                            <td>C+</td>
-                            <td>2.25</td>
-                          </tr>
-                          <tr>
-                            <td>47</td>
-                            <td>TIK6044</td>
-                            <td>SISTEM INFORMASI MANAJEMEN<br><span style="font-size: 0.75rem;font-style: italic;">Management Information System</span></td>
-                            <td>3</td>
-                            <td>B</td>
-                            <td>3.0</td>
-                          </tr>
-                          <tr>
-                            <td>48</td>
-                            <td>TIK6045</td>
-                            <td>DATA WAREHOUSE DAN BUSINESS INTELLIGENCE<br><span style="font-size: 0.75rem;font-style: italic;">Data Warehouse and Business Intelligence</span></td>
-                            <td>3</td>
-                            <td>B+</td>
-                            <td>3.25</td>
-                          </tr>
-                          <tr>
-                            <td>49</td>
-                            <td>TIK6046</td>
-                            <td>BIG DATA ANALYTICS<br><span style="font-size: 0.75rem;font-style: italic;">Big Data Analytics</span></td>
-                            <td>3</td>
-                            <td>A-</td>
-                            <td>3.75</td>
-                          </tr>
-                          <tr>
-                            <td>50</td>
-                            <td>TIK6047</td>
-                            <td>PEMROGRAMAN GAME<br><span style="font-size: 0.75rem;font-style: italic;">Game Programming</span></td>
-                            <td>2</td>
-                            <td>B</td>
-                            <td>3.0</td>
-                          </tr>
-                          <tr>
-                            <td>51</td>
-                            <td>TIK6048</td>
-                            <td>ARTIFICIAL INTELLIGENCE<br><span style="font-size: 0.75rem;font-style: italic;">Artificial Intelligence</span></td>
-                            <td>3</td>
-                            <td>A</td>
-                            <td>4.0</td>
-                          </tr>
-                          <tr>
-                            <td>52</td>
-                            <td>TIK6049</td>
-                            <td>COMPUTER VISION<br><span style="font-size: 0.75rem;font-style: italic;">Computer Vision</span></td>
-                            <td>3</td>
-                            <td>A-</td>
-                            <td>3.75</td>
-                          </tr>
-                          <tr>
-                            <td>53</td>
-                            <td>TIK6050</td>
-                            <td>MACHINE LEARNING<br><span style="font-size: 0.75rem;font-style: italic;">Machine Learning</span></td>
-                            <td>3</td>
-                            <td>A</td>
-                            <td>4.0</td>
-                          </tr>
-                          <tr>
-                            <td>54</td>
-                            <td>TIK6051</td>
-                            <td>NATURAL LANGUAGE PROCESSING<br><span style="font-size: 0.75rem;font-style: italic;">Natural Language Processing</span></td>
-                            <td>3</td>
-                            <td>A-</td>
-                            <td>3.75</td>
-                          </tr>
-                        </tbody>
-                      </VTable>
-                    </div>
-
-                    <!-- Column 3 -->
-                    <div style="flex: 1;">
-                      <VTable class="text-caption fixed-header">
-                        <thead>
-                          <tr>
-                            <th class="no-col">
-                              NO<br>NO
-                            </th>
-                            <th class="kode-col">
-                              KODE<br>CODE
-                            </th>
-                            <th class="matkul-col">
-                              MATA KULIAH<br>SUBJECTS
-                            </th>
-                            <th class="vertical-header sks-col">
-                              SKS<br>CREDITS
-                            </th>
-                            <th class="vertical-header nilai-col">
-                              NILAI<br>GRADE
-                            </th>
-                            <th class="vertical-header ekuivalen-col">
-                              EKUIVALEN<br>EQUIVALENT
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td>55</td>
-                            <td>UNI0009</td>
-                            <td>ENGLISH FOR ACADEMIC READING<br><span style="font-size: 0.75rem;font-style: italic;">English for Academic Reading</span></td>
-                            <td>1</td>
-                            <td>AB</td>
-                            <td>3.5</td>
-                          </tr>
-                          <tr>
-                            <td>56</td>
-                            <td>UNI0010</td>
-                            <td>ENGLISH FOR ACADEMIC WRITING<br><span style="font-size: 0.75rem;font-style: italic;">English for Academic Writing</span></td>
-                            <td>1</td>
-                            <td>A</td>
-                            <td>4.0</td>
-                          </tr>
-                          <tr>
-                            <td>57</td>
-                            <td>UNI0011</td>
-                            <td>KEWIRAUSAHAAN<br><span style="font-size: 0.75rem;font-style: italic;">Entrepreneurship</span></td>
-                            <td>3</td>
-                            <td>A</td>
-                            <td>4.0</td>
-                          </tr>
-                          <tr>
-                            <td>58</td>
-                            <td>UNI0012</td>
-                            <td>KULIAH KERJA NYATA (KKN)<br><span style="font-size: 0.75rem;font-style: italic;">Community Service</span></td>
-                            <td>3</td>
-                            <td>A</td>
-                            <td>4.0</td>
-                          </tr>
-                          <tr>
-                            <td>59</td>
-                            <td>UNI0013</td>
-                            <td>SKRIPSI<br><span style="font-size: 0.75rem;font-style: italic;">Thesis</span></td>
-                            <td>6</td>
-                            <td>C</td>
-                            <td>2.0</td>
-                          </tr>
-                        </tbody>
-                      </VTable>
-                    </div>
-                  </div>
-
-                  <!-- Thesis Title and Registration Information -->
-                  <div class="mt-8 text-center">
-                    <div class="font-weight-bold">
-                      JUDUL TUGAS AKHIR<br><span style="font-size: 0.85rem;font-style: italic;">THESIS TITLE</span>
-                    </div>
-                    <div class="mt-2">
-                      SISTEM INFORMASI PENDAFTARAN PADA KLINIK FISIOTERAPI<br>
-                      UNIVERSITAS AISYIYAH YOGYAKARTA MENGGUNAKAN METODE RAD<br>
-                      <span style="font-size: 0.85rem;font-style: italic;">(RAPID APPLICATION DEVELOPMENT)</span><br>
-                      REGISTRATION INFORMATION SYSTEM AT AISYIYAH UNIVERSITY PHYSIOTHERAPY CLINIC<br>
-                      YOGYAKARTA USING RAD METHOD (RAPID APPLICATION DEVELOPMENT)
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </VCardText>
-        </VCard>
+        <DraftIjazah
+          ref="ijazahPreview"
+          :user="user"
+        />
+        <TranskripNilai
+          ref="transcriptPreview"
+          :user="user"
+          :matakuliah="matakuliah"
+        />
 
         <!-- Card 3: Komentar -->
         <VCard
@@ -993,7 +170,7 @@
                           <div class="reply-text mb-3">
                             {{ reply.text }}
                           </div>
-                          
+                      
                           <!-- Reply Actions -->
                           <div class="d-flex align-center">
                             <VBtn
@@ -1079,7 +256,7 @@
                               <div class="reply-text mb-3">
                                 {{ nestedReply.text }}
                               </div>
-                              
+                          
                               <!-- Nested Reply Actions -->
                               <div class="d-flex align-center">
                                 <VBtn
@@ -1210,9 +387,12 @@
 <script>
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
+import DraftIjazah from './components/DraftIjazah.vue'
+import TranskripNilai from './components/TranskripNilai.vue'
 
 export default {
   name: 'ValidasiIjazah',
+  components: { DraftIjazah, TranskripNilai },
   setup() {
     const form = ref({
       nik: '',
@@ -1280,6 +460,69 @@ export default {
       degree: 'SARJANA',
       graduationDate: '22 MARET 2025',
     })
+
+    // Daftar matakuliah (array of object)
+    const matakuliah = ref([
+      { no: 1, kode: 'TIK0050', nama: 'PENGUJIAN PERANGKAT LUNAK', nama_en: 'Software Testing', sks: 3, nilai: 'A', ekuivalen: 4.0 },
+      { no: 2, kode: 'TIK0051', nama: 'REKAYASA WEB', nama_en: 'Web Engineering', sks: 3, nilai: 'C', ekuivalen: 2.0 },
+      { no: 3, kode: 'TIK0054', nama: 'INTEGRASI SISTEM', nama_en: 'System Integration', sks: 3, nilai: 'A-', ekuivalen: 3.75 },
+      { no: 4, kode: 'TIK1001', nama: 'KALKULUS', nama_en: 'Calculus', sks: 2, nilai: 'BC', ekuivalen: 2.5 },
+      { no: 5, kode: 'TIK1002', nama: 'LOGIKA INFORMATIKA', nama_en: 'Informatics Logic', sks: 2, nilai: 'BC', ekuivalen: 2.5 },
+      { no: 6, kode: 'TIK1003', nama: 'PENGANTAR TEKNOLOGI INFORMASI', nama_en: 'Introduction to Information Technology', sks: 3, nilai: 'A', ekuivalen: 4.0 },
+      { no: 7, kode: 'TIK1004', nama: 'DASAR PEMROGRAMAN', nama_en: 'Basic Programming', sks: 3, nilai: 'B-', ekuivalen: 2.75 },
+      { no: 8, kode: 'TIK1005', nama: 'BASIS DATA', nama_en: 'Database', sks: 3, nilai: 'B-', ekuivalen: 2.75 },
+      { no: 9, kode: 'TIK2006', nama: 'MATEMATIKA DISKRIT', nama_en: 'Discrete Mathematics', sks: 2, nilai: 'B+', ekuivalen: 3.25 },
+      { no: 10, kode: 'TIK2007', nama: 'ALGORITMA PEMROGRAMAN', nama_en: 'Programming Algorithm', sks: 3, nilai: 'A', ekuivalen: 4.0 },
+      { no: 11, kode: 'TIK2008', nama: 'STATISTIK DAN PROBABILITAS', nama_en: 'Statistics and Probability', sks: 2, nilai: 'B+', ekuivalen: 3.25 },
+      { no: 12, kode: 'TIK2009', nama: 'ORGANISASI DAN ARSITEKTUR KOMPUTER', nama_en: 'Computer Organization and Architecture', sks: 3, nilai: 'A', ekuivalen: 4.0 },
+      { no: 13, kode: 'TIK2010', nama: 'JARINGAN KOMPUTER', nama_en: 'Computer Network', sks: 3, nilai: 'B', ekuivalen: 3.0 },
+      { no: 14, kode: 'TIK2011', nama: 'PEMROGRAMAN BERORIENTASI OBJEK', nama_en: 'Object Oriented Programming', sks: 3, nilai: 'A', ekuivalen: 4.0 },
+      { no: 15, kode: 'TIK3012', nama: 'PEMROGRAMAN WEB', nama_en: 'Web Programming', sks: 3, nilai: 'A', ekuivalen: 4.0 },
+      { no: 16, kode: 'TIK3013', nama: 'STRUKTUR DATA', nama_en: 'Data Structure', sks: 3, nilai: 'A', ekuivalen: 4.0 },
+      { no: 17, kode: 'TIK3014', nama: 'SISTEM OPERASI', nama_en: 'Operating System', sks: 3, nilai: 'A-', ekuivalen: 3.75 },
+      { no: 18, kode: 'TIK3015', nama: 'ANALISIS DAN PERANCANGAN SISTEM INFORMASI', nama_en: 'Information System Analysis and Design', sks: 3, nilai: 'B+', ekuivalen: 3.25 },
+      { no: 19, kode: 'TIK3016', nama: 'GRAFIKA KOMPUTER', nama_en: 'Computer Graphics', sks: 2, nilai: 'B', ekuivalen: 3.0 },
+      { no: 20, kode: 'TIK3017', nama: 'SISTEM PAKAR', nama_en: 'Expert System', sks: 2, nilai: 'B-', ekuivalen: 2.75 },
+      { no: 21, kode: 'TIK3018', nama: 'PEMROGRAMAN PERANGKAT BERGERAK', nama_en: 'Mobile Device Programming', sks: 3, nilai: 'A-', ekuivalen: 3.75 },
+      { no: 22, kode: 'TIK3019', nama: 'KEAMANAN INFORMASI', nama_en: 'Information Security', sks: 3, nilai: 'B+', ekuivalen: 3.25 },
+      { no: 23, kode: 'TIK4020', nama: 'REKAYASA PERANGKAT LUNAK', nama_en: 'Software Engineering', sks: 3, nilai: 'B', ekuivalen: 3.0 },
+      { no: 24, kode: 'TIK4021', nama: 'PEMROGRAMAN VISUAL', nama_en: 'Visual Programming', sks: 3, nilai: 'A', ekuivalen: 4.0 },
+      { no: 25, kode: 'TIK4022', nama: 'DATA MINING', nama_en: 'Data Mining', sks: 2, nilai: 'B', ekuivalen: 3.0 },
+      { no: 26, kode: 'TIK4023', nama: 'PEMROGRAMAN JARINGAN', nama_en: 'Network Programming', sks: 3, nilai: 'A-', ekuivalen: 3.75 },
+      { no: 27, kode: 'TIK4024', nama: 'KECERDASAN BUATAN', nama_en: 'Artificial Intelligence', sks: 3, nilai: 'A', ekuivalen: 4.0 },
+      { no: 28, kode: 'TIK4025', nama: 'ARSITEKTUR ENTERPRISE', nama_en: 'Enterprise Architecture', sks: 2, nilai: 'C', ekuivalen: 2.0 },
+      { no: 29, kode: 'TIK5026', nama: 'TEORI BAHASA DAN OTOMATA', nama_en: 'Theory of Formal Language and Automata', sks: 3, nilai: 'B-', ekuivalen: 2.75 },
+      { no: 30, kode: 'TIK5027', nama: 'MANAJEMEN PROYEK TEKNOLOGI INFORMASI', nama_en: 'Information Technology Project Management', sks: 3, nilai: 'B-', ekuivalen: 2.75 },
+      { no: 31, kode: 'TIK5028', nama: 'SISTEM INFORMASI GEOGRAFIS', nama_en: 'Geographic Information System', sks: 3, nilai: 'BC', ekuivalen: 2.5 },
+      { no: 32, kode: 'TIK5029', nama: 'DESAIN DAN ANALISIS ALGORITMA', nama_en: 'Algorithm Design and Analysis', sks: 3, nilai: 'B-', ekuivalen: 2.75 },
+      { no: 33, kode: 'TIK5030', nama: 'SISTEM INFORMASI RUMAH SAKIT', nama_en: 'Hospital Information System', sks: 2, nilai: 'BC', ekuivalen: 2.5 },
+      { no: 34, kode: 'TIK5031', nama: 'SISTEM PENDUKUNG KEPUTUSAN', nama_en: 'Decision Support System', sks: 2, nilai: 'C', ekuivalen: 2.0 },
+      { no: 35, kode: 'TIK5032', nama: 'PEMROGRAMAN SISTEM DAN JARINGAN', nama_en: 'System and Network Programming', sks: 3, nilai: 'BC', ekuivalen: 2.5 },
+      { no: 36, kode: 'TIK6033', nama: 'KERJA PRAKTEK', nama_en: 'Internship', sks: 3, nilai: 'C', ekuivalen: 2.0 },
+      { no: 37, kode: 'TIK6034', nama: 'TREND DALAM TEKNOLOGI INFORMASI', nama_en: 'Trends in Information Technology', sks: 2, nilai: 'C-', ekuivalen: 2.25 },
+      { no: 38, kode: 'TIK6035', nama: 'SISTEM PAKAR', nama_en: 'Expert System', sks: 3, nilai: 'C+', ekuivalen: 2.25 },
+      { no: 39, kode: 'TIK6036', nama: 'TEKNOLOGI INFORMASI KESEHATAN', nama_en: 'Health Information Technology', sks: 3, nilai: 'A', ekuivalen: 4.0 },
+      { no: 40, kode: 'TIK6037', nama: 'MANAJEMEN PROYEK SISTEM INFORMASI', nama_en: 'Information System Project Management', sks: 3, nilai: 'B+', ekuivalen: 3.25 },
+      { no: 41, kode: 'TIK6038', nama: 'E-BUSINESS', nama_en: 'E-Business', sks: 2, nilai: 'C', ekuivalen: 2.0 },
+      { no: 42, kode: 'TIK6039', nama: 'PERANCANGAN DAN IMPLEMENTASI DATABASE', nama_en: 'Database Design and Implementation', sks: 3, nilai: 'B', ekuivalen: 3.0 },
+      { no: 43, kode: 'TIK6040', nama: 'PEMROGRAMAN FRAMEWORK', nama_en: 'Framework Programming', sks: 3, nilai: 'A-', ekuivalen: 3.75 },
+      { no: 44, kode: 'TIK6041', nama: 'PEMROGRAMAN CLIENT-SERVER', nama_en: 'Client-Server Programming', sks: 3, nilai: 'B+', ekuivalen: 3.25 },
+      { no: 45, kode: 'TIK6042', nama: 'AUDIT SISTEM INFORMASI', nama_en: 'Information System Audit', sks: 2, nilai: 'B', ekuivalen: 3.0 },
+      { no: 46, kode: 'TIK6043', nama: 'CLOUD COMPUTING', nama_en: 'Cloud Computing', sks: 2, nilai: 'C+', ekuivalen: 2.25 },
+      { no: 47, kode: 'TIK6044', nama: 'SISTEM INFORMASI MANAJEMEN', nama_en: 'Management Information System', sks: 3, nilai: 'B', ekuivalen: 3.0 },
+      { no: 48, kode: 'TIK6045', nama: 'DATA WAREHOUSE DAN BUSINESS INTELLIGENCE', nama_en: 'Data Warehouse and Business Intelligence', sks: 3, nilai: 'B+', ekuivalen: 3.25 },
+      { no: 49, kode: 'TIK6046', nama: 'BIG DATA ANALYTICS', nama_en: 'Big Data Analytics', sks: 3, nilai: 'A-', ekuivalen: 3.75 },
+      { no: 50, kode: 'TIK6047', nama: 'PEMROGRAMAN GAME', nama_en: 'Game Programming', sks: 2, nilai: 'B', ekuivalen: 3.0 },
+      { no: 51, kode: 'TIK6048', nama: 'ARTIFICIAL INTELLIGENCE', nama_en: 'Artificial Intelligence', sks: 3, nilai: 'A', ekuivalen: 4.0 },
+      { no: 52, kode: 'TIK6049', nama: 'COMPUTER VISION', nama_en: 'Computer Vision', sks: 3, nilai: 'A-', ekuivalen: 3.75 },
+      { no: 53, kode: 'TIK6050', nama: 'MACHINE LEARNING', nama_en: 'Machine Learning', sks: 3, nilai: 'A', ekuivalen: 4.0 },
+      { no: 54, kode: 'TIK6051', nama: 'NATURAL LANGUAGE PROCESSING', nama_en: 'Natural Language Processing', sks: 3, nilai: 'A-', ekuivalen: 3.75 },
+      { no: 55, kode: 'UNI0009', nama: 'ENGLISH FOR ACADEMIC READING', nama_en: 'English for Academic Reading', sks: 1, nilai: 'AB', ekuivalen: 3.5 },
+      { no: 56, kode: 'UNI0010', nama: 'ENGLISH FOR ACADEMIC WRITING', nama_en: 'English for Academic Writing', sks: 1, nilai: 'A', ekuivalen: 4.0 },
+      { no: 57, kode: 'UNI0011', nama: 'KEWIRAUSAHAAN', nama_en: 'Entrepreneurship', sks: 3, nilai: 'A', ekuivalen: 4.0 },
+      { no: 58, kode: 'UNI0012', nama: 'KULIAH KERJA NYATA (KKN)', nama_en: 'Community Service', sks: 3, nilai: 'A', ekuivalen: 4.0 },
+      { no: 59, kode: 'UNI0013', nama: 'SKRIPSI', nama_en: 'Thesis', sks: 6, nilai: 'C', ekuivalen: 2.0 },
+    ])
 
     const route = useRoute()
     const notifId = route.query.notif
@@ -1564,6 +807,7 @@ export default {
       transcriptPreview,
       showNotifAlert,
       notifMessage,
+      matakuliah,
     }
   },
 }

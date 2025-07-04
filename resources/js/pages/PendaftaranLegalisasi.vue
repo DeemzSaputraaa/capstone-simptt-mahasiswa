@@ -224,38 +224,40 @@
                   Ringkasan Data Pendaftaran
                 </div>
                 <table class="summary-table styled-summary-table">
-                  <tr>
-                    <td class="label">
-                      Jumlah
-                    </td>
-                    <td class="value">
-                      {{ form.jml || '-' }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="label">
-                      Alamat
-                    </td>
-                    <td class="value">
-                      {{ form.alamat || '-' }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="label">
-                      Nama Penerima
-                    </td>
-                    <td class="value">
-                      {{ form.namaPenerima || '-' }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="label">
-                      No Telp Penerima
-                    </td>
-                    <td class="value">
-                      {{ form.noTelpPenerima || '-' }}
-                    </td>
-                  </tr>
+                  <tbody>
+                    <tr>
+                      <td class="label">
+                        Jumlah
+                      </td>
+                      <td class="value">
+                        {{ form.jml || '-' }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="label">
+                        Alamat
+                      </td>
+                      <td class="value">
+                        {{ form.alamat || '-' }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="label">
+                        Nama Penerima
+                      </td>
+                      <td class="value">
+                        {{ form.namaPenerima || '-' }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="label">
+                        No Telp Penerima
+                      </td>
+                      <td class="value">
+                        {{ form.noTelpPenerima || '-' }}
+                      </td>
+                    </tr>
+                  </tbody>
                 </table>
               </div>
             </VCardText>
