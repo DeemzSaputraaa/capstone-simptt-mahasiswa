@@ -4,7 +4,7 @@ import logo from '@images/logo_unisa.png'
 import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue'
 
 // Components
-import Footer from '@/layouts/components/Footer.vue'
+// import Footer from '@/layouts/components/Footer.vue'
 import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
 import UserProfile from '@/layouts/components/UserProfile.vue'
 </script>
@@ -104,9 +104,11 @@ import UserProfile from '@/layouts/components/UserProfile.vue'
     <slot />
 
     <!-- 👉 Footer -->
-    <template #footer>
+    <!--
+      <template #footer>
       <Footer />
-    </template>
+      </template> 
+    -->
   </VerticalNavLayout>
 </template>
 
