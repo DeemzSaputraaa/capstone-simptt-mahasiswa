@@ -1,7 +1,40 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FormLegalisasiController;
+use App\Http\Controllers\MhSyaratController;
+use App\Http\Controllers\AkValidasiIjazahController;
 
+// API Routes untuk mengakses data dari database
+Route::prefix('api')->group(function () {
+    // Form Legalisasi routes
+    Route::resource('form-legalisasi', FormLegalisasiController::class);
+
+    // Mh Syarat routes
+    Route::resource('mh-syarat', MhSyaratController::class);
+
+    // Ak Validasi Ijazah routes
+    Route::resource('ak-validasi-ijazah', AkValidasiIjazahController::class);
+
+    // Routes tambahan untuk data master
+    Route::get('form-legalisasi-status', function () {
+        return response()->json(\App\Models\FormLegalisasiStatus::all());
+    });
+
+    Route::get('mh-syarat-jenis', function () {
+        return response()->json(\App\Models\MhSyaratJenis::all());
+    });
+
+    Route::get('mh-syarat-paket', function () {
+        return response()->json(\App\Models\MhSyaratPaket::all());
+    });
+
+    Route::get('ak-tahun-akademik', function () {
+        return response()->json(\App\Models\AkTahunAkademik::all());
+    });
+});
+
+// Vue.js routes (untuk SPA)
 Route::get('{any?}', function () {
     return view('application');
 })->where('any', '.*');
