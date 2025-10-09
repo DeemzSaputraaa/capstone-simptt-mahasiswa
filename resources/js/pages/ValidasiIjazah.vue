@@ -26,8 +26,25 @@
           :matakuliah="matakuliah"
         />
 
+        <div class="d-flex justify-end mb-6">
+          <VBtn
+            color="error"
+            class="mr-3"
+            @click="onLapor"
+          >
+            Lapor
+          </VBtn>
+          <VBtn
+            color="primary"
+            @click="onSimpan"
+          >
+            Simpan
+          </VBtn>
+        </div>
+
         <!-- Card 3: Komentar -->
         <VCard
+          v-if="showComments"
           flat
           class="mb-6 comment-form-card"
         >
@@ -55,303 +72,15 @@
             </VBtn>
             <!-- Daftar Komentar -->
             <div class="comments-list">
-              <template
+              <CommentItem
                 v-for="comment in comments"
                 :key="comment.id"
-              >
-                <!-- Parent Comment -->
-                <VCard
-                  flat
-                  class="mb-4 comment-card"
-                >
-                  <VCardText>
-                    <div class="d-flex align-center mb-3 comment-header">
-                      <VAvatar
-                        size="36"
-                        color="primary"
-                        class="avatar-mr"
-                      >
-                        <span class="white--text">{{ comment.user.charAt(0) }}</span>
-                      </VAvatar>
-                      <div>
-                        <div class="font-weight-bold">
-                          {{ comment.user }}
-                        </div>
-                        <div class="text-caption grey--text">
-                          {{ formatDate(comment.date) }}
-                        </div>
-                      </div>
-                    </div>
-                    <div class="comment-text mb-3">
-                      {{ comment.text }}
-                    </div>
-                    <VBtn
-                      text
-                      small
-                      color="primary"
-                      class="reply-btn-mr"
-                      @click="showReplyForm(comment.id)"
-                    >
-                      <VIcon
-                        small
-                        class="reply-icon-mr"
-                      >
-                        ri-reply-line
-                      </VIcon>
-                      Balas
-                    </VBtn>
-                  </VCardText>
-
-                  <!-- Reply Form -->
-                  <VCardText
-                    v-if="activeReplyForm === comment.id"
-                    class="pt-0 pb-0"
-                  >
-                    <VTextField
-                      v-model="newReply"
-                      label="Tulis balasan..."
-                      outlined
-                      dense
-                      hide-details
-                      class="mb-3"
-                      @keyup.enter="addReply(comment.id)"
-                    />
-                    <div class="d-flex">
-                      <VBtn
-                        color="primary"
-                        size="small"
-                        class="reply-btn-mr"
-                        @click="addReply(comment.id)"
-                      >
-                        Kirim Balasan
-                      </VBtn>
-                      <VBtn
-                        text
-                        size="small"
-                        @click="cancelReply"
-                      >
-                        Batal
-                      </VBtn>
-                    </div>
-                  </VCardText>
-
-                  <!-- Replies -->
-                  <VCardText
-                    v-if="comment.replies && comment.replies.length > 0"
-                    class="pt-0"
-                  >
-                    <div
-                      v-for="reply in comment.replies"
-                      :key="reply.id"
-                      class="nested-reply-container mb-4"
-                    >
-                      <VCard
-                        flat
-                        class="reply-card"
-                      >
-                        <VCardText>
-                          <div class="d-flex align-center mb-3 comment-header">
-                            <VAvatar
-                              size="28"
-                              color="primary"
-                              class="avatar-mr"
-                            >
-                              <span class="white--text">{{ reply.user.charAt(0) }}</span>
-                            </VAvatar>
-                            <div>
-                              <div class="font-weight-bold">
-                                {{ reply.user }}
-                              </div>
-                              <div class="text-caption grey--text">
-                                {{ formatDate(reply.date) }}
-                              </div>
-                            </div>
-                          </div>
-                          <div class="reply-text mb-3">
-                            {{ reply.text }}
-                          </div>
-                      
-                          <!-- Reply Actions -->
-                          <div class="d-flex align-center">
-                            <VBtn
-                              text
-                              x-small
-                              color="primary"
-                              class="reply-btn-mr"
-                              @click="showReplyForm(reply.id)"
-                            >
-                              <VIcon
-                                x-small
-                                class="reply-icon-mr"
-                              >
-                                ri-reply-line
-                              </VIcon>
-                              Balas
-                            </VBtn>
-                          </div>
-                        </VCardText>
-
-                        <!-- Nested Reply Form -->
-                        <VCardText
-                          v-if="activeReplyForm === reply.id"
-                          class="pt-0 pb-0"
-                        >
-                          <VTextField
-                            v-model="newReply"
-                            label="Tulis balasan..."
-                            outlined
-                            dense
-                            hide-details
-                            class="mb-3"
-                            @keyup.enter="addNestedReply(comment.id, reply.id)"
-                          />
-                          <div class="d-flex">
-                            <VBtn
-                              color="primary"
-                              size="small"
-                              class="reply-btn-mr"
-                              @click="addNestedReply(comment.id, reply.id)"
-                            >
-                              Kirim Balasan
-                            </VBtn>
-                            <VBtn
-                              text
-                              size="small"
-                              @click="cancelReply"
-                            >
-                              Batal
-                            </VBtn>
-                          </div>
-                        </VCardText>
-
-                        <!-- Nested Replies -->
-                        <div
-                          v-if="reply.replies && reply.replies.length > 0"
-                          class="nested-reply-container"
-                        >
-                          <VCard
-                            v-for="nestedReply in reply.replies"
-                            :key="nestedReply.id"
-                            flat
-                            class="reply-card"
-                          >
-                            <VCardText>
-                              <div class="d-flex align-center mb-3 comment-header">
-                                <VAvatar
-                                  size="24"
-                                  color="primary"
-                                  class="avatar-mr"
-                                >
-                                  <span class="white--text">{{ nestedReply.user.charAt(0) }}</span>
-                                </VAvatar>
-                                <div>
-                                  <div class="font-weight-bold">
-                                    {{ nestedReply.user }}
-                                  </div>
-                                  <div class="text-caption grey--text">
-                                    {{ formatDate(nestedReply.date) }}
-                                  </div>
-                                </div>
-                              </div>
-                              <div class="reply-text mb-3">
-                                {{ nestedReply.text }}
-                              </div>
-                          
-                              <!-- Nested Reply Actions -->
-                              <div class="d-flex align-center">
-                                <VBtn
-                                  text
-                                  x-small
-                                  color="primary"
-                                  class="reply-btn-mr"
-                                  @click="showReplyForm(nestedReply.id)"
-                                >
-                                  <VIcon
-                                    x-small
-                                    class="reply-icon-mr"
-                                  >
-                                    ri-reply-line
-                                  </VIcon>
-                                  Balas
-                                </VBtn>
-                              </div>
-                            </VCardText>
-
-                            <!-- Deep Nested Reply Form -->
-                            <VCardText
-                              v-if="activeReplyForm === nestedReply.id"
-                              class="pt-0 pb-0"
-                            >
-                              <VTextField
-                                v-model="newReply"
-                                label="Tulis balasan..."
-                                outlined
-                                dense
-                                hide-details
-                                class="mb-3"
-                                @keyup.enter="addNestedReply(comment.id, nestedReply.id)"
-                              />
-                              <div class="d-flex">
-                                <VBtn
-                                  color="primary"
-                                  size="small"
-                                  class="reply-btn-mr"
-                                  @click="addNestedReply(comment.id, nestedReply.id)"
-                                >
-                                  Kirim Balasan
-                                </VBtn>
-                                <VBtn
-                                  text
-                                  size="small"
-                                  @click="cancelReply"
-                                >
-                                  Batal
-                                </VBtn>
-                              </div>
-                            </VCardText>
-
-                            <!-- Deep Nested Replies -->
-                            <div
-                              v-if="nestedReply.replies && nestedReply.replies.length > 0"
-                              class="nested-reply-container"
-                            >
-                              <VCard
-                                v-for="deepReply in nestedReply.replies"
-                                :key="deepReply.id"
-                                flat
-                                class="reply-card"
-                              >
-                                <VCardText>
-                                  <div class="d-flex align-center mb-3 comment-header">
-                                    <VAvatar
-                                      size="24"
-                                      color="primary"
-                                      class="avatar-mr"
-                                    >
-                                      <span class="white--text">{{ deepReply.user.charAt(0) }}</span>
-                                    </VAvatar>
-                                    <div>
-                                      <div class="font-weight-bold">
-                                        {{ deepReply.user }}
-                                      </div>
-                                      <div class="text-caption grey--text">
-                                        {{ formatDate(deepReply.date) }}
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div class="reply-text">
-                                    {{ deepReply.text }}
-                                  </div>
-                                </VCardText>
-                              </VCard>
-                            </div>
-                          </VCard>
-                        </div>
-                      </VCard>
-                    </div>
-                  </VCardText>
-                </VCard>
-              </template>
+                :comment="comment"
+                :depth="0"
+                :max-depth="10"
+                :current-user="user"
+                @add-reply="handleAddReply"
+              />
             </div>
           </VCardText>
         </VCard>
@@ -385,14 +114,15 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import CommentItem from '../components/CommentItem.vue'
 import DraftIjazah from './components/DraftIjazah.vue'
 import TranskripNilai from './components/TranskripNilai.vue'
 
 export default {
   name: 'ValidasiIjazah',
-  components: { DraftIjazah, TranskripNilai },
+  components: { DraftIjazah, TranskripNilai, CommentItem },
   setup() {
     const form = ref({
       nik: '',
@@ -406,43 +136,10 @@ export default {
       photoCtp: '',
     })
 
-    // State untuk komentar
-    const comments = ref([
-      {
-        id: 1,
-        user: 'Admin',
-        text: 'Mohon lengkapi data diri Anda dengan benar.',
-        date: new Date('2024-03-20T10:00:00'),
-        replies: [
-          {
-            id: 2,
-            user: 'User',
-            text: 'Baik, saya akan melengkapi data diri.',
-            date: new Date('2024-03-20T10:30:00'),
-            replies: [
-              {
-                id: 3,
-                user: 'Admin',
-                text: 'Terima kasih atas konfirmasinya.',
-                date: new Date('2024-03-20T11:00:00'),
-                replies: [
-                  {
-                    id: 4,
-                    user: 'User',
-                    text: 'Sama-sama, terima kasih atas bantuannya.',
-                    date: new Date('2024-03-20T11:30:00'),
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-    ])
+    // State untuk komentar (kosong saat awal)
+    const comments = ref([])
 
     const newComment = ref('')
-    const newReply = ref('')
-    const activeReplyForm = ref(null)
 
     const showValidationModal = ref(false)
     const validationMessage = ref('')
@@ -550,48 +247,92 @@ export default {
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
     }
 
+    // Komentar hanya tampil setelah Lapor
+    const showComments = ref(false)
+
     // Fungsi untuk komentar
-    const addComment = () => {
+    const addComment = async () => {
       if (!newComment.value.trim()) return
 
-      comments.value.unshift({
+      const commentData = {
         id: Date.now(),
-        user: 'User',
+        user: user.value?.name || 'Mahasiswa',
         text: newComment.value,
         date: new Date(),
         replies: [],
-      })
-
-      newComment.value = ''
-    }
-
-    const showReplyForm = commentId => {
-      activeReplyForm.value = commentId
-      newReply.value = ''
-    }
-
-    const cancelReply = () => {
-      activeReplyForm.value = null
-      newReply.value = ''
-    }
-
-    const addReply = commentId => {
-      if (!newReply.value.trim()) return
-
-      const comment = comments.value.find(c => c.id === commentId)
-      if (comment) {
-        if (!comment.replies) comment.replies = []
-        comment.replies.push({
-          id: Date.now(),
-          user: 'User',
-          text: newReply.value,
-          date: new Date(),
-        })
       }
 
-      newReply.value = ''
-      activeReplyForm.value = null
+      try {
+        // Simpan ke database
+        await saveCommentToDatabase(commentData)
+        
+        // Tambahkan ke state lokal
+        comments.value.unshift(commentData)
+        newComment.value = ''
+      } catch (error) {
+        console.error('Error saving comment:', error)
+        // Tetap tambahkan ke state lokal jika gagal simpan
+        comments.value.unshift(commentData)
+        newComment.value = ''
+      }
     }
+
+    // Fungsi untuk menyimpan komentar ke database
+    const saveCommentToDatabase = async (commentData) => {
+      try {
+        console.log('Saving comment to database:', commentData)
+        const response = await fetch('/api/comments', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+          },
+          body: JSON.stringify({
+            user_id: 1, // ID user, sesuaikan dengan data sebenarnya
+            content: commentData.text,
+            parent_id: null, // Komentar utama
+            validasi_ijazah_id: 1 // ID validasi ijazah, sesuaikan dengan data sebenarnya
+          })
+        })
+
+        console.log('Save response status:', response.status)
+
+        if (!response.ok) {
+          const errorText = await response.text()
+          console.error('Save failed:', response.status, response.statusText, errorText)
+          throw new Error(`Failed to save comment: ${response.status}`)
+        }
+
+        const result = await response.json()
+        console.log('Comment saved successfully:', result)
+        return result
+      } catch (error) {
+        console.error('Error in saveCommentToDatabase:', error)
+        throw error
+      }
+    }
+
+    // Fungsi untuk memuat komentar dari database
+    const loadCommentsFromDatabase = async () => {
+      try {
+        console.log('Loading comments from database...')
+        const response = await fetch('/api/comments/1') // ID validasi ijazah
+        console.log('Response status:', response.status)
+        
+        if (response.ok) {
+          const data = await response.json()
+          console.log('Comments loaded:', data)
+          comments.value = data
+        } else {
+          console.error('Failed to load comments:', response.status, response.statusText)
+          const errorText = await response.text()
+          console.error('Error response:', errorText)
+        }
+      } catch (error) {
+        console.error('Error loading comments:', error)
+      }
+    }
+
 
     const findReplyAndAddNested = (replies, parentReplyId, newReplyData) => {
       for (const reply of replies) {
@@ -607,33 +348,20 @@ export default {
       return false
     }
 
-    const addNestedReply = (commentId, parentReplyId) => {
-      if (!newReply.value.trim()) return
-
-      const comment = comments.value.find(c => c.id === commentId)
-      if (!comment) return
-
-      const newReplyData = {
-        id: Date.now(),
-        user: 'User',
-        text: newReply.value,
-        date: new Date(),
-        replies: [],
-      }
-
-      // Cek apakah parentReplyId adalah ID komentar utama
-      if (commentId === parentReplyId) {
+    // Fungsi untuk menangani balasan dari komponen CommentItem
+    const handleAddReply = (parentId, replyData) => {
+      const comment = comments.value.find(c => c.id === parentId)
+      if (comment) {
+        // Jika parentId adalah komentar utama
         if (!comment.replies) comment.replies = []
-        comment.replies.push(newReplyData)
+        comment.replies.push(replyData)
       } else {
-        // Cari dan tambahkan ke balasan berjenjang
-        if (reply.replies && findReplyAndAddNested(reply.replies, parentReplyId, newReplyData)) {
-          return true
+        // Jika parentId adalah balasan, cari dan tambahkan secara rekursif
+        const found = findReplyAndAddNested(comments.value, parentId, replyData)
+        if (!found) {
+          console.error('Failed to add nested reply: parent reply not found')
         }
       }
-
-      newReply.value = ''
-      activeReplyForm.value = null
     }
 
     const formatDate = date => {
@@ -658,6 +386,17 @@ export default {
         return
       }
       validationMessage.value = 'Form berhasil dikirim'
+      showValidationModal.value = true
+    }
+
+    const onLapor = async () => {
+      showComments.value = true
+      // Muat komentar dari database saat pertama kali menampilkan komentar
+      await loadCommentsFromDatabase()
+    }
+
+    const onSimpan = () => {
+      validationMessage.value = 'Perubahan berhasil disimpan'
       showValidationModal.value = true
     }
 
@@ -784,19 +523,22 @@ export default {
       }
     }
 
+    // Load comments saat komponen dimount jika ada notifikasi
+    onMounted(async () => {
+      if (notifId) {
+        showComments.value = true
+        await loadCommentsFromDatabase()
+      }
+    })
+
     return {
       form,
       fileStatus,
       updateFileStatus,
       comments,
       newComment,
-      newReply,
-      activeReplyForm,
       addComment,
-      showReplyForm,
-      cancelReply,
-      addReply,
-      addNestedReply,
+      handleAddReply,
       formatDate,
       showValidationModal,
       validationMessage,
@@ -808,6 +550,10 @@ export default {
       showNotifAlert,
       notifMessage,
       matakuliah,
+      onLapor,
+      onSimpan,
+      showComments,
+      loadCommentsFromDatabase,
     }
   },
 }

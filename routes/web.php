@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FormLegalisasiController;
 use App\Http\Controllers\MhSyaratController;
 use App\Http\Controllers\AkValidasiIjazahController;
+use App\Http\Controllers\AkValidasiIjazahCommentController;
 
 // API Routes untuk mengakses data dari database
 Route::prefix('api')->group(function () {
@@ -15,6 +16,22 @@ Route::prefix('api')->group(function () {
 
     // Ak Validasi Ijazah routes
     Route::resource('ak-validasi-ijazah', AkValidasiIjazahController::class);
+
+    // Ak Validasi Ijazah Comment routes
+    Route::resource('ak-validasi-ijazah-comments', AkValidasiIjazahCommentController::class);
+
+    // Route khusus untuk testing
+    Route::get('comments/{id}', [AkValidasiIjazahCommentController::class, 'index']);
+    Route::post('comments', [AkValidasiIjazahCommentController::class, 'store']);
+
+    // Test endpoint sederhana
+    Route::get('test-comments', function () {
+        return response()->json([
+            'message' => 'API working',
+            'timestamp' => now(),
+            'table_exists' => \Schema::hasTable('comment')
+        ]);
+    });
 
     // Routes tambahan untuk data master
     Route::get('form-legalisasi-status', function () {

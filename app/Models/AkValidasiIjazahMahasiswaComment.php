@@ -6,17 +6,41 @@ use Illuminate\Database\Eloquent\Model;
 
 class AkValidasiIjazahMahasiswaComment extends Model
 {
-    protected $table = 'ak_validasi_ijazah_mahasiswa_comment';
+    protected $table = 'comment';
 
     protected $fillable = [
-        // Tambahkan kolom-kolom yang bisa diisi mass assignment
+        'id',
+        'user_id',
+        'content',
+        'created_at',
+        'updated_at',
+        'parent_id',
+        'validasi_ijazah_id',
     ];
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     // Relasi dengan validasi ijazah
     public function validasiIjazah()
     {
-        return $this->belongsTo(AkValidasiIjazahMahasiswa::class);
+        return $this->belongsTo(AkValidasiIjazahMahasiswa::class, 'validasi_ijazah_id');
+    }
+
+    // Relasi dengan parent comment (untuk reply)
+    public function parent()
+    {
+        return $this->belongsTo(AkValidasiIjazahMahasiswaComment::class, 'parent_id');
+    }
+
+    // Relasi dengan replies
+    public function replies()
+    {
+        return $this->hasMany(AkValidasiIjazahMahasiswaComment::class, 'parent_id');
+    }
+
+    // Relasi dengan user
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
