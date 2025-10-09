@@ -3,9 +3,10 @@
     <VMain>
       <VContainer
         fluid
-        class="pa-6"
+        class="pa-0"
       >
         <div v-if="!showWizard">
+          <div class="d-flex justify-space-between align-center mb-4">
           <VBtn
             color="#17a2a6"
             style="border-radius: 10px; background: rgb(var(--v-theme-primary)); color: #fff; font-size: 1.1rem; font-weight: 500; margin-block-end: 32px; min-block-size: 48px; min-inline-size: 220px;"
@@ -13,6 +14,15 @@
           >
             Pengajuan Legalisasi
           </VBtn>
+          <VBtn
+            color="#17a2a6"
+            style="border-radius: 10px; background: rgb(var(--v-theme-primary)); color: #fff; font-size: 1.1rem; font-weight: 500; margin-block-end: 32px; min-block-size: 48px; min-inline-size: 220px;"
+            @click="openCaraPembayaran"
+          >
+            Cara Pembayaran
+          </VBtn>
+          </div>
+
           <VAlert
             v-if="showNotifAlert"
             type="success"
@@ -23,127 +33,63 @@
           >
             <span>{{ notifMessage }}</span>
           </VAlert>
-          <div class="d-flex flex-row align-start">
-            <!-- Sidebar tanggal pengajuan -->
-            <div class="wizard-date-sidebar">
-              <div
-                v-for="(group, year) in groupedPengajuan"
-                :key="year"
-                class="mb-4"
-              >
-                <div class="wizard-date-year">
-                  {{ year }}
-                </div>
-                <div
-                  v-for="item in group"
-                  :key="item.id"
-                  class="wizard-date-item"
-                >
-                  <button
-                    class="wizard-date-btn"
-                    :class="{active: selectedPengajuan && selectedPengajuan.id === item.id}"
-                    @click="selectPengajuan(item)"
-                  >
-                    {{ item.tanggal.split('-').slice(1).join('/') }}
-                  </button>
-                </div>
-              </div>
-            </div>
-            <!-- Vertical wizard detail -->
-            <div class="wizard-vertical-detail">
-              <div v-if="selectedPengajuan">
-                <!-- Step 1: Tagihan -->
-                <div class="wizard-vertical-step">
-                  <span
-                    class="wizard-vertical-dot"
-                    :class="tagihanColor(selectedPengajuan)"
-                  />
-                  <div class="wizard-vertical-line" />
-                  <div class="wizard-vertical-content">
-                    <div class="wizard-vertical-title">
-                      Tagihan
-                    </div>
-                    <div class="wizard-vertical-desc">
-                      <template v-if="selectedPengajuan.status === 'pending'">
-                        Menunggu Tagihan
-                      </template>
-                      <template v-else>
-                        Rp. {{ selectedPengajuan.tagihan }}
-                      </template>
-                    </div>
-                  </div>
-                </div>
-                <!-- Step 2: Cara Pembayaran -->
-                <div class="wizard-vertical-step">
-                  <span
-                    class="wizard-vertical-dot"
-                    :class="caraBayarColor(selectedPengajuan)"
-                  />
-                  <div class="wizard-vertical-line" />
-                  <div class="wizard-vertical-content">
-                    <div class="wizard-vertical-title">
-                      Cara Pembayaran
-                    </div>
-                    <div class="wizard-vertical-desc">
-                      <template v-if="selectedPengajuan.status === 'pending'">
-                        -
-                      </template>
-                      <template v-else>
-                        Cara Melakukan Pembayaran
-                        <div>
-                          <button
-                            class="wizard-bayar-btn"
-                            @click="openCaraPembayaran(selectedPengajuan)"
-                          >
-                            CARA MELAKUKAN PEMBAYARAN
-                          </button>
-                        </div>
-                      </template>
-                    </div>
-                  </div>
-                </div>
-                <!-- Step 3: Status -->
-                <div class="wizard-vertical-step">
-                  <span
-                    class="wizard-vertical-dot"
-                    :class="statusColor(selectedPengajuan)"
-                  />
-                  <div class="wizard-vertical-content">
-                    <div class="wizard-vertical-title">
-                      Status
-                    </div>
-                    <div class="wizard-vertical-desc">
-                      <template v-if="selectedPengajuan.status === 'pending'">
-                        Pending
-                      </template>
-                      <template v-else-if="selectedPengajuan.status === 'proses'">
-                        Sedang di proses
-                      </template>
-                      <template v-else>
-                        Selesai
-                        <div style="margin-block-start: 10px;">
-                          <VBtn
-                            color="primary"
-                            style="border-radius: 6px; font-size: 0.95rem; font-weight: 600; margin-inline-start: 0;"
-                            @click="trackingResi(selectedPengajuan)"
-                          >
-                            Tracking
-                          </VBtn>
-                        </div>
-                      </template>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                v-else
-                class="wizard-vertical-empty"
-              >
-                Pilih tanggal pengajuan untuk melihat detail.
-              </div>
-            </div>
-          </div>
+
+      <div class="table-wrapper">
+        <table class="pengajuan-table">
+              <colgroup>
+                <col class="col-no" />
+                <col class="col-tanggal" />
+                <col class="col-tagihan" />
+                <col class="col-va" />
+                <col class="col-resi" />
+                <col class="col-status" />
+              </colgroup>
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Tanggal Pengajuan</th>
+          <th>Tagihan</th>
+          <th>No. VA</th>
+          <th>No. Resi</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(item, index) in paginatedData" :key="item.id" :class="{ 'done-row': item.status === 'Done' }" >
+          <td>{{ (currentPage - 1)* itemsPerPage + index + 1}}</td>
+          <td>{{ item.tanggal }}</td>
+          <td>{{ item.tagihan }}</td>
+          <td>{{ item.noVA || '-' }}</td>
+          <td v-if="item.noResi">
+            <a
+            :href="`https://www.posindonesia.co.id/en/tracking/${item.noResi}`"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-blue-600 underline hover:text-blue-800"
+            >
+            {{ item.noResi }}
+          </a>
+        </td>
+        <td v-else>-</td>
+          <!-- <td>{{ item.noResi || '-' }}</td> -->
+          <td :class="statusClass(item.status)">
+            {{ item.status }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+        <div class="d-flex justify-start align-center mb-2" style="gap: 0.3rem;  padding-block-start: 14px;">
+          <span style="font-size: 0.8rem; font-weight: 350;">Page:</span>
+<VSelect
+  v-model="itemsPerPage"
+  :items="[5, 10, 20, 50]"
+  density="compact"
+  hide-details
+  style="inline-size: 32px; font-size= 0.3rem;"
+/>
         </div>
+  </div>
+</div>
         <div v-else>
           <!-- Stepper Wizard -->
           <div class="wizard-steps mb-8 d-flex justify-center align-center">
@@ -309,7 +255,7 @@
         <VSpacer />
         <VBtn
           color="primary"
-          @click="showValidationModal = false"
+          @click="closeValidationModal"
         >
           OK
         </VBtn>
@@ -325,24 +271,21 @@
         Cara Melakukan Pembayaran
       </VCardTitle>
       <VCardText>
-        <div style="border-radius: 8px; background: #fcf8ee; color: #7a7652; font-family: Georgia, serif; padding-block: 1rem; padding-inline: 1rem;">
-          <div style="font-size: 2.5rem; font-style: italic; font-weight: 600;">
+        <div style="border-radius: 8px; background: #fff; color: #000; font-family: Georgia, serif; padding-block: 1rem; padding-inline: 1rem;">
+          <div style="font-size: 2rem; font-style: normal; font-weight: 600; line-height: 3rem; text-align: center;">
             Tagihan Pembayaran 2211501033
           </div>
-          <div style="font-size: 1.2rem; font-style: italic; margin-block-end: 1rem;">
+          <div style="font-size: 1.2rem; font-style: italic; margin-block-end: 1rem; text-align: center;">
             Timestamp: 30 Juni 2025 13:21:51
           </div>
-          <div style="margin-block-end: 1rem;">
-            Klik tombol di bawah ini untuk menampilkan metode pembayaran menggunakan Bank Terpilih.
-          </div>
-          <div style="border-radius: 16px 16px 0 0; background: yellow; color: #7a7652; font-size: 1.7rem; font-weight: 500; padding-block: 0.5rem; padding-inline: 1rem;">
+          <div style="border-radius: 16px 16px 0 0; background: #129990; color: #fff; font-size: 1.5rem; font-weight: 500; padding-block: 0.5rem; padding-inline: 1rem; text-align: center;">
             Melalui ATM BPD DIY
           </div>
-          <div style="padding-block: 1rem; padding-inline: 1rem;">
-            <div style="font-size: 1.1rem; margin-block-end: 0.5rem;">
+          <div style="padding-block: 0.4rem; padding-inline: 1.5rem;">
+            <div style="font-size: 1.1rem; margin-block-end: 0.2rem;">
               Catatan:
             </div>
-            <ol style="font-size: 1.2rem;">
+            <ol style="font-size: 1.1rem;">
               <li>Siapkan Kartu ATM Bank BPD DIY</li>
               <li>Masukkan PIN dan pilih bahasa</li>
               <li>Pilih menu Pembayaran</li>
@@ -353,33 +296,33 @@
               <li>Lakukan pembayaran</li>
             </ol>
           </div>
-          <div style="border-radius: 16px 16px 0 0; background: orange; color: #5a4a2a; font-size: 1.7rem; font-weight: 500; margin-block-start: 1.5rem; padding-block: 0.5rem; padding-inline: 1rem;">
+          <div style="border-radius: 16px 16px 0 0; background: #129990; color: #fff; font-size: 1.5rem; font-weight: 500; padding-block: 0.5rem; padding-inline: 1rem; text-align: center;">
             Melalui Internet Banking Bank BSI
           </div>
-          <div style="padding-block: 1rem; padding-inline: 1rem;">
-            <div style="font-size: 1.1rem; margin-block-end: 0.5rem;">
+          <div style="padding-block: 0.4rem; padding-inline: 1.5rem;">
+            <div style="font-size: 1.1rem; margin-block-end: 0.2rem;">
               Catatan: Nominal pembayaran otomatis muncul di Ibanking.
             </div>
-            <ol style="font-size: 1.2rem;">
+            <ol style="font-size: 1.1rem;">
               <li>Pilih menu Pembayaran</li>
               <li>
                 Pada menu pembayaran pilih:
+                </li>
                 <ul>
                   <li>Jenis Pembayaran: Institusi</li>
                   <li>Nama Lembaga: UNISA Yogya</li>
                   <li>Nomor Pembayaran: <b>2211501033</b></li>
                 </ul>
-              </li>
             </ol>
           </div>
-          <div style="border-radius: 16px 16px 0 0; background: orange; color: #5a4a2a; font-size: 1.7rem; font-weight: 500; margin-block-start: 1.5rem; padding-block: 0.5rem; padding-inline: 1rem;">
+          <div style="border-radius: 16px 16px 0 0; background: #129990; color: #fff; font-size: 1.5rem; font-weight: 500; padding-block: 0.5rem; padding-inline: 1rem; text-align: center;">
             Melalui Mobile Banking Bank BSI
           </div>
-          <div style="padding-block: 1rem; padding-inline: 1rem;">
-            <div style="font-size: 1.1rem; margin-block-end: 0.5rem;">
+          <div style="padding-block: 0.4rem; padding-inline: 1.5rem;">
+            <div style="font-size: 1.1rem; margin-block-end: 0.2rem;">
               Catatan: Nominal pembayaran otomatis muncul di Mbanking.
             </div>
-            <ol style="font-size: 1.2rem;">
+            <ol style="font-size: 1.1rem;">
               <li>Pilih menu Pembayaran</li>
               <li>
                 Pada menu pembayaran pilih:
@@ -391,10 +334,10 @@
               </li>
             </ol>
           </div>
-          <div style="border-radius: 16px 16px 0 0; background: orange; color: #5a4a2a; font-size: 1.7rem; font-weight: 500; margin-block-start: 1.5rem; padding-block: 0.5rem; padding-inline: 1rem;">
+          <div style="border-radius: 16px 16px 0 0; background: #129990; color: #fff; font-size: 1.5rem; font-weight: 500; padding-block: 0.5rem; padding-inline: 1rem; text-align: center;">
             Melalui ATM Bank BSI
           </div>
-          <div style="padding-block: 1rem; padding-inline: 1rem;">
+          <div style="padding-block: 0.4rem; padding-inline: 1.5rem;">
             <div style="font-size: 1.1rem; margin-block-end: 0.5rem;">
               Catatan: Nominal pembayaran otomatis muncul di ATM.
             </div>
@@ -420,8 +363,8 @@
 </template>
 
 <script>
-import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, ref } from 'vue';
+import { useRoute } from 'vue-router';
 
 export default {
   name: 'PendaftaranLegalisasi',
@@ -430,40 +373,35 @@ export default {
     const currentStep = ref(1)
 
     // Dummy data pengajuan legalisasi
-    const daftarPengajuan = ref([
-      { id: 1, tanggal: '2025-06-05', status: 'pending', tagihan: null },
-      { id: 2, tanggal: '2025-06-01', status: 'proses', tagihan: '20.000,00' },
-      { id: 3, tanggal: '2025-05-26', status: 'selesai', tagihan: '30.000,00' },
-      { id: 4, tanggal: '2024-11-27', status: 'pending', tagihan: null },
-      { id: 5, tanggal: '2024-09-19', status: 'pending', tagihan: null },
-      { id: 6, tanggal: '2024-08-26', status: 'pending', tagihan: null },
+    const pengajuanList = ref([
+      { id: 1, tanggal: '2025-06-01', tagihan: 'Menunggu Tagihan', noVA: '', noResi: '', status: 'Pending' },
+      { id: 2, tanggal: '2025-05-17', tagihan: 'Rp 20.000,00', noVA: '2211501047', noResi: 'P2303300137564', status: 'Done' },
+      { id: 3, tanggal: '2025-04-20', tagihan: 'Rp 65.000,00', noVA: '2211501047', noResi: '', status: 'Proses' },
+      { id: 4, tanggal: '2025-04-17', tagihan: 'Menunggu Tagihan', noVA: '', noResi: '', status: 'Pending' },
+      { id: 5, tanggal: '2025-04-08', tagihan: 'Menunggu Tagihan', noVA: '', noResi: '', status: 'Pending' }, 
+      { id: 6, tanggal: '2025-10-06', tagihan: 'Rp 80.000,00', noVA: '2211505666', noResi: 'P2345678901234', status: 'Done' },
+      { id: 7, tanggal: '2025-10-07', tagihan: 'Menunggu Tagihan', noVA: '', noResi: '', status: 'Pending' },
+      { id: 8,  tanggal: '2025-10-08', tagihan: 'Rp 40.000,00', noVA: '2211233313', noResi: '', status: 'Proses' },
     ])
-
-    // Group pengajuan by year
-    const groupedPengajuan = computed(() => {
-      const groups = {}
-
-      daftarPengajuan.value.forEach(item => {
-        const year = item.tanggal.split('-')[0]
-        if (!groups[year]) groups[year] = []
-        groups[year].push(item)
-      })
-
-      // Urutkan tahun dari terbesar ke terkecil
-      const sortedYears = Object.keys(groups).sort((a, b) => parseInt(b) - parseInt(a))
-      const sortedGroups = {}
-
-      sortedYears.forEach(year => {
-        // Urutkan tanggal dalam tahun dari terbaru ke terlama
-        groups[year].sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal))
-        sortedGroups[year] = groups[year]
-      })
-      
-      return sortedGroups
+    const currentPage = ref(1)
+    const itemsPerPage = ref(5)
+    
+    const totalPages = computed(() => Math.ceil(pengajuanList.value.length / itemsPerPage.value))
+    const paginatedData = computed(() => {
+      const start = (currentPage.value - 1) * itemsPerPage.value
+      const end = start + itemsPerPage.value
+      return pengajuanList.value.slice(start, end)
     })
+    
+    const statusClass = status => {
+      switch(status.toLowerCase()) {
+        case 'done': return 'bg-green'
+        default: return 'bg-white'
+      }
+    }
 
     // State pengajuan yang dipilih
-    const selectedPengajuan = ref(daftarPengajuan.value[0])
+    const selectedPengajuan = ref(pengajuanList.value[0])
 
     const selectPengajuan = pengajuan => {
       selectedPengajuan.value = pengajuan
@@ -476,8 +414,6 @@ export default {
       namaPenerima: '',
       noTelpPenerima: '',
     })
-
-    const fileStatus = ref({})
 
     const showValidationModal = ref(false)
     const validationMessage = ref('')
@@ -524,12 +460,12 @@ export default {
     }
 
     // Warna status step
-    const tagihanColor = pengajuan => pengajuan.status === 'pending' ? 'dot-yellow' : 'dot-green'
-    const caraBayarColor = pengajuan => pengajuan.status === 'pending' ? 'dot-grey' : 'dot-blue'
+    const tagihanColor = pengajuan => pengajuan.status === 'pending' ? 'dot-white' : 'dot-white'
+    const caraBayarColor = pengajuan => pengajuan.status === 'pending' ? 'dot-white' : 'dot-white'
 
     const statusColor = pengajuan => {
-      if (pengajuan.status === 'pending') return 'dot-grey'
-      if (pengajuan.status === 'proses') return 'dot-blue'
+      if (pengajuan.status === 'pending') return 'dot-white'
+      if (pengajuan.status === 'proses') return 'dot-white'
       
       return 'dot-green'
     }
@@ -548,20 +484,29 @@ export default {
     // Fungsi untuk tracking
     const trackingResi = item => {
       // Ganti dengan item.resi jika ada field resi di data pengajuan
-      const resi = item.resi || defaultResi
+      const resi = item.noResi || defaultResi
 
       window.open(`https://www.posindonesia.co.id/en/tracking/${resi}`, '_blank')
     }
 
+    const closeValidationModal = () => {
+      showValidationModal.value = false
+      
+      if (validationMessage.value.includes('berhasil')) {
+        // Balik ke list pengajuan
+         showWizard.value = false
+         currentStep.value = 1
+        }
+      }
+
     return {
       showWizard,
       currentStep,
-      daftarPengajuan,
-      groupedPengajuan,
+      pengajuanList,
+      statusClass,
       selectedPengajuan,
       selectPengajuan,
       form,
-      fileStatus,
       showValidationModal,
       validationMessage,
       handleSubmit,
@@ -576,12 +521,80 @@ export default {
       notifMessage,
       showCaraBayarDialog,
       trackingResi,
+      paginatedData,
+      currentPage,
+      itemsPerPage,
+      totalPages,
     }
   },
 }
 </script>
 
 <style scoped>
+.table-wrapper {
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 8%);
+  inline-size: 100%;
+  overflow-x: auto;
+  padding-block: 16px;
+  padding-inline: 20px;
+}
+
+.table-wrapper .pengajuan-table {
+  background: #fff;
+  border-collapse: collapse; /* 🟢 Biar garis antar sel nyatu */
+  inline-size: 100%;
+  table-layout: fixed; /* 🟢 Kolom proporsional, nggak goyah */
+}
+
+.pengajuan-table col.col-no { inline-size: 6%; }
+.pengajuan-table col.col-tanggal { inline-size: 18%; }
+.pengajuan-table col.col-tagihan { inline-size: 28%; }
+.pengajuan-table col.col-va { inline-size: 14%; }
+.pengajuan-table col.col-resi { inline-size: 22%; }
+.pengajuan-table col.col-status { inline-size: 12%; }
+
+.pengajuan-table th,
+.pengajuan-table td {
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  line-height: 1.2;
+  padding-block: 12px;
+  padding-inline: 14px;
+  text-align: center;
+  vertical-align: middle;
+  word-wrap: break-word;
+}
+
+.pengajuan-table th {
+  background-color: #f5f5f5;
+  font-weight: 600;
+  white-space: normal;
+}
+
+.styled-summary-table td {
+  font-size: 1rem;
+  padding-block: 14px;
+  padding-inline: 18px;
+  vertical-align: top;
+}
+
+.pengajuan-table tr.done-row td {
+  background-color: #7cfc00 !important;
+  color: black;
+  font-weight: normal;
+}
+
+.styled-summary-table tr {
+  background: #fff;
+  border-block-end: 1px solid #f0f0f0;
+}
+
+.pengajuan-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
 .form-card {
   margin: 0;
   max-inline-size: 100%;
@@ -636,55 +649,6 @@ export default {
 
 .upload-field .v-input__prepend-inner {
   display: none;
-}
-
-/* File upload style (theme aware) */
-.file-upload {
-  display: flex;
-  align-items: center;
-  padding: 12px;
-  border-radius: 8px;
-  background: rgb(var(--v-theme-surface));
-  transition: background 0.2s;
-}
-
-.file-upload-icon {
-  color: rgb(var(--v-theme-primary));
-  font-size: 22px;
-  margin-inline-end: 10px;
-  transition: color 0.2s;
-}
-
-.file-upload-input {
-  flex: 1;
-  background: transparent !important;
-  color: rgb(var(--v-theme-on-surface)) !important;
-
-  --v-field-border-color: rgb(var(--v-theme-primary));
-  --v-field-label-color: rgb(var(--v-theme-on-surface));
-  --v-field-placeholder-color: rgb(var(--v-theme-on-surface));
-  --v-field-bg-color: rgb(var(--v-theme-surface));
-}
-
-.v-file-input__text {
-  display: flex;
-  align-items: center;
-  border-radius: 0 0 10px 10px;
-  background: rgb(var(--v-theme-surface)) !important;
-  color: rgb(var(--v-theme-on-surface));
-  font-size: 1rem;
-  padding-block: 8px;
-  padding-inline: 12px;
-}
-
-.v-file-input__text .v-icon {
-  color: rgb(var(--v-theme-primary)) !important;
-  margin-inline-end: 8px;
-}
-
-.v-file-input__text .v-btn {
-  color: rgb(var(--v-theme-on-surface)) !important;
-  margin-inline-start: 8px;
 }
 
 .wizard-steps {
@@ -768,18 +732,6 @@ export default {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 3%);
   inline-size: 100%;
   margin-block-end: 24px;
-}
-
-.styled-summary-table tr {
-  background: #fff;
-  border-block-end: 1px solid #f0f0f0;
-}
-
-.styled-summary-table td {
-  font-size: 1rem;
-  padding-block: 14px;
-  padding-inline: 18px;
-  vertical-align: top;
 }
 
 .styled-summary-table .label {
