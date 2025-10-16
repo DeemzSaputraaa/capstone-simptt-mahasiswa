@@ -79,13 +79,13 @@
       </tbody>
     </table>
         <div class="d-flex justify-start align-center mb-2" style="gap: 0.3rem;  padding-block-start: 14px;">
-          <span style="font-size: 0.8rem; font-weight: 350;">Page:</span>
+          <span style="font-size: 1rem; font-weight: 400;">Page:</span>
 <VSelect
   v-model="itemsPerPage"
   :items="[5, 10, 20, 50]"
   density="compact"
   hide-details
-  style="inline-size: 32px; font-size= 0.3rem;"
+  style="max-inline-size: 85px;"
 />
         </div>
   </div>
@@ -533,8 +533,8 @@ export default {
 <style scoped>
 .table-wrapper {
   border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 8%);
+  background: var(--v-theme-surface);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 10%);
   inline-size: 100%;
   overflow-x: auto;
   padding-block: 16px;
@@ -542,7 +542,7 @@ export default {
 }
 
 .table-wrapper .pengajuan-table {
-  background: #fff;
+  background: var(--v-theme-surface);
   border-collapse: collapse; /* 🟢 Biar garis antar sel nyatu */
   inline-size: 100%;
   table-layout: fixed; /* 🟢 Kolom proporsional, nggak goyah */
@@ -568,7 +568,7 @@ export default {
 }
 
 .pengajuan-table th {
-  background-color: #f5f5f5;
+  background-color: var(--v-theme-surface);
   font-weight: 600;
   white-space: normal;
 }
@@ -592,7 +592,7 @@ export default {
 }
 
 .pengajuan-table tr:nth-child(even) {
-  background-color: #f9f9f9;
+  background-color: var(--v-theme-surface);
 }
 
 .form-card {
