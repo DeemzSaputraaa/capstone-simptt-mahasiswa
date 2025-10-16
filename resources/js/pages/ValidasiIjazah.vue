@@ -108,6 +108,51 @@
             </VCardActions>
           </VCard>
         </VDialog>
+
+        <!-- PDF Viewer -->
+        <div class="pdf-viewer">
+          <div class="pdf-toolbar">
+            <button @click="zoomOut">-</button>
+            <span>{{ Math.round(scale * 100) }}%</span>
+            <button @click="zoomIn">+</button>
+            <button @click="rotate">↻</button>
+            <button @click="download">⭳</button>
+            <button @click="print">🖨️</button>
+          </div>
+          <div class="pdf-container" ref="container">
+            <canvas ref="canvas"></canvas>
+          </div>
+        </div>
+
+        <!-- Dialog untuk PDF Viewer -->
+        <VDialog
+          v-model="showPdfViewer"
+          fullscreen
+          hide-overlay
+          transition="dialog-bottom-transition"
+        >
+          <VCard>
+            <VToolbar
+              dark
+              color="primary"
+            >
+              <VBtn
+                icon
+                @click="showPdfViewer = false"
+              >
+                <VIcon>mdi-close</VIcon>
+              </VBtn>
+              <VToolbarTitle>{{ pdfTitle }}</VToolbarTitle>
+            </VToolbar>
+            
+            <VCardText>
+              <PdfViewer
+                :pdf-data="currentPdfData"
+                class="pdf-viewer-container"
+              />
+            </VCardText>
+          </VCard>
+        </VDialog>
       </VContainer>
     </VMain>
   </VApp>
@@ -195,15 +240,15 @@ export default {
       { no: 33, kode: 'TIK5030', nama: 'SISTEM INFORMASI RUMAH SAKIT', nama_en: 'Hospital Information System', sks: 2, nilai: 'BC', ekuivalen: 2.5 },
       { no: 34, kode: 'TIK5031', nama: 'SISTEM PENDUKUNG KEPUTUSAN', nama_en: 'Decision Support System', sks: 2, nilai: 'C', ekuivalen: 2.0 },
       { no: 35, kode: 'TIK5032', nama: 'PEMROGRAMAN SISTEM DAN JARINGAN', nama_en: 'System and Network Programming', sks: 3, nilai: 'BC', ekuivalen: 2.5 },
-      { no: 36, kode: 'TIK6033', nama: 'KERJA PRAKTEK', nama_en: 'Internship', sks: 3, nilai: 'C', ekuivalen: 2.0 },
-      { no: 37, kode: 'TIK6034', nama: 'TREND DALAM TEKNOLOGI INFORMASI', nama_en: 'Trends in Information Technology', sks: 2, nilai: 'C-', ekuivalen: 2.25 },
-      { no: 38, kode: 'TIK6035', nama: 'SISTEM PAKAR', nama_en: 'Expert System', sks: 3, nilai: 'C+', ekuivalen: 2.25 },
+      { no: 36, kode: 'TIK6033', nama_en: 'Internship', sks: 3, nilai: 'C', ekuivalen: 2.0 },
+      { no: 37, kode: 'TIK6034', nama_en: 'Trends in Information Technology', sks: 2, nilai: 'C-', ekuivalen: 2.25 },
+      { no: 38, kode: 'TIK6035', nama_en: 'Expert System', sks: 3, nilai: 'C+', ekuivalen: 2.25 },
       { no: 39, kode: 'TIK6036', nama: 'TEKNOLOGI INFORMASI KESEHATAN', nama_en: 'Health Information Technology', sks: 3, nilai: 'A', ekuivalen: 4.0 },
-      { no: 40, kode: 'TIK6037', nama: 'MANAJEMEN PROYEK SISTEM INFORMASI', nama_en: 'Information System Project Management', sks: 3, nilai: 'B+', ekuivalen: 3.25 },
-      { no: 41, kode: 'TIK6038', nama: 'E-BUSINESS', nama_en: 'E-Business', sks: 2, nilai: 'C', ekuivalen: 2.0 },
+      { no: 40, kode: 'TIK6037', nama_en: 'Information System Project Management', sks: 3, nilai: 'B+', ekuivalen: 3.25 },
+      { no: 41, kode: 'TIK6038', nama_en: 'E-Business', sks: 2, nilai: 'C', ekuivalen: 2.0 },
       { no: 42, kode: 'TIK6039', nama: 'PERANCANGAN DAN IMPLEMENTASI DATABASE', nama_en: 'Database Design and Implementation', sks: 3, nilai: 'B', ekuivalen: 3.0 },
-      { no: 43, kode: 'TIK6040', nama: 'PEMROGRAMAN FRAMEWORK', nama_en: 'Framework Programming', sks: 3, nilai: 'A-', ekuivalen: 3.75 },
-      { no: 44, kode: 'TIK6041', nama: 'PEMROGRAMAN CLIENT-SERVER', nama_en: 'Client-Server Programming', sks: 3, nilai: 'B+', ekuivalen: 3.25 },
+      { no: 43, kode: 'TIK6040', nama_en: 'Framework Programming', sks: 3, nilai: 'A-', ekuivalen: 3.75 },
+      { no: 44, kode: 'TIK6041', nama_en: 'Client-Server Programming', sks: 3, nilai: 'B+', ekuivalen: 3.25 },
       { no: 45, kode: 'TIK6042', nama: 'AUDIT SISTEM INFORMASI', nama_en: 'Information System Audit', sks: 2, nilai: 'B', ekuivalen: 3.0 },
       { no: 46, kode: 'TIK6043', nama: 'CLOUD COMPUTING', nama_en: 'Cloud Computing', sks: 2, nilai: 'C+', ekuivalen: 2.25 },
       { no: 47, kode: 'TIK6044', nama: 'SISTEM INFORMASI MANAJEMEN', nama_en: 'Management Information System', sks: 3, nilai: 'B', ekuivalen: 3.0 },
@@ -531,6 +576,127 @@ export default {
       }
     })
 
+    // Tambahkan fungsi generatePDF
+    const generatePDF = () => {
+      const content = document.createElement('div')
+      
+      // Ambil konten ijazah dan transkrip
+      const ijazahContent = ijazahPreview.value.$el.cloneNode(true)
+      const transcriptContent = transcriptPreview.value.$el.cloneNode(true)
+      
+      // Gabungkan konten
+      content.appendChild(ijazahContent)
+      content.appendChild(transcriptContent)
+      
+      // Konfigurasi PDF
+      const options = {
+        margin: 10,
+        filename: 'ijazah-transkrip.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          logging: true
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'portrait' 
+        }
+      }
+
+      // Generate PDF
+      html2pdf().from(content).set(options).save()
+    }
+
+    const container = ref(null)
+    const canvas = ref(null)
+    const scale = ref(1)
+    const rotation = ref(0)
+    let pdfDoc = null
+    let pageNum = 1
+
+    const renderPage = async () => {
+      const page = await pdfDoc.getPage(pageNum)
+      const viewport = page.getViewport({ scale: scale.value, rotation: rotation.value })
+      
+      const context = canvas.value.getContext('2d')
+      canvas.value.height = viewport.height
+      canvas.value.width = viewport.width
+
+      await page.render({
+        canvasContext: context,
+        viewport: viewport
+      }).promise
+    }
+
+    const zoomIn = () => {
+      scale.value = Math.min(scale.value + 0.1, 3)
+      renderPage()
+    }
+
+    const zoomOut = () => {
+      scale.value = Math.max(scale.value - 0.1, 0.5)
+      renderPage()
+    }
+
+    const rotate = () => {
+      rotation.value = (rotation.value + 90) % 360
+      renderPage()
+    }
+
+    const download = () => {
+      const link = document.createElement('a')
+      link.href = props.pdfData
+      link.download = 'document.pdf'
+      link.click()
+    }
+
+    const print = () => {
+      const iframe = document.createElement('iframe')
+      iframe.style.display = 'none'
+      iframe.src = props.pdfData
+      document.body.appendChild(iframe)
+      iframe.contentWindow.print()
+    }
+
+    onMounted(async () => {
+      try {
+        pdfDoc = await pdfjsLib.getDocument(props.pdfData).promise
+        renderPage()
+      } catch (error) {
+        console.error('Error loading PDF:', error)
+      }
+    })
+
+    const showPdfViewer = ref(false)
+    const currentPdfData = ref('')
+    const pdfTitle = ref('')
+
+    const generatePdfData = async (element) => {
+      const opt = {
+        margin: 10,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      }
+
+      const pdf = await html2pdf().from(element).set(opt).outputPdf('datauristring')
+      return pdf
+    }
+
+    const showIjazahPdf = async () => {
+      pdfTitle.value = 'Draft Ijazah'
+      currentPdfData.value = await generatePdfData(ijazahPreview.value.$el)
+      showPdfViewer.value = true
+    }
+
+    const showTranscriptPdf = async () => {
+      pdfTitle.value = 'Transkrip Nilai'
+      currentPdfData.value = await generatePdfData(transcriptPreview.value.$el)
+      showPdfViewer.value = true
+    }
+
     return {
       form,
       fileStatus,
@@ -554,6 +720,20 @@ export default {
       onSimpan,
       showComments,
       loadCommentsFromDatabase,
+      generatePDF,
+      container,
+      canvas, 
+      scale,
+      zoomIn,
+      zoomOut,
+      rotate,
+      download,
+      print,
+      showPdfViewer,
+      currentPdfData,
+      pdfTitle,
+      showIjazahPdf,
+      showTranscriptPdf
     }
   },
 }
@@ -764,8 +944,10 @@ export default {
   margin: auto;
   background: #fff;
   box-shadow: 0 2px 8px 0 rgba(33, 150, 243, 5%);
-  max-inline-size: 900px;
-  min-block-size: 400px;
+  /* A4 Landscape container */
+  inline-size: fit-content;
+  max-inline-size: 1200px;
+  min-block-size: auto;
 }
 
 .position-relative {
@@ -805,4 +987,100 @@ export default {
   vertical-align: middle;
   writing-mode: vertical-rl;
 }
-</style> 
+
+.pdf-viewer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  block-size: 100%;
+  inline-size: 100%;
+}
+
+.pdf-toolbar {
+  display: flex;
+  padding: 10px;
+  border-radius: 4px;
+  background: #f5f5f5;
+  gap: 10px;
+  margin-block-end: 10px;
+}
+
+.pdf-toolbar button {
+  border: none;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  padding-block: 5px;
+  padding-inline: 10px;
+}
+
+.pdf-toolbar button:hover {
+  background: #e0e0e0;
+}
+
+.pdf-container {
+  overflow: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  max-inline-size: 100%;
+}
+
+canvas {
+  display: block;
+  margin-block: 0;
+  margin-inline: auto;
+}
+
+/* ... style yang sudah ada ... */
+
+.pdf-viewer-container {
+  block-size: calc(100vh - 64px);
+  inline-size: 100%;
+}
+
+.dialog-bottom-transition-enter-active,
+.dialog-bottom-transition-leave-active {
+  transition: transform 0.3s ease-in-out;
+}
+
+.dialog-bottom-transition-enter,
+.dialog-bottom-transition-leave-to {
+  transform: translateY(100%);
+}
+</style>
+
+<style>
+/* Tambahkan di bagian style yang ada */
+@media print {
+  .draft-ijazah-preview,
+  .transcript-preview {
+    padding: 20mm;
+    margin: 0;
+    background: white;
+    page-break-after: always;
+  }
+
+  .draft-ijazah-preview:last-child,
+  .transcript-preview:last-child {
+    page-break-after: auto;
+  }
+
+  /* Sembunyikan elemen yang tidak perlu di PDF */
+  .v-btn,
+  .comment-form-card,
+  .v-alert {
+    display: none !important;
+  }
+}
+
+/* Style untuk preview sebelum di-print */
+.draft-ijazah-preview,
+.transcript-preview {
+  padding: 20mm;
+  background: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 10%);
+  inline-size: 210mm;
+  margin-block: 20mm;
+  margin-inline: auto;
+}
+</style>
