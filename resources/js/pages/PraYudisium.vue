@@ -54,7 +54,7 @@
             <div class="text-subtitle-1 font-weight-bold mb-2">
               Upload Foto Berukuran 3×4 dan Berlatar Biru
             </div>
-            <div class="file-upload mb-4">
+            <div class="file-upload ">
               <VIcon class="file-upload-icon">
                 ri-attachment-2
               </VIcon>
@@ -73,10 +73,10 @@
             </div>
             
             <!-- Section 4: Upload Foto Ijazah SMA -->
-            <div class="text-subtitle-1 font-weight-bold mb-2 mt-6">
+            <div class="text-subtitle-1 font-weight-bold mt-6">
               Upload Foto Ijazah SMA
             </div>
-            <div class="file-upload mb-4 mt-6">
+            <div class="file-upload">
               <VIcon class="file-upload-icon">
                 ri-attachment-2
               </VIcon>
@@ -95,10 +95,10 @@
             </div>
             
             <!-- Section 5: Upload Foto KTP -->
-            <div class="text-subtitle-1 font-weight-bold mb-2 mt-6">
+            <div class="text-subtitle-1 font-weight-bold mt-6">
               Upload Foto KTP
             </div>
-            <div class="file-upload mb-4 mt-6">
+            <div class="file-upload">
               <VIcon class="file-upload-icon">
                 ri-attachment-2
               </VIcon>

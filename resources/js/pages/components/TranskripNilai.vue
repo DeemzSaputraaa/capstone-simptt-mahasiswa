@@ -6,9 +6,9 @@
         <div><b>TEMPAT/TANGGAL LAHIR</b> : {{ user.birthPlace }}, {{ user.birthDate }}</div>
         <div><b>PROGRAM STUDI / JENJANG</b> : {{ user.studyProgram }} / {{ user.degree }}</div>
         <div><b>TANGGAL KELULUSAN</b> : {{ user.graduationDate }}</div>
-        <div><b>TOTAL SKS</b> : 146</div>
-        <div><b>INDEKS PRESTASI</b> : 2.94</div>
-        <div><b>PREDIKAT KELULUSAN</b> : MEMUASKAN / SATISFACTORY</div>
+        <div><b>TOTAL SKS</b> : {{ totalSks }}</div>
+        <div><b>INDEKS PRESTASI</b> : {{ ipk }}</div>
+        <div><b>PREDIKAT KELULUSAN</b> : {{ predikat }}</div>
         <div><b>STATUS</b> : Akreditasi LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 tanggal 19 Maret 2024 dengan peringkat "Baik Sekali".<br><span class="sub-label">Accredited "Very Good" by LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 on March 19, 2024.</span></div>
       </div>
       <div class="transkrip-nomor">
@@ -92,11 +92,9 @@
             >
               <div class="judul-ta">
                 <b>JUDUL TUGAS AKHIR</b><br><span class="sub-label">THESIS TITLE</span><br>
-                SISTEM INFORMASI PENDAFTARAN PADA KLINIK FISIOTERAPI<br>
-                UNIVERSITAS AISYIYAH YOGYAKARTA MENGGUNAKAN METODE RAD<br>
+                {{ thesisTitle.indo }}<br>
                 <span class="sub-label">(RAPID APPLICATION DEVELOPMENT)</span><br>
-                REGISTRATION INFORMATION SYSTEM AT AISYIYAH UNIVERSITY PHYSIOTHERAPY CLINIC<br>
-                YOGYAKARTA USING RAD METHOD (RAPID APPLICATION DEVELOPMENT)
+                {{ thesisTitle.eng }} (RAPID APPLICATION DEVELOPMENT)
               </div>
               <div class="ttd-row">
                 <div class="dekan">
@@ -122,6 +120,13 @@ import { computed } from 'vue'
 const props = defineProps({
   user: { type: Object, required: true },
   matakuliah: { type: Array, required: true },
+  totalSks: { type: [Number, String], default: 146 },
+  ipk: { type: [Number, String], default: 2.94 },
+  predikat: { type: String, default: 'MEMUASKAN / SATISFACTORY' },
+  thesisTitle: { type: Object, default: () => ({
+    indo: 'SISTEM INFORMASI PENDAFTARAN PADA KLINIK FISIOTERAPI UNIVERSITAS AISYIYAH YOGYAKARTA MENGGUNAKAN METODE RAD',
+    eng: 'REGISTRATION INFORMATION SYSTEM AT AISYIYAH UNIVERSITY PHYSIOTHERAPY CLINIC YOGYAKARTA USING RAD METHOD'
+  }) },
 })
 
 const columns = computed(() => {
@@ -145,10 +150,10 @@ const columns = computed(() => {
   color: #000;
   font-family: "Times New Roman", Times, serif;
   font-size: 9pt;
+  line-height: 1.2;
   margin-block: 0 32px;
   margin-inline: auto;
   max-inline-size: 297mm;
-  max-inline-size: 100%;
   min-block-size: 210mm;
   padding-block: 18px;
   padding-inline: 10px;
@@ -189,7 +194,7 @@ const columns = computed(() => {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  gap: 6px;
+  gap: 8px;
   margin-block-end: 10px;
 }
 
@@ -197,10 +202,9 @@ const columns = computed(() => {
   border: 1px solid #000;
   background: #fff;
   border-collapse: collapse;
+  flex: 1;
   font-size: 9pt;
-  inline-size: 32%;
   margin-block-end: 0;
-  max-inline-size: 33%;
   min-inline-size: 220px;
 }
 
@@ -209,7 +213,7 @@ const columns = computed(() => {
   background: #fff;
   font-size: 9pt;
   font-weight: bold;
-  padding-block: 2px;
+  padding-block: 4px;
   padding-inline: 2px;
   text-align: center;
 }
@@ -233,7 +237,8 @@ const columns = computed(() => {
   font-size: 9pt;
   font-weight: bold;
   text-align: center;
-  transform: rotate(180deg);
+  text-orientation: mixed;
+  white-space: nowrap;
   writing-mode: vertical-rl;
 }
 
@@ -309,15 +314,15 @@ const columns = computed(() => {
 .ta-ttd-cell {
   background: #fff;
   border-block-end: none !important;
-  padding-block: 8px;
-  padding-inline: 4px;
+  padding-block: 12px;
+  padding-inline: 8px;
   text-align: center;
 }
 
 .ttd-row {
   display: flex;
   justify-content: flex-end;
-  margin-block-start: 18px;
+  margin-block-start: 24px;
 }
 
 .dekan {
