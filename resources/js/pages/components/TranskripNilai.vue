@@ -1,24 +1,8 @@
 <template>
-<<<<<<< Updated upstream
-  <div class="transkrip-pdf">
-    <div class="transkrip-header">
-      <div class="transkrip-info">
-        <div><b>NIM / NAMA LENGKAP</b> : {{ user.nim }} / {{ user.name }}</div>
-        <div><b>TEMPAT/TANGGAL LAHIR</b> : {{ user.birthPlace }}, {{ user.birthDate }}</div>
-        <div><b>PROGRAM STUDI / JENJANG</b> : {{ user.studyProgram }} / {{ user.degree }}</div>
-        <div><b>TANGGAL KELULUSAN</b> : {{ user.graduationDate }}</div>
-        <div><b>TOTAL SKS</b> : {{ totalSks }}</div>
-        <div><b>INDEKS PRESTASI</b> : {{ ipk }}</div>
-        <div><b>PREDIKAT KELULUSAN</b> : {{ predikat }}</div>
-        <div><b>STATUS</b> : Akreditasi LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 tanggal 19 Maret 2024 dengan peringkat "Baik Sekali".<br><span class="sub-label">Accredited "Very Good" by LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 on March 19, 2024.</span></div>
-      </div>
-      <div class="transkrip-nomor">
-        <div class="label">
-          Nomor Ijazah Nasional:
-=======
   <div class="position-relative mb-6">
-    <div class="transcript-preview pa-6">
-      <div class="transkrip-pdf">
+    <div class="transcript-wrapper">
+      <div class="transcript-preview pa-6">
+        <div class="transkrip-pdf">
         <!-- Tombol PDF dipindah ke sini -->
         <VBtn
           color="primary"
@@ -29,29 +13,84 @@
           <VIcon>mdi-file-pdf-box</VIcon>
         </VBtn>
         
+        
         <div class="transkrip-header">
-          <div class="transkrip-info">
-            <div><b>NIM / NAMA LENGKAP</b> : {{ user.nim }} / {{ user.name }}</div>
-            <div><b>TEMPAT/TANGGAL LAHIR</b> : {{ user.birthPlace }}, {{ user.birthDate }}</div>
-            <div><b>PROGRAM STUDI / JENJANG</b> : {{ user.studyProgram }} / {{ user.degree }}</div>
-            <div><b>TANGGAL KELULUSAN</b> : {{ user.graduationDate }}</div>
-            <div><b>TOTAL SKS</b> : 146</div>
-            <div><b>INDEKS PRESTASI</b> : 2.94</div>
-            <div><b>PREDIKAT KELULUSAN</b> : MEMUASKAN / SATISFACTORY</div>
-            <div><b>STATUS</b> : Akreditasi LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 tanggal 19 Maret 2024 dengan peringkat "Baik Sekali".<br><span class="sub-label">Accredited "Very Good" by LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 on March 19, 2024.</span></div>
+          <div class="transkrip-info-center">
+            <div class="info-row">
+              <span class="info-label-center">NIM/NAMA LENGKAP</span>
+              <span class="info-separator">:</span>
+              <span class="info-value-center">{{ user.nim }} / {{ user.name }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label-center">TEMPAT/TANGGAL LAHIR</span>
+              <span class="info-separator">:</span>
+              <span class="info-value-center">{{ user.birthPlace }}, {{ user.birthDate }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label-center" style=" font-size: 6pt;font-style: italic;">Place of Birth/Date</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label-center">PROGRAM STUDI / JENJANG</span>
+              <span class="info-separator">:</span>
+              <span class="info-value-center">{{ user.studyProgram }} / {{ user.degree }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label-center" style=" font-size: 6pt;font-style: italic;">Study Program / Level</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label-center">TANGGAL KELULUSAN</span>
+              <span class="info-separator">:</span>
+              <span class="info-value-center">{{ user.graduationDate }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label-center" style=" font-size: 6pt;font-style: italic;">Graduation Date</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label-center">TOTAL SKS</span>
+              <span class="info-separator">:</span>
+              <span class="info-value-center">146</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label-center" style=" font-size: 6pt;font-style: italic;">Total Credits</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label-center">INDEKS PRESTASI</span>
+              <span class="info-separator">:</span>
+              <span class="info-value-center">2.94</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label-center" style=" font-size: 6pt;font-style: italic;">Grade Point Average</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label-center">PREDIKAT KELULUSAN</span>
+              <span class="info-separator">:</span>
+              <span class="info-value-center">MEMUASKAN / <span class="italic-text">SATISFACTORY</span></span>
+            </div>
+            <div class="info-row">
+              <span class="info-label-center" style=" font-size: 6pt;font-style: italic;">Graduation Predicate</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label-center">STATUS</span>
+              <span class="info-separator">:</span>
+              <span class="status-text-inline">Akreditasi LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 tanggal 19 Maret 2024 dengan peringkat "Baik Sekali".</span>
+            </div>
+            <div class="info-row">
+              <span class="italic-text" style="font-size: 6pt;">Accredited "Very Good" by LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 on March 19, 2024.</span>
+            </div>
           </div>
           <div class="transkrip-nomor">
-            <div class="label">
-              Nomor Ijazah Nasional:
+            <div class="nomor-header">
+              <div class="nomor-label">
+                Nomor Ijazah Nasional:
+              </div>
+              <div class="nomor-value-box">
+                051022592012025100002
+              </div>
             </div>
-            <div class="sub-label">
-              National Certificate Number
-            </div>
-            <div class="value">
-              051022592012025100002
+            <div class="nomor-sublabel">
+              <span class="italic-text">National Certificate Number</span>
             </div>
           </div>
->>>>>>> Stashed changes
         </div>
         <div class="transkrip-tables">
           <table
@@ -59,100 +98,58 @@
             :key="idx"
             class="transkrip-table no-inner-border"
           >
-<<<<<<< Updated upstream
-            <td class="center">
-              {{ mk.no }}
-            </td>
-            <td class="center">
-              {{ mk.kode }}
-            </td>
-            <td class="left">
-              {{ mk.nama }}<br><span class="sub-label">{{ mk.nama_en }}</span>
-            </td>
-            <td class="center">
-              {{ mk.sks }}
-            </td>
-            <td class="center">
-              {{ mk.nilai }}
-            </td>
-            <td class="center">
-              {{ mk.ekuivalen }}
-            </td>
-          </tr>
-          <!-- Judul tugas akhir & ttd dekan hanya di kolom ketiga -->
-          <tr v-if="idx === 2">
-            <td
-              colspan="6"
-              class="ta-ttd-cell"
-            >
-              <div class="judul-ta">
-                <b>JUDUL TUGAS AKHIR</b><br><span class="sub-label">THESIS TITLE</span><br>
-                {{ thesisTitle.indo }}<br>
-                <span class="sub-label">(RAPID APPLICATION DEVELOPMENT)</span><br>
-                {{ thesisTitle.eng }} (RAPID APPLICATION DEVELOPMENT)
-              </div>
-              <div class="ttd-row">
-                <div class="dekan">
-                  YOGYAKARTA, {{ user.graduationDate }}<br><span class="sub-label">YOGYAKARTA, MARCH 22, 2025</span><br>
-                  DEKAN FAKULTAS SAINS DAN TEKNOLOGI,<br><span class="sub-label">DEAN OF FACULTY OF SCIENCE AND TECHNOLOGY,</span>
-                  <div class="ttd-space" />
-                  <div class="nama">
-                    Ar. TIKA AINUNNISA FITRIA, S.T., M.T., Ph.D
-=======
             <thead>
               <tr>
-                <th style="inline-size: 36px;">
-                  NO<br>NO
+                <th rowspan="3" class="th-no">
+                  NO
                 </th>
-                <th style="inline-size: 70px;">
-                  KODE<br>CODE
+                <th rowspan="3" class="th-kode">
+                  KODE
                 </th>
-                <th class="mata-kuliah-column" style="text-align: start;">
-                  MATA KULIAH<br>SUBJECTS
+                <th rowspan="3" class="th-matkul matkul-center">
+                  MATA KULIAH
                 </th>
-                <th
-                  class="vertical-text"
-                  style="inline-size: 30px;"
-                >
-                  SKS<br>CREDITS
+                <th rowspan="3" class="th-vertical">
+                  <div class="vertical-header">
+                    <div class="vertical-text-eng">CREDITS</div>
+                    <div class="vertical-text-indo">SKS</div>
+                  </div>
                 </th>
-                <th
-                  class="vertical-text"
-                  style="inline-size: 30px;"
-                >
-                  NILAI<br>GRADE
+                <th rowspan="3" class="th-vertical">
+                  <div class="vertical-header">
+                    <div class="vertical-text-eng">GRADE</div>
+                    <div class="vertical-text-indo">NILAI</div>
+                  </div>
                 </th>
-                <th
-                  class="vertical-text"
-                  style="inline-size: 30px;"
-                >
-                  EKUIVALEN<br>EQUIVALENT
+                <th rowspan="3" class="th-vertical">
+                  <div class="vertical-header">
+                    <div class="vertical-text-eng">EQUIVALENT</div>
+                    <div class="vertical-text-indo">EKUIVALEN</div>
+                  </div>
                 </th>
               </tr>
             </thead>
             <tbody>
               <tr
                 v-for="(mk, i) in col"
-                :key="mk.no + mk.kode"
+                :key="mk.no + mk.kode + i"
+                :class="[{ 'empty-row': mk.isEmpty }, { 'last-empty-row': mk.isLastEmpty }]"
+
               >
-                <td class="center">
-                  {{ mk.no }}
-                </td>
-                <td class="center">
-                  {{ mk.kode }}
-                </td>
-                <td class="left">
-                  {{ mk.nama }}<br><span class="sub-label">{{ mk.nama_en }}</span>
-                </td>
-                <td class="center">
-                  {{ mk.sks }}
-                </td>
-                <td class="center">
-                  {{ mk.nilai }}
-                </td>
-                <td class="center">
-                  {{ mk.ekuivalen }}
-                </td>
+                <template v-if="!mk.isEmpty">
+                  <td class="td-no">{{ mk.no }}</td>
+                  <td class="td-kode">{{ mk.kode }}</td>
+                  <td class="td-matkul">
+                    {{ mk.nama }}<br>
+                    <span class="course-subtitle">{{ mk.nama_en }}</span>
+                  </td>
+                  <td class="td-center">{{ mk.sks }}</td>
+                  <td class="td-center">{{ mk.nilai }}</td>
+                  <td class="td-center">{{ formatKredit(mk.kredit) }}</td>
+                </template>
+                <template v-else-if="mk.isLastEmpty">
+                  <td colspan="6"></td>
+                </template>
               </tr>
               <!-- Judul tugas akhir & ttd dekan hanya di kolom ketiga -->
               <tr v-if="idx === 2">
@@ -160,22 +157,25 @@
                   colspan="6"
                   class="ta-ttd-cell"
                 >
+                  <div class="judul-ta-label"><b>JUDUL TUGAS AKHIR:</b></div>
                   <div class="judul-ta">
-                    <b>JUDUL TUGAS AKHIR</b><br><span class="sub-label">THESIS TITLE</span><br>
                     SISTEM INFORMASI PENDAFTARAN PADA KLINIK FISIOTERAPI<br>
                     UNIVERSITAS AISYIYAH YOGYAKARTA MENGGUNAKAN METODE RAD<br>
-                    <span class="sub-label">(RAPID APPLICATION DEVELOPMENT)</span><br>
-                    REGISTRATION INFORMATION SYSTEM AT AISYIYAH UNIVERSITY PHYSIOTHERAPY CLINIC<br>
-                    YOGYAKARTA USING RAD METHOD (RAPID APPLICATION DEVELOPMENT)
->>>>>>> Stashed changes
+                    (RAPID APPLICATION DEVELOPMENT)<br>
+                    <span class="italic-text">REGISTRATION INFORMATION SYSTEM AT AISYIYAH UNIVERSITY PHYSIOTHERAPY CLINIC<br>
+                    YOGYAKARTA USING RAD METHOD (RAPID APPLICATION DEVELOPMENT)</span>
                   </div>
-                  <div class="ttd-row">
+                  <div class="location-date">
+                    Yogyakarta, 22 Maret 2025<br>
+                    <span class="italic-text">Yogyakarta, March 22, 2025</span>
+                  </div>
+                  <div class="ttd-section">
                     <div class="dekan">
-                      YOGYAKARTA, {{ user.graduationDate }}<br><span class="sub-label">YOGYAKARTA, MARCH 22, 2025</span><br>
-                      DEKAN FAKULTAS SAINS DAN TEKNOLOGI,<br><span class="sub-label">DEAN OF FACULTY OF SCIENCE AND TECHNOLOGY,</span>
-                      <div class="ttd-space" />
+                      DEKAN FAKULTAS SAINS DAN TEKNOLOGI,<br>
+                      <span class="italic-text">DEAN OF FACULTY OF SCIENCE AND TECHNOLOGY,</span>
+                      <div class="ttd-space"></div>
                       <div class="nama">
-                        Ar. TIKA AINUNNISA FITRIA, S.T., M.T., Ph.D
+                        <u>Ir. Ar. TIKA AINUNNISA FITRIA, S.T., M.T., Ph.D</u>
                       </div>
                     </div>
                   </div>
@@ -186,90 +186,152 @@
         </div>
       </div>
     </div>
+    </div>
   </div>
-
-  <!-- Perbaiki dialog PDF Viewer -->
-  <VDialog
-    v-model="showPdfViewer"
-    fullscreen
-    persistent
-    :retain-focus="false"
-    transition="dialog-bottom-transition"
-  >
-    <VCard>
-      <VToolbar dark color="primary">
-        <VBtn icon @click="showPdfViewer = false">
-          <VIcon>mdi-close</VIcon>
-        </VBtn>
-        <VToolbarTitle>Transkrip Nilai</VToolbarTitle>
-        <VSpacer></VSpacer>
-        <VBtn icon @click="downloadPDF">
-          <VIcon>mdi-download</VIcon>
-          <VTooltip activator="parent">
-            Download PDF
-          </VTooltip>
-        </VBtn>
-        <VBtn icon @click="printPDF">
-          <VIcon>mdi-printer</VIcon>
-          <VTooltip activator="parent">
-            Print
-          </VTooltip>
-        </VBtn>
-      </VToolbar>
-
-      <div class="pdf-viewer-container">
-        <div ref="pdfContent" class="pdf-content">
-          <!-- Perbaiki cara menampilkan konten -->
-          <div class="transkrip-pdf">
-            <div v-if="showPdfViewer" v-html="transkripContent"></div>
-          </div>
-        </div>
-      </div>
-    </VCard>
-  </VDialog>
 </template>
 
 <script setup>
 import html2pdf from 'html2pdf.js'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps({
   user: { type: Object, required: true },
-<<<<<<< Updated upstream
-  matakuliah: { type: Array, required: true },
-  totalSks: { type: [Number, String], default: 146 },
-  ipk: { type: [Number, String], default: 2.94 },
-  predikat: { type: String, default: 'MEMUASKAN / SATISFACTORY' },
-  thesisTitle: { type: Object, default: () => ({
-    indo: 'SISTEM INFORMASI PENDAFTARAN PADA KLINIK FISIOTERAPI UNIVERSITAS AISYIYAH YOGYAKARTA MENGGUNAKAN METODE RAD',
-    eng: 'REGISTRATION INFORMATION SYSTEM AT AISYIYAH UNIVERSITY PHYSIOTHERAPY CLINIC YOGYAKARTA USING RAD METHOD'
-  }) },
-=======
   matakuliah: { type: Array, required: true }
->>>>>>> Stashed changes
 })
+
+// Helper function untuk konversi nilai ke bobot
+const getNilaiBobot = (nilai) => {
+  const bobotMap = {
+    'A': 4.0,
+    'AB': 3.5,
+    'B': 3.0,
+    'BC': 2.5,
+    'C': 2.0,
+    'D': 1.0,
+    'E': 0.0
+  }
+  return bobotMap[nilai] || 0.0
+}
+
+// Helper function untuk format kredit dengan desimal yang tepat
+const formatKredit = (kredit) => {
+  const num = parseFloat(kredit)
+  // Jika bilangan bulat (desimal .0), tampilkan 1 angka desimal
+  // Jika ada pecahan, tampilkan 2 angka desimal
+  return num % 1 === 0 ? num.toFixed(1) : num.toFixed(2)
+}
 
 const columns = computed(() => {
-  const total = props.matakuliah.length
-  const perCol = Math.ceil(total / 3)
-  
-  return [
-    props.matakuliah.slice(0, perCol),
-    props.matakuliah.slice(perCol, perCol * 2),
-    props.matakuliah.slice(perCol * 2),
-  ]
+  // Add bobot and kredit to each matakuliah
+  const enrichedData = props.matakuliah.map(mk => ({
+    ...mk,
+    bobot: getNilaiBobot(mk.nilai),
+    kredit: formatKredit(mk.sks * getNilaiBobot(mk.nilai))
+  }))
+
+  // Set fixed size untuk setiap kolom
+  const itemsPerColumn = 27 // Jumlah item tetap per kolom
+
+  // Slice data untuk setiap kolom
+  const col1 = enrichedData.slice(0, itemsPerColumn).map((mk, i) => ({
+    ...mk,
+    no: i + 1
+  }))
+
+  const col2 = enrichedData.slice(itemsPerColumn, itemsPerColumn * 2).map((mk, i) => ({
+    ...mk,
+    no: i + itemsPerColumn + 1
+  }))
+
+  // Prepare col3 with actual data and fixed length
+  const col3Start = itemsPerColumn * 2
+  const col3Data = enrichedData.slice(col3Start)
+  const col3 = col3Data.map((mk, i) => ({
+    ...mk,
+    no: i + col3Start + 1
+  }))
+
+  return [col1, col2, col3]
 })
 
-const showPdfViewer = ref(false)
-
 const openPdfViewer = async () => {
-  const element = document.querySelector('.transcript-preview')
+  const element = document.querySelector('.transkrip-pdf').cloneNode(true)
+  
+  // Hapus tombol dari clone
+  const button = element.querySelector('.view-pdf-btn')
+  if (button) {
+    button.remove()
+  }
+  
+  // Hapus border untuk PDF
+  element.style.border = 'none'
+
+  // Pastikan semua style di-inject
+  const style = document.createElement('style')
+  style.innerHTML = `
+    .transkrip-table .th-vertical {
+      block-size: 54px !important;
+      inline-size: 30px !important;
+      min-inline-size: 30px !important;
+      padding-block: 3px !important;
+      padding-inline: 1px !important;
+    }
+    .transkrip-table .vertical-header {
+      display: flex !important;
+      overflow: visible !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      block-size: 100% !important;
+      font-size: 6pt !important;
+      font-weight: bold !important;
+      gap: 2px !important;
+      line-height: 1 !important;
+      margin-block: 0 !important;
+      margin-inline: auto !important;
+      text-orientation: mixed !important;
+      transform: none !important;
+      white-space: nowrap !important;
+      writing-mode: vertical-lr !important;
+    }
+    .transkrip-table .vertical-text-indo {
+      display: block !important;
+      font-size: 6pt !important;
+      font-weight: bold !important;
+      inline-size: 100% !important;
+      overflow-wrap: normal !important;
+      text-align: center !important;
+      word-break: keep-all !important;
+    }
+    .transkrip-table .vertical-text-eng {
+      display: block !important;
+      font-size: 6pt !important;
+      font-style: italic !important;
+      font-weight: bold !important;
+      inline-size: 100% !important;
+      overflow-wrap: normal !important;
+      text-align: center !important;
+      word-break: keep-all !important;
+    }
+  `
+  element.appendChild(style)
+
   const opt = {
-    margin: 10,
-    filename: 'khs.pdf',
+    margin: [5, 2.5, 0, 2.5],
+    filename: 'transkrip-nilai.pdf',
     image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    html2canvas: { 
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      letterRendering: true
+    },
+    jsPDF: { 
+      unit: 'mm', 
+      format: [278, 337.9],
+      orientation: 'landscape'
+    },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
   }
 
   try {
@@ -290,7 +352,7 @@ const openPdfViewer = async () => {
       <html dir="ltr" lang="en">
       <head>
         <meta charset="utf-8">
-        <title>khs.pdf</title>
+        <title>transkrip-nilai.pdf</title>
         <style>
           html, body {
             height: 100%;
@@ -329,207 +391,402 @@ const openPdfViewer = async () => {
 </script>
 
 <style scoped>
+/* Wrapper utama dengan background dan scroll horizontal */
+.transcript-wrapper {
+  display: flex;
+  overflow: auto hidden;
+  justify-content: center;
+  background: #f5f5f5;
+  margin-inline: calc(-1 * var(--v-container-padding-x, 24px));
+  padding-block: 20px;
+}
+
+/* Preview container dengan background putih landscape */
+.transcript-preview {
+  display: inline-block;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 10%);
+  min-inline-size: fit-content;
+  padding-block: 24px;
+  padding-inline: 24px;
+}
+
 .transkrip-pdf {
-  position: relative; /* Tambahkan ini */
+  position: relative;
   overflow: hidden;
   box-sizing: border-box;
   border: 1px solid #000;
   background: #fff;
   color: #000;
   font-family: "Times New Roman", Times, serif;
-  font-size: 9pt;
-  line-height: 1.2;
-  margin-block: 0 32px;
-  margin-inline: auto;
-  max-inline-size: 297mm;
-  min-block-size: 210mm;
-  padding-block: 18px;
-  padding-inline: 10px;
+  font-size: 7.5pt;
+
+  /* Custom size: 33.79cm x 27.8cm (Landscape) */
+  inline-size: 337.9mm;
+  line-height: 1.25;
+  max-inline-size: 337.9mm;
+  min-block-size: 278mm;
+  padding-block: 9.5mm 0;
+
+  /* Margins: Top 0.95cm, Left 0.25cm, Right 0.25cm, Bottom 0cm */
+  padding-inline: 2.5mm;
 }
 
 .transkrip-header {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
-  margin-block-end: 8px;
+  justify-content: center;
+  gap: 40px;
+  margin-block-end: 6px;
 }
 
-.transkrip-info {
-  flex: 1;
-  font-size: 10pt;
+.transkrip-info-center {
+  flex: 0 0 auto;
+  font-size: 6.5pt;
+  line-height: 1.2;
+  margin-inline-start: 375px;
+  text-align: start;
 }
 
-.transkrip-nomor {
-  min-inline-size: 220px;
-  text-align: end;
+.info-row {
+  display: block;
+  margin-block-end: 1px;
+  text-align: start;
 }
 
-.transkrip-nomor .label {
-  font-weight: bold;
+.info-label-center {
+  display: inline;
+  font-weight: normal;
 }
 
-.transkrip-nomor .sub-label {
-  font-size: 8pt;
+.info-separator {
+  display: inline;
+  padding-inline: 3px;
+}
+
+.info-value-center {
+  display: inline;
+  font-weight: normal;
+}
+
+.status-text-inline {
+  display: inline;
+  font-size: 6pt;
+  line-height: 1.3;
+}
+
+.italic-text {
   font-style: italic;
 }
 
-.transkrip-nomor .value {
-  font-size: 1rem;
+.transkrip-nomor {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 7pt;
+  line-height: 1.2;
+  margin-inline-start: 70px;
+  min-inline-size: 190px;
+}
+
+.nomor-label {
+  flex: 1;
+  font-size: 7pt;
   font-weight: bold;
+  text-align: start;
+}
+
+.nomor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  inline-size: 100%;
+  margin-block-end: 2px;
+}
+
+.nomor-sublabel {
+  display: block;
+  font-size: 6.5 pt;
+  inline-size: 100%;
+  margin-block-start: 1px;
+}
+
+.nomor-value-box {
+  display: inline-block;
+  font-size: 8pt;
+  font-weight: normal;
+  padding-block: 3px;
+  padding-inline: 6px;
+  text-align: center;
 }
 
 .transkrip-tables {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  gap: 8px;
-  margin-block-end: 10px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 5px;
+  margin-block-end: 0;
 }
 
 .transkrip-table {
-  border: 1px solid #000;
+  flex: 1;
+  align-self: flex-start;
+  border: 0.5px solid #000;
   background: #fff;
   border-collapse: collapse;
-  flex: 1;
-  font-size: 9pt;
+  font-size: 6.5pt;
+  inline-size: 33.33%;
   margin-block-end: 0;
-  min-inline-size: 220px;
+  vertical-align: top;
 }
 
 .transkrip-table th {
-  border: 1px solid #000;
+  border: none;
   background: #fff;
-  font-size: 9pt;
+  block-size: 18px;
+  border-block-end: 0.5px solid #000;
+  font-size: 6pt;
   font-weight: bold;
-  padding-block: 4px;
+  line-height: 1.1;
+  padding-block: 3px;
   padding-inline: 2px;
   text-align: center;
+  vertical-align: middle;
+}
+
+.th-no {
+  inline-size: 24px !important;
+  min-inline-size: 24px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.th-kode {
+  inline-size: 50px !important;
+  min-inline-size: 50px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.matkul-center {
+  text-align: center !important;
+  vertical-align: middle;
+}
+
+.th-vertical {
+  block-size: 54px !important;
+  inline-size: 30px !important;
+  min-inline-size: 30px;
+  padding-block: 3px !important;
+  padding-inline: 1px !important;
+}
+
+.vertical-header {
+  display: flex;
+  overflow: visible;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  block-size: 100%;
+  font-size: 6pt;
+  font-weight: bold;
+  gap: 2px;
+  line-height: 1;
+  margin-block: 0;
+  margin-inline: auto;
+  text-orientation: mixed;
+  transform: none;
+  white-space: nowrap;
+  writing-mode: vertical-lr;
+}
+
+.vertical-text-indo {
+  display: block;
+  font-size: 6pt;
+  font-weight: bold;
+  inline-size: 100%;
+  overflow-wrap: normal;
+  text-align: center;
+  word-break: keep-all;
+}
+
+.vertical-text-eng {
+  display: block;
+  font-size: 6pt;
+  font-style: italic;
+  font-weight: bold;
+  inline-size: 100%;
+  overflow-wrap: normal;
+  text-align: center;
+  word-break: keep-all;
 }
 
 .transkrip-table td {
-  border: 1px solid #000;
-  font-size: 9pt;
+  border: none;
+  block-size: 12px;
+  font-size: 6.5pt;
+  line-height: 1.1;
   padding-block: 2px;
   padding-inline: 2px;
+  vertical-align: top;
 }
 
-.transkrip-table .center {
+.td-no {
+  block-size: 12px;
+  inline-size: 24px;
+  line-height: 1.1;
+  min-inline-size: 24px;
   text-align: center;
+  vertical-align: top;
 }
 
-.transkrip-table .left {
+.td-kode {
+  block-size: 12px;
+  font-size: 6pt;
+  inline-size: 50px;
+  line-height: 1.1;
+  min-inline-size: 50px;
+  text-align: center;
+  vertical-align: top;
+}
+
+.td-matkul {
+  block-size: 12px;
+  line-height: 1.1;
+  padding-block: 2px !important;
+  padding-inline: 3px !important;
   text-align: start;
+  vertical-align: top;
 }
 
-.vertical-text {
-  font-size: 9pt;
-  font-weight: bold;
+.td-center {
+  block-size: 12px;
+  font-size: 6.5pt;
+  font-variant-numeric: tabular-nums;
+  inline-size: 30px;
+  line-height: 1.1;
+  min-inline-size: 30px;
+  padding-block: 2px;
+  padding-inline: 2px;
   text-align: center;
-  text-orientation: mixed;
-  white-space: nowrap;
-  writing-mode: vertical-rl;
+  vertical-align: top;
 }
 
-.transkrip-table .mata-kuliah-column,
-.no-inner-border td,
-.no-inner-border th {
-  border-block-start: none;
-  border-inline-end: none;
-  border-inline-start: none;
-}
-
-.transkrip-table td:nth-child(3) {
-  max-inline-size: 180px;
-  min-inline-size: 120px !important;
-}
-
-.transkrip-table th.vertical-text,
-.transkrip-table td:nth-child(4),
-.transkrip-table td:nth-child(5),
-.transkrip-table td:nth-child(6) {
-  inline-size: 30px !important;
-  max-inline-size: 30px;
-  text-align: center;
-}
-
-.transkrip-table th[style*="inline-size: 36px"],
-.transkrip-table td:nth-child(1) {
-  inline-size: 28px !important;
-  max-inline-size: 28px;
-}
-
-.transkrip-table td:nth-child(2),
-.transkrip-table th[style*="inline-size: 70px"] {
-  inline-size: 55px !important;
-  max-inline-size: 55px;
-}
-
-.no-inner-border tr:first-child th {
-  border-block-start: 1px solid #000;
-}
-
-.no-inner-border tr td:first-child,
-.no-inner-border tr th:first-child {
-  border-inline-start: 1px solid #000;
-}
-
-.no-inner-border tr td:last-child,
-.no-inner-border tr th:last-child {
-  border-inline-end: 1px solid #000;
-}
-
-.transkrip-table .sub-label {
-  font-size: 8pt;
+.course-subtitle {
+  display: inline;
+  color: #000;
+  font-size: 5.5pt;
   font-style: italic;
-  font-weight: normal;
+  line-height: 1.1;
+  margin-block-start: 1px;
+}
+
+.judul-ta-label {
+  font-size: 6.5pt;
+  font-weight: bold;
+  margin-block-end: 2px;
+  text-align: center;
 }
 
 .judul-ta {
-  font-size: 10pt;
-  margin-block-end: 10px;
+  font-size: 6.5pt;
+  line-height: 1.15;
+  margin-block-end: 6px;
   text-align: center;
 }
 
-.judul-ta .sub-label {
-  font-size: 8pt;
-  font-style: italic;
+.location-date {
+  font-size: 6.5pt;
+  line-height: 1.2;
+  margin-block-end: 4px;
+  text-align: center;
+}
+
+.ttd-section {
+  display: flex;
+  justify-content: center;
 }
 
 .ta-ttd-cell {
   background: #fff;
-  border-block-end: none !important;
-  padding-block: 12px;
-  padding-inline: 8px;
+  border-block-end: 0.5px solid #000 !important;
+  border-inline-end: 0.5px solid #000;
+  border-inline-start: 0.5px solid #000;
+  padding-block: 4px;
+  padding-block-end: 18px;
+  padding-inline: 4px;
   text-align: center;
-}
-
-.ttd-row {
-  display: flex;
-  justify-content: flex-end;
-  margin-block-start: 24px;
+  vertical-align: top;
 }
 
 .dekan {
-  font-size: 10pt;
-  min-inline-size: 220px;
-  text-align: end;
+  font-size: 6.5pt;
+  line-height: 1.15;
+  min-inline-size: 170px;
+  text-align: center;
 }
 
 .ttd-space {
-  min-block-size: 40px;
+  min-block-size: 380px;
 }
 
 .nama {
+  font-size: 6.5pt;
   font-weight: bold;
-  margin-block-start: 6px;
+  margin-block-start: 2px;
+  text-align: center;
 }
 
-/* Tambahkan style untuk tombol download */
-.download-btn {
-  position: absolute;
-  z-index: 1;
-  inset-block-start: 10px;
-  inset-inline-end: 10px;
+.nama u {
+  display: block;
+  text-align: center;
+  text-decoration: underline;
+}
+
+/* Hide borders and content for empty rows */
+.empty-row {
+  background: transparent !important;
+}
+
+.empty-row td {
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  block-size: 12px !important;
+  font-size: 6.5pt;
+  line-height: 1.1;
+  min-block-size: 12px !important;
+}
+
+/* Tambahkan style untuk baris kosong terakhir */
+.last-empty-row td {
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  block-size: 12px !important;
+}
+
+/* Style untuk empty rows */
+.transkrip-table tr.empty-row td {
+  padding: 0 !important;
+  border: none;
+  background: transparent !important;
+  block-size: 12px !important;
+}
+
+.transkrip-table tr.empty-row {
+  background: transparent !important;
+}
+
+/* Remove any extra spacing in table cells */
+.td-matkul,
+.td-no,
+.td-kode,
+.td-center {
+  block-size: 12px !important;
+  min-block-size: 12px !important;
 }
 
 .view-pdf-btn {
@@ -542,42 +799,5 @@ const openPdfViewer = async () => {
 /* Tambahkan style untuk tooltip */
 .v-tooltip {
   font-size: 12px;
-}
-
-/* Perbaiki style untuk PDF viewer */
-.pdf-viewer-container {
-  display: flex;
-  overflow: auto;
-  justify-content: center;
-  padding: 20px;
-  background: #f5f5f5;
-  block-size: calc(100vh - 64px);
-}
-
-.pdf-content {
-  padding: 20px;
-  background: white;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 10%);
-  inline-size: 210mm;
-  margin-block: 0;
-  margin-inline: auto;
-}
-
-/* Print styles */
-@media print {
-  .v-toolbar {
-    display: none !important;
-  }
-
-  .pdf-viewer-container {
-    overflow: visible;
-    padding: 0;
-    block-size: auto;
-  }
-
-  .pdf-content {
-    padding: 0;
-    box-shadow: none;
-  }
 }
 </style>

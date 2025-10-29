@@ -1,8 +1,9 @@
 <template>
   <div class="position-relative mb-6">
-    <div class="draft-ijazah-preview">
-      <!-- Pindahkan tombol ke dalam draft-ijazah-pdf -->
-      <div class="draft-ijazah-pdf">
+    <div class="draft-wrapper">
+      <div class="draft-ijazah-preview">
+        <!-- Pindahkan tombol ke dalam draft-ijazah-pdf -->
+        <div class="draft-ijazah-pdf">
         <!-- Tombol PDF dipindah ke sini -->
         <VBtn
           color="primary"
@@ -14,20 +15,18 @@
         </VBtn>
         
         <!-- Existing draft ijazah content -->
+        <div class="ijazah-nomor-top">
+          <div class="nomor-container">
+            <div class="nomor-labels">
+              <div class="label">Nomor Ijazah Nasional:</div>
+              <div class="sub-label">National Certificate Number</div>
+            </div>
+            <div class="nomor-value">051022592012025100002</div>
+          </div>
+        </div>
         <div class="ijazah-header">
           <div class="ijazah-title">
             <!-- Space for university logo/seal -->
-          </div>
-          <div class="ijazah-nomor">
-            <div class="label">
-              Nomor Ijazah Nasional:
-            </div>
-            <div class="sub-label">
-              National Certificate Number
-            </div>
-            <div class="value">
-              051022592012025100002
-            </div>
           </div>
         </div>
         <div class="ijazah-body">
@@ -41,7 +40,7 @@
                   :
                 </td>
                 <td class="value">
-                  <b>{{ user.name }}</b>
+                  <span class="value-main">{{ user.name?.toUpperCase() }}</span>
                 </td>
               </tr>
               <tr>
@@ -52,7 +51,8 @@
                   :
                 </td>
                 <td class="value">
-                  {{ user.birthPlace }}, {{ user.birthDate }}
+                  <span class="value-main">{{ user.birthPlace?.toUpperCase() }}, {{ user.birthDate?.toUpperCase() }}</span><br>
+                  <span class="value-sub">{{ user.birthPlace }}, {{ user.birthDate }}</span>
                 </td>
               </tr>
               <tr>
@@ -85,7 +85,8 @@
                   :
                 </td>
                 <td class="value">
-                  {{ user.studyProgram }}
+                  <span class="value-main">TEKNOLOGI INFORMASI</span><br>
+                  <span class="value-sub">INFORMATION TECHNOLOGY</span>
                 </td>
               </tr>
               <tr>
@@ -96,7 +97,8 @@
                   :
                 </td>
                 <td class="value">
-                  {{ user.degree }}
+                  <span class="value-main">SARJANA</span><br>
+                  <span class="value-sub">BACHELOR</span>
                 </td>
               </tr>
               <tr>
@@ -107,7 +109,8 @@
                   :
                 </td>
                 <td class="value">
-                  {{ user.graduationDate }}
+                  <span class="value-main">22 MARET 2025</span><br>
+                  <span class="value-sub">MARCH 22, 2025</span>
                 </td>
               </tr>
               <tr>
@@ -140,13 +143,14 @@
             <div class="stamp-box" />
           </div>
           <div class="dekan">
-            <div class="date-location">YOGYAKARTA, {{ user.graduationDate }}<br><span class="sub-label">YOGYAKARTA, MARCH 22, 2025</span></div>
+            <div class="date-location">YOGYAKARTA, 22 MARET 2025<br><span class="sub-label">YOGYAKARTA, MARCH 22, 2025</span></div>
             <div class="signature-label">DEKAN FAKULTAS SAINS DAN TEKNOLOGI,<br><span class="sub-label">DEAN OF FACULTY OF SCIENCE AND TECHNOLOGY,</span></div>
             <div class="ttd-space" />
             <div class="nama">
               Ar. TIKA AINUNNISA FITRIA, S.T., M.T., Ph.D
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>
@@ -155,9 +159,11 @@
 
 <script setup>
 import html2pdf from 'html2pdf.js'
+import { computed } from 'vue'
 
 const props = defineProps({
-  user: { type: Object, required: true }
+  user: { type: Object, required: true },
+  matakuliah: { type: Array, required: true }
 })
 
 const openPdfViewer = async () => {
@@ -168,13 +174,25 @@ const openPdfViewer = async () => {
   if (button) {
     button.remove()
   }
+  
+  // Hapus border untuk PDF
+  element.style.border = 'none'
 
   const opt = {
-    margin: 10,
+    margin: [5, 5, 5, 5],
     filename: 'ijazah.pdf',
     image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+    html2canvas: { 
+      scale: 2,
+      useCORS: true,
+      logging: false
+    },
+    jsPDF: { 
+      unit: 'mm', 
+      format: 'a4', 
+      orientation: 'landscape'
+    },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
   }
 
   try {
@@ -231,183 +249,293 @@ const openPdfViewer = async () => {
     alert('Error generating PDF. Please try again.')
   }
 }
+
+const columns = computed(() => {
+  // Add bobot and kredit to each matakuliah
+  const enrichedData = props.matakuliah.map(mk => ({
+    ...mk,
+    bobot: getNilaiBobot(mk.nilai),
+    kredit: (mk.sks * getNilaiBobot(mk.nilai)).toFixed(2)
+  }))
+
+  // Distribute data into 3 columns with proper numbering
+  const total = enrichedData.length
+  const col1Count = 27 // Fixed size for column 1
+  const col2Count = 27 // Fixed size for column 2
+
+  const col1 = enrichedData.slice(0, col1Count).map((mk, i) => ({
+    ...mk,
+    no: i + 1
+  }))
+
+  const col2 = enrichedData.slice(col1Count, col1Count + col2Count).map((mk, i) => ({
+    ...mk,
+    no: i + 28
+  }))
+
+  const col3Data = enrichedData.slice(col1Count + col2Count)
+  const col3 = []
+
+  // Fill col3 with actual data
+  col3Data.forEach((mk, i) => {
+    col3.push({
+      ...mk,
+      no: i + 55
+    })
+  })
+
+  // Add empty rows to match height of other columns
+  const targetRowCount = 27 // Same as col1 and col2
+  const emptyRowsNeeded = targetRowCount - col3.length
+
+  for (let i = 0; i < emptyRowsNeeded; i++) {
+    col3.push({
+      no: '',
+      kode: '',
+      nama: '',
+      nama_en: '',
+      sks: '',
+      nilai: '',
+      bobot: '',
+      kredit: '',
+      isEmpty: true
+    })
+  }
+
+  return [col1, col2, col3]
+})
 </script>
 
 <style scoped>
-.draft-ijazah-preview {
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  margin: auto;
-  background: #fff;
-  box-shadow: 0 2px 8px 0 rgba(33, 150, 243, 0.05);
-  padding: 24px;
-  inline-size: fit-content;
+/* Wrapper utama untuk centering saat zoom */
+.draft-wrapper {
   display: flex;
-  justify-content: center;
+  overflow: auto hidden;
   align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  margin-inline: calc(-1 * var(--v-container-padding-x, 24px));
+  min-block-size: 100%;
+  padding-block: 20px;
+}
+
+.draft-ijazah-preview {
+  display: inline-block;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 10%);
+  min-inline-size: fit-content;
+  padding-block: 24px;
+  padding-inline: 24px;
 }
 
 .draft-ijazah-pdf {
   position: relative;
-  border: 1px solid #000;
+  overflow: hidden;
+  box-sizing: border-box;
+  border: 2px solid #000;
   background: #fff;
+  block-size: 793px;
   color: #000;
   font-family: "Times New Roman", Times, serif;
   font-size: 10pt;
-  margin-block: 0 32px;
-  margin-inline: auto;
+
   /* A4 Landscape: 29.7cm x 21cm = 1122px x 793px (at 96 DPI) */
   inline-size: 1122px;
-  block-size: 793px;
+  max-block-size: 793px;
+  max-inline-size: 1122px;
+
   /* Padding disesuaikan untuk tampilan layar yang proporsional */
-  padding-block-start: 30px;
-  padding-block-end: 40px;
-  padding-inline-start: 100px;
-  padding-inline-end: 100px;
-  box-sizing: border-box;
-  overflow: hidden;
+  padding-block: 15px;
+  padding-inline: 80px;
 }
 
-.ijazah-header {
+.ijazah-nomor-top {
+  margin-block-end: 15px;
+  margin-inline-start: 480px;
+}
+
+.ijazah-nomor-top .nomor-container {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
-  margin-block-end: 80px;
+  justify-content: flex-start;
+  gap: 30px;
 }
 
-.ijazah-title {
-  flex: 1;
-  min-block-size: 100px;
-}
-
-.ijazah-nomor {
-  min-inline-size: 320px;
+.ijazah-nomor-top .nomor-labels {
+  line-height: 1.3;
+  min-inline-size: 220px;
   text-align: end;
 }
 
-.ijazah-nomor .label {
-  font-weight: bold;
+.ijazah-nomor-top .label {
+  font-size: 9pt;
+  font-weight: normal;
 }
 
-.ijazah-nomor .sub-label {
-  font-size: 10pt;
+.ijazah-nomor-top .sub-label {
+  font-size: 8pt;
   font-style: italic;
+  font-weight: normal;
 }
 
-.ijazah-nomor .value {
-  font-size: 11pt;
-  font-weight: bold;
-  margin-block-start: 4px;
+.ijazah-nomor-top .nomor-value {
+  font-size: 9pt;
+  font-weight: normal;
+  min-inline-size: 180px;
+  padding-block-start: 0;
+  text-align: start;
+}
+
+.ijazah-header {
+  margin-block-end: 10px;
+}
+
+.ijazah-title {
+  min-block-size: 40px;
 }
 
 .ijazah-body {
-  margin-block-start: 20px;
+  margin-block-start: 10px;
 }
 
 .ijazah-table {
   border-collapse: collapse;
   inline-size: 100%;
-  margin-block-end: 18px;
+  margin-block-end: 10px;
 }
 
 .ijazah-table td {
   border: none;
-  padding-block: 4px;
-  padding-inline: 6px;
+  line-height: 1.4;
+  padding-block: 2px;
+  padding-inline: 4px;
   vertical-align: top;
 }
 
 .ijazah-table .label {
+  font-size: 10pt;
   font-weight: normal;
-  inline-size: 240px;
-  font-size: 11pt;
+  inline-size: 190px;
 }
 
 .ijazah-table .sub-label {
-  font-size: 9pt;
+  font-size: 8pt;
   font-style: italic;
   font-weight: normal;
 }
 
 .ijazah-table .colon {
-  inline-size: 20px;
+  font-size: 10pt;
   font-weight: normal;
+  inline-size: 15px;
 }
 
 .ijazah-table .value {
-  font-size: 11pt;
+  font-size: 10pt;
+  line-height: 1.5;
+}
+
+.ijazah-table .value-main {
+  font-size: 10pt;
+  font-weight: bold;
+}
+
+.ijazah-table .value-sub {
+  font-size: 8pt;
+  font-style: italic;
+  font-weight: normal;
 }
 
 .ijazah-table .nik-block {
   display: inline-block;
   background: #000;
-  min-block-size: 16px;
-  min-inline-size: 180px;
+  min-block-size: 14px;
+  min-inline-size: 200px;
   vertical-align: middle;
 }
 
 .ijazah-explanation {
-  font-size: 11pt;
-  margin-block-start: 20px;
-  line-height: 1.5;
+  font-size: 9pt;
+  line-height: 1.3;
+  margin-block: 5px 8px;
   text-align: justify;
 }
 
 .ijazah-explanation .sub-label {
-  font-size: 9pt;
+  display: block;
+  font-size: 8pt;
   font-style: italic;
+  font-weight: normal;
+  margin-block-start: 2px;
 }
 
 .ijazah-signatures {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-block-start: 60px;
   position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-block-start: 0;
 }
 
 .ijazah-signatures .rektor {
   flex: 1;
+  padding-block-start: 30px;
   text-align: start;
 }
 
 .ijazah-signatures .stamp-area {
-  flex: 0 0 auto;
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  margin-inline: 20px;
+  margin-inline: 30px;
 }
 
 .ijazah-signatures .stamp-box {
-  inline-size: 120px;
-  block-size: 120px;
-  border: 2px dashed #666;
+  border: 2px dashed #999;
+  border-radius: 2px;
+  block-size: 180px;
+  inline-size: 150px;
 }
 
 .ijazah-signatures .dekan {
   flex: 1;
-  text-align: end;
+  padding-block-start: 0;
+  text-align: start;
 }
 
 .ijazah-signatures .signature-label {
-  font-size: 11pt;
-  margin-block-end: 8px;
+  font-size: 9pt;
+  line-height: 1.3;
+  margin-block-end: 6px;
+}
+
+.ijazah-signatures .signature-label .sub-label {
+  font-size: 8pt;
+  font-style: italic;
+  font-weight: normal;
 }
 
 .ijazah-signatures .date-location {
-  font-size: 11pt;
-  margin-block-end: 8px;
+  font-size: 9pt;
+  line-height: 1.3;
+  margin-block-end: 6px;
+}
+
+.ijazah-signatures .date-location .sub-label {
+  font-size: 8pt;
+  font-style: italic;
+  font-weight: normal;
 }
 
 .ijazah-signatures .ttd-space {
-  min-block-size: 70px;
+  min-block-size: 40px;
 }
 
 .ijazah-signatures .nama {
+  font-size: 9pt;
   font-weight: normal;
-  margin-block-start: 8px;
-  font-size: 11pt;
+  margin-block-start: 6px;
 }
 
 .view-pdf-btn {
@@ -415,5 +543,19 @@ const openPdfViewer = async () => {
   z-index: 1;
   inset-block-start: 20px;
   inset-inline-end: 20px;
+}
+
+.empty-row td {
+  padding: 2px !important; /* Tambahkan padding yang sama dengan row berisi */
+  border: 1px solid #000 !important; /* Tampilkan border */
+  background: #fff !important;
+  block-size: 12px;
+  min-block-size: 12px;
+}
+
+/* Ubah display none menjadi table-row */
+.empty-row {
+  display: table-row !important;
+  visibility: visible !important;
 }
 </style>
