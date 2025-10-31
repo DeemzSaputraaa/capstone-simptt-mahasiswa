@@ -15,15 +15,7 @@
         </VBtn>
         
         <!-- Existing draft ijazah content -->
-        <div class="ijazah-nomor-top">
-          <div class="nomor-container">
-            <div class="nomor-labels">
-              <div class="label">Nomor Ijazah Nasional:</div>
-              <div class="sub-label">National Certificate Number</div>
-            </div>
-            <div class="nomor-value">051022592012025100002</div>
-          </div>
-        </div>
+
         <div class="ijazah-header">
           <div class="ijazah-title">
             <!-- Space for university logo/seal -->

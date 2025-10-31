@@ -78,19 +78,7 @@
               <span class="italic-text" style="font-size: 6pt;">Accredited "Very Good" by LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 on March 19, 2024.</span>
             </div>
           </div>
-          <div class="transkrip-nomor">
-            <div class="nomor-header">
-              <div class="nomor-label">
-                Nomor Ijazah Nasional:
-              </div>
-              <div class="nomor-value-box">
-                051022592012025100002
-              </div>
-            </div>
-            <div class="nomor-sublabel">
-              <span class="italic-text">National Certificate Number</span>
-            </div>
-          </div>
+
         </div>
         <div class="transkrip-tables">
           <table
@@ -165,15 +153,15 @@
                     <span class="italic-text">REGISTRATION INFORMATION SYSTEM AT AISYIYAH UNIVERSITY PHYSIOTHERAPY CLINIC<br>
                     YOGYAKARTA USING RAD METHOD (RAPID APPLICATION DEVELOPMENT)</span>
                   </div>
-                  <div class="location-date">
-                    Yogyakarta, 22 Maret 2025<br>
-                    <span class="italic-text">Yogyakarta, March 22, 2025</span>
-                  </div>
                   <div class="ttd-section">
                     <div class="dekan">
+                      <div class="ttd-space"></div>
+                      <div class="location-date">
+                        Yogyakarta, 22 Maret 2025<br>
+                        <span class="italic-text">Yogyakarta, March 22, 2025</span>
+                      </div>
                       DEKAN FAKULTAS SAINS DAN TEKNOLOGI,<br>
                       <span class="italic-text">DEAN OF FACULTY OF SCIENCE AND TECHNOLOGY,</span>
-                      <div class="ttd-space"></div>
                       <div class="nama">
                         <u>Ir. Ar. TIKA AINUNNISA FITRIA, S.T., M.T., Ph.D</u>
                       </div>
@@ -444,7 +432,7 @@ const openPdfViewer = async () => {
   flex: 0 0 auto;
   font-size: 6.5pt;
   line-height: 1.2;
-  margin-inline-start: 375px;
+  margin-inline-start: 50px;
   text-align: start;
 }
 
