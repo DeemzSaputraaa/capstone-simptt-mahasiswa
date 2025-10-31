@@ -6,17 +6,17 @@
         class="pa-0"
       >
         <div v-if="!showWizard">
-          <div class="d-flex justify-space-between align-center mb-4">
+          <div class="d-flex flex-wrap justify-space-between align-center mb-6">
           <VBtn
             color="#17a2a6"
-            style="border-radius: 10px; background: rgb(var(--v-theme-primary)); color: #fff; font-size: 1.1rem; font-weight: 500; margin-block-end: 32px; min-block-size: 48px; min-inline-size: 220px;"
+            style="border-radius: 10px; background: rgb(var(--v-theme-primary)); color: #fff; font-size: 1.1rem; font-weight: 500; margin-block-end: 32px; min-block-size: 48px;"
             @click="showWizard = true"
           >
             Pengajuan Legalisasi
           </VBtn>
           <VBtn
             color="#17a2a6"
-            style="border-radius: 10px; background: rgb(var(--v-theme-primary)); color: #fff; font-size: 1.1rem; font-weight: 500; margin-block-end: 32px; min-block-size: 48px; min-inline-size: 220px;"
+            style="border-radius: 10px; background: rgb(var(--v-theme-primary)); color: #fff; font-size: 1.1rem; font-weight: 500; margin-block-end: 32px; min-block-size: 48px;"
             @click="openCaraPembayaran"
           >
             Cara Pembayaran
