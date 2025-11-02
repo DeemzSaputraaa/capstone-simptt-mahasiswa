@@ -1,8 +1,8 @@
 <script setup>
-import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
 import authV1MaskDark from '@images/pages/auth-v1-mask-dark.png'
 import authV1MaskLight from '@images/pages/auth-v1-mask-light.png'
 import logoUnisa from '@images/unisa_tulisan.png'
+import logoUnisaDark from '@images/unisa_tulisan_dark.png'
 import { useRouter } from 'vue-router'
 import { useTheme } from 'vuetify'
 
@@ -27,6 +27,10 @@ const router = useRouter()
 
 const authThemeMask = computed(() => {
   return vuetifyTheme.global.name.value === 'light' ? authV1MaskLight : authV1MaskDark
+})
+
+const logoTheme = computed(() => {
+  return vuetifyTheme.global.name.value === 'light' ? logoUnisa : logoUnisaDark
 })
 
 const isPasswordVisible = ref(false)
@@ -61,10 +65,10 @@ const handleLogin = () => {
           <!-- eslint-disable vue/no-v-html -->
           <div class="d-flex">
             <img
-              :src="logoUnisa"
+              :src="logoTheme"
               alt="Logo Unisa"
-              width="140"
-              height="50"
+              width="195"
+              height="70"
             >
           </div>
           <!--
@@ -76,10 +80,13 @@ const handleLogin = () => {
       </VCardItem>
 
       <VCardText class="pt-2">
-        <h4 class="text-h4 mb-1">
+        <h4 class="text-h4 mb-1 text-center">
           Welcome to SIMPTT Mahasiswa
         </h4>
-        <p class="mb-0">
+        <p
+          class="mb-0 text-center"
+          style="font-size: 0.8rem;"
+        >
           Please sign-in to your account and start the adventure
         </p>
       </VCardText>
@@ -87,7 +94,7 @@ const handleLogin = () => {
       <VCardText>
         <VForm @submit.prevent="handleLogin">
           <VRow>
-            <!-- email -->
+            <!-- NIM -->
             <VCol cols="12">
               <VTextField
                 v-model="form.nim"
@@ -106,17 +113,21 @@ const handleLogin = () => {
                 :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
                 @click:append-inner="isPasswordVisible = !isPasswordVisible"
               />
+            </VCol>
 
+            <!-- Tahun Akademik -->
+            <VCol cols="12">
               <VSelect
                 v-model="form.tahunAkademik"
                 :items="tahunAkademikOptions"
                 label="Tahun Akademik"
                 placeholder="Pilih Tahun Akademik"
-                class="mt-4"
               />
+            </VCol>
 
-              <!-- remember me checkbox -->
-              <div class="d-flex align-center justify-space-between flex-wrap mt-1 mb-4">
+            <!-- remember me checkbox and login button -->
+            <VCol cols="12">
+              <div class="d-flex align-center justify-space-between flex-wrap mb-4">
                 <VCheckbox
                   v-model="form.remember"
                   label="Remember Me"
@@ -136,6 +147,8 @@ const handleLogin = () => {
               <VBtn
                 block
                 type="submit"
+                color="#17a2a6"
+                class="login-btn"
               >
                 Login
               </VBtn>
@@ -169,12 +182,14 @@ const handleLogin = () => {
             -->
 
             <!-- auth providers -->
-            <VCol
+            <!--
+              <VCol
               cols="12"
               class="text-center"
-            >
+              >
               <AuthProvider />
-            </VCol>
+              </VCol> 
+            -->
           </VRow>
         </VForm>
       </VCardText>
@@ -219,13 +234,48 @@ const handleLogin = () => {
     -->
 
     <!-- bg img -->
-    <VImg
+    <!--
+      <VImg
       class="auth-footer-mask d-none d-md-block"
       :src="authThemeMask"
-    />
+      /> 
+    -->
   </div>
 </template>
 
 <style lang="scss">
 @use "@core-scss/template/pages/page-auth";
+
+.auth-wrapper {
+  // .auth-footer-mask {
+  //   // Mengubah warna ungu menjadi cyan/tosca (#17a2a6)
+  //   filter: hue-rotate(160deg) saturate(0.8) brightness(0.9);
+  // }
+
+  // Styling untuk form dengan jarak konsisten
+  .v-row .v-col-12 {
+    margin-block-end: 16px;
+    padding-block: 0 !important;
+
+    &:last-child {
+      margin-block-end: 0;
+    }
+  }
+}
+
+.login-btn {
+  border-radius: 8px;
+  background: #17a2a6 !important;
+  box-shadow: 0 2px 8px rgba(23, 162, 166, 25%);
+  color: #fff !important;
+  font-size: 1rem;
+  font-weight: 500;
+  min-block-size: 48px;
+  text-transform: none;
+
+  &:hover {
+    background: #129990 !important;
+    box-shadow: 0 4px 12px rgba(23, 162, 166, 35%);
+  }
+}
 </style>

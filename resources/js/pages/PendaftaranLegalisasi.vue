@@ -264,95 +264,103 @@
   </VDialog>
   <VDialog
     v-model="showCaraBayarDialog"
-    max-width="700"
+    max-width="1400"
+    class="payment-dialog"
   >
-    <VCard>
-      <VCardTitle class="text-h5">
+    <VCard class="payment-card-wrapper">
+      <VCardTitle class="text-h4 text-center pa-6" style="background: #f5f5f5;">
         Cara Melakukan Pembayaran
       </VCardTitle>
-      <VCardText>
-        <div style="border-radius: 8px; background: #fff; color: #000; font-family: Georgia, serif; padding-block: 1rem; padding-inline: 1rem;">
-          <div style="font-size: 2rem; font-style: normal; font-weight: 600; line-height: 3rem; text-align: center;">
-            Tagihan Pembayaran 2211501033
-          </div>
-          <div style="font-size: 1.2rem; font-style: italic; margin-block-end: 1rem; text-align: center;">
-            Timestamp: 30 Juni 2025 13:21:51
-          </div>
-          <div style="border-radius: 16px 16px 0 0; background: #129990; color: #fff; font-size: 1.5rem; font-weight: 500; padding-block: 0.5rem; padding-inline: 1rem; text-align: center;">
-            Melalui ATM BPD DIY
-          </div>
-          <div style="padding-block: 0.4rem; padding-inline: 1.5rem;">
-            <div style="font-size: 1.1rem; margin-block-end: 0.2rem;">
-              Catatan:
+      <VCardText class="pa-8">
+        <div class="payment-cards-container">
+          <!-- Card 1: ATM BPD DIY -->
+          <div class="payment-card">
+            <div class="payment-card-header">
+              <h3 class="payment-card-title">ATM BPD DIY</h3>
             </div>
-            <ol style="font-size: 1.1rem;">
-              <li>Siapkan Kartu ATM Bank BPD DIY</li>
-              <li>Masukkan PIN dan pilih bahasa</li>
-              <li>Pilih menu Pembayaran</li>
-              <li>Pilih layanan Pendidikan</li>
-              <li>Pilih Universitas</li>
-              <li>Masukan ID Peserta <b>2211501033</b></li>
-              <li>Masukkan nominal <b>400.000</b></li>
-              <li>Lakukan pembayaran</li>
-            </ol>
-          </div>
-          <div style="border-radius: 16px 16px 0 0; background: #129990; color: #fff; font-size: 1.5rem; font-weight: 500; padding-block: 0.5rem; padding-inline: 1rem; text-align: center;">
-            Melalui Internet Banking Bank BSI
-          </div>
-          <div style="padding-block: 0.4rem; padding-inline: 1.5rem;">
-            <div style="font-size: 1.1rem; margin-block-end: 0.2rem;">
-              Catatan: Nominal pembayaran otomatis muncul di Ibanking.
+            <div class="payment-card-body">
+              <div class="payment-amount">Rp 400.000</div>
+              <div class="payment-description">Pembayaran melalui ATM BPD DIY</div>
+              <div class="payment-id">ID: 2211501033</div>
+              <ul class="payment-steps">
+                <li>✓ Siapkan Kartu ATM Bank BPD DIY</li>
+                <li>✓ Masukkan PIN dan pilih bahasa</li>
+                <li>✓ Pilih menu Pembayaran</li>
+                <li>✓ Pilih layanan Pendidikan</li>
+                <li>✓ Pilih Universitas</li>
+                <li>✓ Masukan ID Peserta</li>
+                <li>✓ Masukkan nominal</li>
+                <li>✓ Lakukan pembayaran</li>
+              </ul>
             </div>
-            <ol style="font-size: 1.1rem;">
-              <li>Pilih menu Pembayaran</li>
-              <li>
-                Pada menu pembayaran pilih:
-                </li>
-                <ul>
-                  <li>Jenis Pembayaran: Institusi</li>
-                  <li>Nama Lembaga: UNISA Yogya</li>
-                  <li>Nomor Pembayaran: <b>2211501033</b></li>
-                </ul>
-            </ol>
           </div>
-          <div style="border-radius: 16px 16px 0 0; background: #129990; color: #fff; font-size: 1.5rem; font-weight: 500; padding-block: 0.5rem; padding-inline: 1rem; text-align: center;">
-            Melalui Mobile Banking Bank BSI
-          </div>
-          <div style="padding-block: 0.4rem; padding-inline: 1.5rem;">
-            <div style="font-size: 1.1rem; margin-block-end: 0.2rem;">
-              Catatan: Nominal pembayaran otomatis muncul di Mbanking.
+
+          <!-- Card 2: Internet Banking BSI -->
+          <div class="payment-card">
+            <div class="payment-card-header">
+              <h3 class="payment-card-title">Internet Banking BSI</h3>
             </div>
-            <ol style="font-size: 1.1rem;">
-              <li>Pilih menu Pembayaran</li>
-              <li>
-                Pada menu pembayaran pilih:
-                <ul>
-                  <li>Jenis Pembayaran: Akademik</li>
-                  <li>Nama Akademik: 9032 - UNISA Yogya</li>
-                  <li>Kode Bayar: <b>2211501033</b></li>
-                </ul>
-              </li>
-            </ol>
-          </div>
-          <div style="border-radius: 16px 16px 0 0; background: #129990; color: #fff; font-size: 1.5rem; font-weight: 500; padding-block: 0.5rem; padding-inline: 1rem; text-align: center;">
-            Melalui ATM Bank BSI
-          </div>
-          <div style="padding-block: 0.4rem; padding-inline: 1.5rem;">
-            <div style="font-size: 1.1rem; margin-block-end: 0.5rem;">
-              Catatan: Nominal pembayaran otomatis muncul di ATM.
+            <div class="payment-card-body">
+              <div class="payment-amount">Rp 400.000</div>
+              <div class="payment-description">Nominal otomatis muncul di Ibanking</div>
+              <div class="payment-id">ID: 2211501033</div>
+              <ul class="payment-steps">
+                <li>✓ Pilih menu Pembayaran</li>
+                <li>✓ Jenis Pembayaran: Institusi</li>
+                <li>✓ Nama Lembaga: UNISA Yogya</li>
+                <li>✓ Nomor Pembayaran: 2211501033</li>
+                <li>✓ Konfirmasi pembayaran</li>
+                <li>✓ Selesai</li>
+              </ul>
             </div>
-            <ol style="font-size: 1.2rem;">
-              <li>Pilih menu Pembayaran/Pembelian</li>
-              <li>Pilih menu Akademik</li>
-              <li>Masukkan kode 9032-<b>2211501033</b></li>
-            </ol>
+          </div>
+
+          <!-- Card 3: Mobile Banking BSI -->
+          <div class="payment-card">
+            <div class="payment-card-header">
+              <h3 class="payment-card-title">Mobile Banking BSI</h3>
+            </div>
+            <div class="payment-card-body">
+              <div class="payment-amount">Rp 400.000</div>
+              <div class="payment-description">Nominal otomatis muncul di Mbanking</div>
+              <div class="payment-id">ID: 2211501033</div>
+              <ul class="payment-steps">
+                <li>✓ Pilih menu Pembayaran</li>
+                <li>✓ Jenis Pembayaran: Akademik</li>
+                <li>✓ Nama Akademik: 9032 - UNISA Yogya</li>
+                <li>✓ Kode Bayar: 2211501033</li>
+                <li>✓ Konfirmasi pembayaran</li>
+                <li>✓ Selesai</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Card 4: ATM Bank BSI -->
+          <div class="payment-card">
+            <div class="payment-card-header">
+              <h3 class="payment-card-title">ATM Bank BSI</h3>
+            </div>
+            <div class="payment-card-body">
+              <div class="payment-amount">Rp 400.000</div>
+              <div class="payment-description">Nominal otomatis muncul di ATM</div>
+              <div class="payment-id">ID: 2211501033</div>
+              <ul class="payment-steps">
+                <li>✓ Pilih menu Pembayaran/Pembelian</li>
+                <li>✓ Pilih menu Akademik</li>
+                <li>✓ Masukkan kode 9032-2211501033</li>
+                <li>✓ Konfirmasi pembayaran</li>
+                <li>✓ Ambil struk pembayaran</li>
+                <li>✓ Selesai</li>
+              </ul>
+            </div>
           </div>
         </div>
       </VCardText>
-      <VCardActions>
+      <VCardActions class="pa-6" style="background: #f5f5f5;">
         <VSpacer />
         <VBtn
-          color="primary"
+          color="#17a2a6"
+          style="border-radius: 10px; background: #17a2a6; color: #fff; font-size: 1rem; font-weight: 500; min-block-size: 48px; min-inline-size: 150px;"
           @click="showCaraBayarDialog = false"
         >
           Tutup
@@ -872,5 +880,203 @@ export default {
   color: #888;
   font-style: italic;
   margin-block-start: 32px;
+}
+
+/* Payment Dialog Styles */
+.payment-dialog .v-overlay__content {
+  max-width: 1400px !important;
+}
+
+.payment-card-wrapper {
+  background: rgb(var(--v-theme-surface));
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.payment-cards-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  padding: 0;
+}
+
+.payment-card {
+  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  border-radius: 12px;
+  background: rgb(var(--v-theme-surface-variant));
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.payment-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(23, 162, 166, 0.3);
+  border-color: #17a2a6;
+}
+
+.payment-card-header {
+  background: linear-gradient(135deg, #17a2a6 0%, #129990 100%);
+  padding: 20px 16px;
+  text-align: center;
+}
+
+.payment-card-title {
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.payment-card-body {
+  padding: 20px 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: rgb(var(--v-theme-surface-bright));
+}
+
+.payment-amount {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #17a2a6;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.payment-description {
+  font-size: 0.9rem;
+  color: rgb(var(--v-theme-on-surface-variant));
+  text-align: center;
+  margin-bottom: 12px;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+.payment-id {
+  font-size: 0.95rem;
+  color: #17a2a6;
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 16px;
+  padding: 8px;
+  background: rgba(23, 162, 166, 0.15);
+  border-radius: 6px;
+  border: 1px solid rgba(23, 162, 166, 0.3);
+}
+
+.payment-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+}
+
+.payment-steps li {
+  font-size: 0.85rem;
+  color: rgb(var(--v-theme-on-surface));
+  margin-bottom: 10px;
+  padding-left: 4px;
+  line-height: 1.4;
+  opacity: 0.9;
+}
+
+.payment-steps li::before {
+  color: #17a2a6;
+  margin-right: 6px;
+}
+
+/* Light Mode Specific */
+.v-theme--light .payment-card {
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.v-theme--light .payment-card-body {
+  background: #ffffff;
+}
+
+.v-theme--light .payment-amount {
+  color: #17a2a6;
+}
+
+.v-theme--light .payment-description {
+  color: #666;
+}
+
+.v-theme--light .payment-steps li {
+  color: #333;
+}
+
+/* Dark Mode Specific */
+.v-theme--dark .payment-card {
+  background: #1a1a1a;
+  border-color: #333333;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+}
+
+.v-theme--dark .payment-card-body {
+  background: #1a1a1a;
+}
+
+.v-theme--dark .payment-amount {
+  color: #5ce1e6;
+  text-shadow: 0 0 20px rgba(92, 225, 230, 0.3);
+}
+
+.v-theme--dark .payment-description {
+  color: #a8a8a8;
+  font-weight: 400;
+}
+
+.v-theme--dark .payment-steps li {
+  color: #e0e0e0;
+  font-weight: 400;
+}
+
+.v-theme--dark .payment-id {
+  background: linear-gradient(135deg, rgba(92, 225, 230, 0.2) 0%, rgba(23, 162, 166, 0.15) 100%);
+  border: 1px solid rgba(92, 225, 230, 0.4);
+  color: #5ce1e6;
+  box-shadow: 0 0 15px rgba(92, 225, 230, 0.1);
+}
+
+.v-theme--dark .payment-card:hover {
+  box-shadow: 0 8px 32px rgba(92, 225, 230, 0.25);
+  border-color: #5ce1e6;
+}
+
+.v-theme--dark .payment-steps li::before {
+  color: #5ce1e6;
+  filter: drop-shadow(0 0 2px rgba(92, 225, 230, 0.5));
+}
+
+.v-theme--dark .payment-card-wrapper {
+  background: #0f0f0f !important;
+}
+
+.v-theme--dark .payment-card-wrapper .v-card-title {
+  background: #1a1a1a !important;
+  color: #e0e0e0 !important;
+}
+
+.v-theme--dark .payment-card-wrapper .v-card-actions {
+  background: #1a1a1a !important;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .payment-cards-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .payment-cards-container {
+    grid-template-columns: 1fr;
+  }
 }
 </style> 

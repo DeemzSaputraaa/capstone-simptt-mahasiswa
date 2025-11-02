@@ -64,3 +64,8 @@ public/mockServiceWorker.js
 # Env files
 .env*
 !.env.example
+
+/database/migrations/*.php
+/database/seeders/*.php
+/database/factories/*.php
+/resources/js/pages/components/TranskripNilai copy.vue
