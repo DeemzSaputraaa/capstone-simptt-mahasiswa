@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FormLegalisasiController;
 use App\Http\Controllers\MhSyaratController;
 use App\Http\Controllers\AkValidasiIjazahController;
@@ -8,6 +10,15 @@ use App\Http\Controllers\AkValidasiIjazahCommentController;
 
 // API Routes untuk mengakses data dari database
 Route::prefix('api')->group(function () {
+    // Public routes
+    Route::post('/login', [AuthController::class, 'processLogin']);
+
+    // Protected routes
+    Route::middleware(['auth.session'])->group(function () {
+        Route::get('/me', [AuthController::class, 'me']);
+        Route::post('/refresh', [AuthController::class, 'refresh']);
+        Route::post('/logout', [AuthController::class, 'logout']);
+    });
     // Form Legalisasi routes
     Route::resource('form-legalisasi', FormLegalisasiController::class);
 
@@ -29,7 +40,7 @@ Route::prefix('api')->group(function () {
         return response()->json([
             'message' => 'API working',
             'timestamp' => now(),
-            'table_exists' => \Schema::hasTable('comment')
+            'table_exists' => Schema::hasTable('comment')
         ]);
     });
 

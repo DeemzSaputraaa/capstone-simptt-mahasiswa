@@ -11,7 +11,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        // Exclude API routes from CSRF verification
+        $middleware->validateCsrfTokens(except: [
+            'api/*',
+        ]);
+
+        // Alternative: if the above doesn't work, you can use statefulApi
+        // $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

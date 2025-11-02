@@ -21,6 +21,8 @@ const tahunAkademikOptions = [
 ]
 
 const showLoginErrorModal = ref(false)
+const loginErrorMessage = ref('')
+const isLoggingIn = ref(false)
 
 const vuetifyTheme = useTheme()
 const router = useRouter()
@@ -35,16 +37,95 @@ const logoTheme = computed(() => {
 
 const isPasswordVisible = ref(false)
 
-const handleLogin = () => {
-  console.log('Attempting login...')
-
-  // Contoh validasi sederhana
-  if (form.value.nim === '12345678' && form.value.password === 'password123') {
-    console.log('Login successful! Redirecting to dashboard.')
-    router.push('/dashboard')
-  } else {
-    console.log('Login failed: Incorrect credentials.')
+const handleLogin = async () => {
+  // Validasi form
+  if (!form.value.nim || !form.value.password) {
+    loginErrorMessage.value = 'Mohon lengkapi NIM dan Password'
     showLoginErrorModal.value = true
+    
+    return
+  }
+
+  // Set loading state
+  isLoggingIn.value = true
+
+  try {
+    console.log('Attempting login...', { nim: form.value.nim })
+
+    // Ambil CSRF token dari meta tag (jika ada)
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+    
+    // Kirim request ke API
+    const headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
+    }
+    
+    // Tambahkan CSRF token jika tersedia
+    if (csrfToken) {
+      headers['X-CSRF-TOKEN'] = csrfToken
+    }
+    
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers,
+      credentials: 'include', // Penting: kirim cookies untuk session
+      body: JSON.stringify({
+        nim: form.value.nim,
+        password: form.value.password,
+        remember_me: form.value.remember, // eslint-disable-line camelcase
+      }),
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      // Handle error response
+      let errorMessage = 'Login gagal. Silakan coba lagi.'
+      
+      if (data.code === 'UNAUTHORIZED') {
+        errorMessage = 'NIM atau Password yang Anda masukkan salah. Silakan coba lagi.'
+      } else if (data.code === 'SERVICE_UNAVAILABLE') {
+        errorMessage = 'Layanan autentikasi sedang tidak tersedia. Silakan coba lagi nanti.'
+      } else if (data.code === 'BAD_REQUEST') {
+        errorMessage = data.message || 'Mohon lengkapi semua field yang diperlukan.'
+      } else if (data.message) {
+        errorMessage = data.message
+      }
+
+      loginErrorMessage.value = errorMessage
+      showLoginErrorModal.value = true
+      console.error('Login failed:', data)
+      
+      return
+    }
+
+    // Login berhasil
+    if (data.success && data.token) {
+      console.log('Login successful!', data)
+      
+      // Simpan token ke localStorage (opsional, karena sudah ada di session)
+      if (data.token) {
+        localStorage.setItem('auth_token', data.token)
+      }
+
+      // Simpan user data ke localStorage (opsional)
+      if (data.data) {
+        localStorage.setItem('user_data', JSON.stringify(data.data))
+      }
+
+      // Redirect ke dashboard
+      router.push('/dashboard')
+    } else {
+      throw new Error('Invalid response from server')
+    }
+  } catch (error) {
+    console.error('Login error:', error)
+    loginErrorMessage.value = 'Terjadi kesalahan saat melakukan login. Silakan coba lagi.'
+    showLoginErrorModal.value = true
+  } finally {
+    isLoggingIn.value = false
   }
 }
 </script>
@@ -149,8 +230,10 @@ const handleLogin = () => {
                 type="submit"
                 color="#17a2a6"
                 class="login-btn"
+                :loading="isLoggingIn"
+                :disabled="isLoggingIn"
               >
-                Login
+                {{ isLoggingIn ? 'Memproses...' : 'Login' }}
               </VBtn>
             </VCol>
 
@@ -203,7 +286,7 @@ const handleLogin = () => {
             Login Gagal
           </VCardTitle>
           <VCardText>
-            NIM atau Password yang Anda masukkan salah. Silakan coba lagi.
+            {{ loginErrorMessage || 'NIM atau Password yang Anda masukkan salah. Silakan coba lagi.' }}
           </VCardText>
           <VCardActions>
             <VSpacer />
