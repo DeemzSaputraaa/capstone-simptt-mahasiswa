@@ -80,45 +80,65 @@ const handleLogin = async () => {
 
     const data = await response.json()
 
-    if (!response.ok) {
+    console.log('Response from server:', data) 
+
+    // ✅ PERBAIKAN: Cek response dengan format baru
+    if (response.ok && data.isallowed === true) {
+      console.log('Login successful!', data)
+      
+      // Simpan data user ke session storage
+      // Simpan data tambahan yang mungkin dibutuhkan
+      const userData = {
+        namalengkap: data.namalengkap || data.name || '',
+        username: data.username || form.value.nim,
+        role: data.role || data.loginas,
+        loginAs: data.loginas,
+      }
+
+      // Simpan ke session storage
+      sessionStorage.setItem('user_data', JSON.stringify(userData))
+      
+      // Simpan data ke localStorage (opsional)
+      localStorage.setItem('login_as', data.loginas)
+      localStorage.setItem('timeout', data.timeout)
+      
+      // Redirect berdasarkan role
+      switch(data.loginas) {
+      case 'mahasiswa':
+        await router.push('/dashboard')
+        break
+      case 'tendik':
+        await router.push('/admin/dashboard')
+        break
+      case 'dosen':
+        await router.push('/dosen/dashboard')
+        break
+      case 'preceptor':
+        await router.push('/preceptor/dashboard')
+        break
+      default:
+        await router.push('/dashboard')
+      }
+    } else {
       // Handle error response
       let errorMessage = 'Login gagal. Silakan coba lagi.'
       
-      if (data.code === 'UNAUTHORIZED') {
-        errorMessage = 'NIM atau Password yang Anda masukkan salah. Silakan coba lagi.'
-      } else if (data.code === 'SERVICE_UNAVAILABLE') {
-        errorMessage = 'Layanan autentikasi sedang tidak tersedia. Silakan coba lagi nanti.'
-      } else if (data.code === 'BAD_REQUEST') {
-        errorMessage = data.message || 'Mohon lengkapi semua field yang diperlukan.'
-      } else if (data.message) {
+      if (data.message) {
         errorMessage = data.message
+      } else if (!data.isallowed) {
+        errorMessage = 'NIM atau Password yang Anda masukkan salah. Silakan coba lagi.'
+      }
+
+      // Handle specific error messages
+      if (errorMessage.includes('unavailable')) {
+        errorMessage = 'Layanan autentikasi sedang tidak tersedia. Silakan coba lagi nanti.'
+      } else if (errorMessage.includes('Validation failed')) {
+        errorMessage = 'Mohon lengkapi semua field yang diperlukan.'
       }
 
       loginErrorMessage.value = errorMessage
       showLoginErrorModal.value = true
       console.error('Login failed:', data)
-      
-      return
-    }
-
-    // Login berhasil
-    if (data.success && data.token) {
-      console.log('Login successful!', data)
-      
-      // Simpan token ke localStorage (opsional, karena sudah ada di session)
-      if (data.token) {
-        localStorage.setItem('auth_token', data.token)
-      }
-
-      // Simpan user data ke localStorage (opsional)
-      if (data.data) {
-        localStorage.setItem('user_data', JSON.stringify(data.data))
-      }
-
-      // Redirect ke dashboard
-      router.push('/dashboard')
-    } else {
-      throw new Error('Invalid response from server')
     }
   } catch (error) {
     console.error('Login error:', error)

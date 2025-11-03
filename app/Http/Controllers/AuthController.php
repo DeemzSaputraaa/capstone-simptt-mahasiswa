@@ -339,14 +339,25 @@ class AuthController extends Controller
                 ], 500);
             }
 
-            // Step 10: Return success response
-            return response()->json([
-                'success' => true,
-                'token_type' => 'bearer',
-                'expires_in' => $tokenResponse['ttl'],
-                'data' => $data,
-                'token' => $tokenResponse['token']
-            ], 200);
+            // Step 10: Prepare response data
+            $responseData = [
+                'isallowed' => true,
+                'timeout' => $tokenResponse['ttl'],
+                'loginas' => $loginAs,
+                'username' => $data->nim ?? $data->kodeuser ?? $data->nip ?? null,
+                'role' => $data->role ?? $loginAs,
+            ];
+
+            // Add namalengkap for mahasiswa
+            if ($loginAs === 'mahasiswa' && isset($data->namalengkap)) {
+                $responseData['namalengkap'] = $data->namalengkap;
+            }
+            // Add name for other roles
+            elseif (isset($data->nama)) {
+                $responseData['name'] = $data->nama;
+            }
+
+            return response()->json($responseData, 200);
         } catch (\Throwable $e) {
             Log::error('Authentication process error', [
                 'username' => $credentials['nim'] ?? 'unknown',
