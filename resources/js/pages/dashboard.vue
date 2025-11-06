@@ -2,6 +2,27 @@
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
+const userName = ref('')
+
+// Get user data from session storage
+const fetchUserData = () => {
+  try {
+    const userData = JSON.parse(sessionStorage.getItem('user_data'))
+    if (userData && userData.namalengkap) {
+      userName.value = userData.namalengkap
+    }
+  } catch (error) {
+    console.error('Error fetching user data:', error)
+  }
+}
+
+// Fetch user data when component mounts
+onMounted(() => {
+  fetchUserData()
+  updateToday()
+  timer = setInterval(updateToday, 1000)
+})
+
 const totalProfit = {
   title: 'Total Profit',
   color: 'secondary',
@@ -54,12 +75,34 @@ const stats = ref([
 // Tanggal realtime
 const today = ref('')
 let timer = null
+
+// Daftar nama hari dalam Bahasa Indonesia
+const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabat']
+
+// Daftar nama bulan dalam Bahasa Indonesia
+const months = [
+  'Januari',
+  'Februari',
+  'Maret',
+  'April',
+  'Mei',
+  'Juni',
+  'Juli',
+  'Agustus',
+  'September',
+  'Oktober',
+  'November',
+  'Desember',
+]
+
 function updateToday() {
   const now = new Date()
-
-  today.value = new Intl.DateTimeFormat('en-US', {
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-  }).format(now)
+  const dayName = days[now.getDay()]
+  const date = now.getDate()
+  const monthName = months[now.getMonth()]
+  const year = now.getFullYear()
+  
+  today.value = `${dayName}, ${date} ${monthName} ${year}`
 }
 onMounted(() => {
   updateToday()
@@ -179,20 +222,21 @@ function goToNotification(notification) {
         md="8"
       >
         <VCard
-          class="pa-6 welcome-card"
+          class="pa-6 welcome-card mb-4"
           elevation="2"
+          style="min-block-size: 230px;"
         >
           <VRow align="center">
             <VCol
               cols="12"
-              md="7"
+              md="12"
               class="d-flex flex-column justify-center"
             >
               <div class="welcome-title mb-2">
-                Hi, Mahasiswa!
+                Hi, {{ userName || 'Mahasiswa' }}!
               </div>
               <div class="welcome-subtitle mb-2">
-                What are we doing today?
+                Selamat atas gelar barunya...
               </div>
               <div
                 class="welcome-date mb-4"
@@ -201,31 +245,34 @@ function goToNotification(notification) {
                 {{ today }}
               </div>
             </VCol>
-            <VCol
+            <!--
+              <VCol
               cols="12"
               md="5"
               class="d-flex justify-center align-center"
-            >
+              >
               <VImg
-                src="https://cdn.pixabay.com/photo/2017/01/31/13/14/animal-2023924_1280.png"
-                alt="Bear"
-                width="180"
-                height="180"
-                style="object-fit: contain;"
+              src="https://cdn.pixabay.com/photo/2017/01/31/13/14/animal-2023924_1280.png"
+              alt="Bear"
+              width="180"
+              height="180"
+              style="object-fit: contain;"
               />
-            </VCol>
+              </VCol> 
+            -->
           </VRow>
         </VCard>
         <VCard
-          class="pa-4 mb-4"
-          style=" margin-block: 18px 16px; max-inline-size: 1000px;"
+          class="pa-4 mb-4 mx-auto"
+          :class="$vuetify.display.smAndDown ? 'w-100' : 'w-100'"
+          style="margin-block: 18px 16px;"
         >
           <VTextField
             v-model="trackingNumber"
             label="Search"
             placeholder="Input Tracking Number"
             append-inner-icon="ri-search-line"
-            dense
+            density="comfortable"
             hide-details
             @click:append-inner="trackShipment"
             @keyup.enter="trackShipment"
@@ -398,90 +445,6 @@ function goToNotification(notification) {
         </VCardText>
       </VCard>
     </VDialog>
-    <!--
-      <VRow class="match-height">
-      <VCol
-      cols="12"
-      md="4"
-      >
-      <AnalyticsAward />
-      </VCol>
-
-      <VCol
-      cols="12"
-      md="8"
-      >
-      <AnalyticsTransactions />
-      </VCol>
-
-      <VCol
-      cols="12"
-      md="4"
-      >
-      <AnalyticsWeeklyOverview />
-      </VCol>
-
-      <VCol
-      cols="12"
-      md="4"
-      >
-      <AnalyticsTotalEarning />
-      </VCol>
-
-      <VCol
-      cols="12"
-      md="4"
-      >
-      <VRow class="match-height">
-      <VCol
-      cols="12"
-      sm="6"
-      >
-      <AnalyticsTotalProfitLineCharts />
-      </VCol>
-
-      <VCol
-      cols="12"
-      sm="6"
-      >
-      <CardStatisticsVertical v-bind="totalProfit" />
-      </VCol>
-
-      <VCol
-      cols="12"
-      sm="6"
-      >
-      <CardStatisticsVertical v-bind="newProject" />
-      </VCol>
-
-      <VCol
-      cols="12"
-      sm="6"
-      >
-      <AnalyticsBarCharts />
-      </VCol>
-      </VRow>
-      </VCol>
-
-      <VCol
-      cols="12"
-      md="4"
-      >
-      <AnalyticsSalesByCountries />
-      </VCol>
-
-      <VCol
-      cols="12"
-      md="8"
-      >
-      <AnalyticsDepositWithdraw />
-      </VCol>
-
-      <VCol cols="12">
-      <AnalyticsUserTable />
-      </VCol>
-      </VRow> 
-    -->
   </VContainer>
 </template>
 
@@ -539,7 +502,7 @@ function goToNotification(notification) {
 
 .welcome-title {
   color: var(--v-theme-on-surface);
-  font-size: 2.2rem;
+  font-size: 1.8rem;
   font-weight: bold;
   transition: color 0.3s;
 }

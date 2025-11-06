@@ -36,7 +36,7 @@ onMounted(() => {
         v-bind="props"
         class="cursor-pointer font-weight-semibold"
       >
-        {{ user.name }}
+        {{ user.name.split(' ')[0] }}
       </span>
     </template>
 
