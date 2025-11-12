@@ -3,177 +3,238 @@
     <div class="transcript-wrapper">
       <div class="transcript-preview pa-6">
         <div class="transkrip-pdf">
-        <!-- Tombol PDF dipindah ke sini -->
-        <VBtn
-          color="primary"
-          icon
-          class="view-pdf-btn"
-          @click="openPdfViewer"
-        >
-          <VIcon>mdi-file-pdf-box</VIcon>
-        </VBtn>
+          <!-- Tombol PDF dipindah ke sini -->
+          <VBtn
+            color="primary"
+            icon
+            class="view-pdf-btn"
+            @click="openPdfViewer"
+          >
+            <VIcon>mdi-file-pdf-box</VIcon>
+          </VBtn>
         
         
-        <div class="transkrip-header">
-          <div class="transkrip-info-center">
-            <div class="info-row">
-              <span class="info-label-center">NIM/NAMA LENGKAP</span>
-              <span class="info-separator">:</span>
-              <span class="info-value-center">{{ user.nim }} / {{ user.name }}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label-center">TEMPAT/TANGGAL LAHIR</span>
-              <span class="info-separator">:</span>
-              <span class="info-value-center">{{ user.birthPlace }}, {{ user.birthDate }}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label-center" style=" font-size: 6pt;font-style: italic;">Place of Birth/Date</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label-center">PROGRAM STUDI / JENJANG</span>
-              <span class="info-separator">:</span>
-              <span class="info-value-center">{{ user.studyProgram }} / {{ user.degree }}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label-center" style=" font-size: 6pt;font-style: italic;">Study Program / Level</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label-center">TANGGAL KELULUSAN</span>
-              <span class="info-separator">:</span>
-              <span class="info-value-center">{{ user.graduationDate }}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label-center" style=" font-size: 6pt;font-style: italic;">Graduation Date</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label-center">TOTAL SKS</span>
-              <span class="info-separator">:</span>
-              <span class="info-value-center">146</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label-center" style=" font-size: 6pt;font-style: italic;">Total Credits</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label-center">INDEKS PRESTASI</span>
-              <span class="info-separator">:</span>
-              <span class="info-value-center">2.94</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label-center" style=" font-size: 6pt;font-style: italic;">Grade Point Average</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label-center">PREDIKAT KELULUSAN</span>
-              <span class="info-separator">:</span>
-              <span class="info-value-center">MEMUASKAN / <span class="italic-text">SATISFACTORY</span></span>
-            </div>
-            <div class="info-row">
-              <span class="info-label-center" style=" font-size: 6pt;font-style: italic;">Graduation Predicate</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label-center">STATUS</span>
-              <span class="info-separator">:</span>
-              <span class="status-text-inline">Akreditasi LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 tanggal 19 Maret 2024 dengan peringkat "Baik Sekali".</span>
-            </div>
-            <div class="info-row">
-              <span class="italic-text" style="font-size: 6pt;">Accredited "Very Good" by LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 on March 19, 2024.</span>
+          <div class="transkrip-header">
+            <div class="transkrip-info-center">
+              <div class="info-row">
+                <span class="info-label-center">NIM/NAMA LENGKAP</span>
+                <span class="info-separator">:</span>
+                <span class="info-value-center">{{ user.nim }} / {{ user.name }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label-center">TEMPAT/TANGGAL LAHIR</span>
+                <span class="info-separator">:</span>
+                <span class="info-value-center">{{ user.birthPlace }}, {{ user.birthDate }}</span>
+              </div>
+              <div class="info-row">
+                <span
+                  class="info-label-center"
+                  style=" font-size: 6pt;font-style: italic;"
+                >Place of Birth/Date</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label-center">PROGRAM STUDI / JENJANG</span>
+                <span class="info-separator">:</span>
+                <span class="info-value-center">{{ user.studyProgram }} / {{ user.degree }}</span>
+              </div>
+              <div class="info-row">
+                <span
+                  class="info-label-center"
+                  style=" font-size: 6pt;font-style: italic;"
+                >Study Program / Level</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label-center">TANGGAL KELULUSAN</span>
+                <span class="info-separator">:</span>
+                <span class="info-value-center">{{ user.graduationDate }}</span>
+              </div>
+              <div class="info-row">
+                <span
+                  class="info-label-center"
+                  style=" font-size: 6pt;font-style: italic;"
+                >Graduation Date</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label-center">TOTAL SKS</span>
+                <span class="info-separator">:</span>
+                <span class="info-value-center">146</span>
+              </div>
+              <div class="info-row">
+                <span
+                  class="info-label-center"
+                  style=" font-size: 6pt;font-style: italic;"
+                >Total Credits</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label-center">INDEKS PRESTASI</span>
+                <span class="info-separator">:</span>
+                <span class="info-value-center">2.94</span>
+              </div>
+              <div class="info-row">
+                <span
+                  class="info-label-center"
+                  style=" font-size: 6pt;font-style: italic;"
+                >Grade Point Average</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label-center">PREDIKAT KELULUSAN</span>
+                <span class="info-separator">:</span>
+                <span class="info-value-center">MEMUASKAN / <span class="italic-text">SATISFACTORY</span></span>
+              </div>
+              <div class="info-row">
+                <span
+                  class="info-label-center"
+                  style=" font-size: 6pt;font-style: italic;"
+                >Graduation Predicate</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label-center">STATUS</span>
+                <span class="info-separator">:</span>
+                <span class="status-text-inline">Akreditasi LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 tanggal 19 Maret 2024 dengan peringkat "Baik Sekali".</span>
+              </div>
+              <div class="info-row">
+                <span
+                  class="italic-text"
+                  style="font-size: 6pt;"
+                >Accredited "Very Good" by LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 on March 19, 2024.</span>
+              </div>
             </div>
           </div>
-
-        </div>
-        <div class="transkrip-tables">
-          <table
-            v-for="(col, idx) in columns"
-            :key="idx"
-            class="transkrip-table no-inner-border"
-          >
-            <thead>
-              <tr>
-                <th rowspan="3" class="th-no">
-                  NO
-                </th>
-                <th rowspan="3" class="th-kode">
-                  KODE
-                </th>
-                <th rowspan="3" class="th-matkul matkul-center">
-                  MATA KULIAH
-                </th>
-                <th rowspan="3" class="th-vertical">
-                  <div class="vertical-header">
-                    <div class="vertical-text-eng">CREDITS</div>
-                    <div class="vertical-text-indo">SKS</div>
-                  </div>
-                </th>
-                <th rowspan="3" class="th-vertical">
-                  <div class="vertical-header">
-                    <div class="vertical-text-eng">GRADE</div>
-                    <div class="vertical-text-indo">NILAI</div>
-                  </div>
-                </th>
-                <th rowspan="3" class="th-vertical">
-                  <div class="vertical-header">
-                    <div class="vertical-text-eng">EQUIVALENT</div>
-                    <div class="vertical-text-indo">EKUIVALEN</div>
-                  </div>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="(mk, i) in col"
-                :key="mk.no + mk.kode + i"
-                :class="[{ 'empty-row': mk.isEmpty }, { 'last-empty-row': mk.isLastEmpty }]"
-
-              >
-                <template v-if="!mk.isEmpty">
-                  <td class="td-no">{{ mk.no }}</td>
-                  <td class="td-kode">{{ mk.kode }}</td>
-                  <td class="td-matkul">
-                    {{ mk.nama }}<br>
-                    <span class="course-subtitle">{{ mk.nama_en }}</span>
-                  </td>
-                  <td class="td-center">{{ mk.sks }}</td>
-                  <td class="td-center">{{ mk.nilai }}</td>
-                  <td class="td-center">{{ formatKredit(mk.kredit) }}</td>
-                </template>
-                <template v-else-if="mk.isLastEmpty">
-                  <td colspan="6"></td>
-                </template>
-              </tr>
-              <!-- Judul tugas akhir & ttd dekan hanya di kolom ketiga -->
-              <tr v-if="idx === 2">
-                <td
-                  colspan="6"
-                  class="ta-ttd-cell"
-                >
-                  <div class="judul-ta-label"><b>JUDUL TUGAS AKHIR:</b></div>
-                  <div class="judul-ta">
-                    SISTEM INFORMASI PENDAFTARAN PADA KLINIK FISIOTERAPI<br>
-                    UNIVERSITAS AISYIYAH YOGYAKARTA MENGGUNAKAN METODE RAD<br>
-                    (RAPID APPLICATION DEVELOPMENT)<br>
-                    <span class="italic-text">REGISTRATION INFORMATION SYSTEM AT AISYIYAH UNIVERSITY PHYSIOTHERAPY CLINIC<br>
-                    YOGYAKARTA USING RAD METHOD (RAPID APPLICATION DEVELOPMENT)</span>
-                  </div>
-                  <div class="ttd-section">
-                    <div class="dekan">
-                      <div class="ttd-space"></div>
-                      <div class="location-date">
-                        Yogyakarta, 22 Maret 2025<br>
-                        <span class="italic-text">Yogyakarta, March 22, 2025</span>
+          <div class="transkrip-tables">
+            <table
+              v-for="(col, idx) in columns"
+              :key="idx"
+              class="transkrip-table no-inner-border"
+            >
+              <thead>
+                <tr>
+                  <th
+                    rowspan="3"
+                    class="th-no"
+                  >
+                    NO
+                  </th>
+                  <th
+                    rowspan="3"
+                    class="th-kode"
+                  >
+                    KODE
+                  </th>
+                  <th
+                    rowspan="3"
+                    class="th-matkul matkul-center"
+                  >
+                    MATA KULIAH
+                  </th>
+                  <th
+                    rowspan="3"
+                    class="th-vertical"
+                  >
+                    <div class="vertical-header">
+                      <div class="vertical-text-eng">
+                        CREDITS
                       </div>
-                      DEKAN FAKULTAS SAINS DAN TEKNOLOGI,<br>
-                      <span class="italic-text">DEAN OF FACULTY OF SCIENCE AND TECHNOLOGY,</span>
-                      <div class="nama">
-                        <u>Ir. Ar. TIKA AINUNNISA FITRIA, S.T., M.T., Ph.D</u>
+                      <div class="vertical-text-indo">
+                        SKS
                       </div>
                     </div>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                  </th>
+                  <th
+                    rowspan="3"
+                    class="th-vertical"
+                  >
+                    <div class="vertical-header">
+                      <div class="vertical-text-eng">
+                        GRADE
+                      </div>
+                      <div class="vertical-text-indo">
+                        NILAI
+                      </div>
+                    </div>
+                  </th>
+                  <th
+                    rowspan="3"
+                    class="th-vertical"
+                  >
+                    <div class="vertical-header">
+                      <div class="vertical-text-eng">
+                        EQUIVALENT
+                      </div>
+                      <div class="vertical-text-indo">
+                        EKUIVALEN
+                      </div>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(mk, i) in col"
+                  :key="mk.no + mk.kode + i"
+                  :class="[{ 'empty-row': mk.isEmpty }, { 'last-empty-row': mk.isLastEmpty }]"
+                >
+                  <template v-if="!mk.isEmpty">
+                    <td class="td-no">
+                      {{ mk.no }}
+                    </td>
+                    <td class="td-kode">
+                      {{ mk.kode }}
+                    </td>
+                    <td class="td-matkul">
+                      {{ mk.nama }}<br>
+                      <span class="course-subtitle">{{ mk.nama_en }}</span>
+                    </td>
+                    <td class="td-center">
+                      {{ mk.sks }}
+                    </td>
+                    <td class="td-center">
+                      {{ mk.nilai }}
+                    </td>
+                    <td class="td-center">
+                      {{ formatKredit(mk.kredit) }}
+                    </td>
+                  </template>
+                  <template v-else-if="mk.isLastEmpty">
+                    <td colspan="6" />
+                  </template>
+                </tr>
+                <!-- Judul tugas akhir & ttd dekan hanya di kolom ketiga -->
+                <tr v-if="idx === 2">
+                  <td
+                    colspan="6"
+                    class="ta-ttd-cell"
+                  >
+                    <div class="judul-ta-label">
+                      <b>JUDUL TUGAS AKHIR:</b>
+                    </div>
+                    <div class="judul-ta">
+                      SISTEM INFORMASI PENDAFTARAN PADA KLINIK FISIOTERAPI<br>
+                      UNIVERSITAS AISYIYAH YOGYAKARTA MENGGUNAKAN METODE RAD<br>
+                      (RAPID APPLICATION DEVELOPMENT)<br>
+                      <span class="italic-text">REGISTRATION INFORMATION SYSTEM AT AISYIYAH UNIVERSITY PHYSIOTHERAPY CLINIC<br>
+                        YOGYAKARTA USING RAD METHOD (RAPID APPLICATION DEVELOPMENT)</span>
+                    </div>
+                    <div class="ttd-section">
+                      <div class="dekan">
+                        <div class="ttd-space" />
+                        <div class="location-date">
+                          Yogyakarta, 22 Maret 2025<br>
+                          <span class="italic-text">Yogyakarta, March 22, 2025</span>
+                        </div>
+                        DEKAN FAKULTAS SAINS DAN TEKNOLOGI,<br>
+                        <span class="italic-text">DEAN OF FACULTY OF SCIENCE AND TECHNOLOGY,</span>
+                        <div class="nama">
+                          <u>Ir. Ar. TIKA AINUNNISA FITRIA, S.T., M.T., Ph.D</u>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-    </div>
     </div>
   </div>
 </template>
@@ -184,11 +245,11 @@ import { computed } from 'vue'
 
 const props = defineProps({
   user: { type: Object, required: true },
-  matakuliah: { type: Array, required: true }
+  matakuliah: { type: Array, required: true },
 })
 
 // Helper function untuk konversi nilai ke bobot
-const getNilaiBobot = (nilai) => {
+const getNilaiBobot = nilai => {
   const bobotMap = {
     'A': 4.0,
     'AB': 3.5,
@@ -196,14 +257,16 @@ const getNilaiBobot = (nilai) => {
     'BC': 2.5,
     'C': 2.0,
     'D': 1.0,
-    'E': 0.0
+    'E': 0.0,
   }
+  
   return bobotMap[nilai] || 0.0
 }
 
 // Helper function untuk format kredit dengan desimal yang tepat
-const formatKredit = (kredit) => {
+const formatKredit = kredit => {
   const num = parseFloat(kredit)
+
   // Jika bilangan bulat (desimal .0), tampilkan 1 angka desimal
   // Jika ada pecahan, tampilkan 2 angka desimal
   return num % 1 === 0 ? num.toFixed(1) : num.toFixed(2)
@@ -214,7 +277,7 @@ const columns = computed(() => {
   const enrichedData = props.matakuliah.map(mk => ({
     ...mk,
     bobot: getNilaiBobot(mk.nilai),
-    kredit: formatKredit(mk.sks * getNilaiBobot(mk.nilai))
+    kredit: formatKredit(mk.sks * getNilaiBobot(mk.nilai)),
   }))
 
   // Set fixed size untuk setiap kolom
@@ -223,20 +286,21 @@ const columns = computed(() => {
   // Slice data untuk setiap kolom
   const col1 = enrichedData.slice(0, itemsPerColumn).map((mk, i) => ({
     ...mk,
-    no: i + 1
+    no: i + 1,
   }))
 
   const col2 = enrichedData.slice(itemsPerColumn, itemsPerColumn * 2).map((mk, i) => ({
     ...mk,
-    no: i + itemsPerColumn + 1
+    no: i + itemsPerColumn + 1,
   }))
 
   // Prepare col3 with actual data and fixed length
   const col3Start = itemsPerColumn * 2
   const col3Data = enrichedData.slice(col3Start)
+
   const col3 = col3Data.map((mk, i) => ({
     ...mk,
-    no: i + col3Start + 1
+    no: i + col3Start + 1,
   }))
 
   return [col1, col2, col3]
@@ -256,6 +320,7 @@ const openPdfViewer = async () => {
 
   // Pastikan semua style di-inject
   const style = document.createElement('style')
+
   style.innerHTML = `
     .transkrip-table .th-vertical {
       block-size: 54px !important;
@@ -312,14 +377,14 @@ const openPdfViewer = async () => {
       scale: 2,
       useCORS: true,
       logging: false,
-      letterRendering: true
+      letterRendering: true,
     },
     jsPDF: { 
       unit: 'mm', 
       format: [278, 337.9],
-      orientation: 'landscape'
+      orientation: 'landscape',
     },
-    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
   }
 
   try {
@@ -333,6 +398,7 @@ const openPdfViewer = async () => {
     const pdfWindow = window.open('', '_blank')
     if (!pdfWindow) {
       alert('Please allow popups for this website')
+      
       return
     }
 
@@ -379,6 +445,72 @@ const openPdfViewer = async () => {
 </script>
 
 <style scoped>
+/* Responsive styles */
+@media screen and (max-width: 1200px) {
+  .transkrip-pdf {
+    transform: scale(0.9);
+    transform-origin: top center;
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .transkrip-pdf {
+    transform: scale(0.8);
+    transform-origin: top center;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .transkrip-pdf {
+    transform: scale(0.7);
+    transform-origin: top center;
+  }
+
+  .transkrip-info-center {
+    margin-inline-start: 30px;
+  }
+
+  .transkrip-nomor {
+    margin-inline-start: 30px;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .transkrip-pdf {
+    transform: scale(0.6);
+    transform-origin: top center;
+  }
+
+  .transkrip-info-center {
+    margin-inline-start: 10px;
+  }
+
+  .transkrip-nomor {
+    margin-inline-start: 10px;
+  }
+}
+
+/* Scroll horizontal untuk layar kecil */
+.transcript-wrapper {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+/* Memastikan container utama tidak melebihi viewport */
+.transcript-preview {
+  overflow: hidden;
+  max-inline-size: 100vw;
+}
+
+/* Menambahkan padding untuk touch devices */
+@media (hover: none) {
+  .transkrip-pdf {
+    padding-inline: 1rem;
+  }
+}
+
+/* Style asli */
+
 /* Wrapper utama dengan background dan scroll horizontal */
 .transcript-wrapper {
   display: flex;
@@ -386,7 +518,9 @@ const openPdfViewer = async () => {
   justify-content: center;
   background: #f5f5f5;
   margin-inline: calc(-1 * var(--v-container-padding-x, 24px));
+  -webkit-overflow-scrolling: touch;
   padding-block: 20px;
+  scrollbar-width: thin;
 }
 
 /* Preview container dengan background putih landscape */
@@ -394,7 +528,9 @@ const openPdfViewer = async () => {
   display: inline-block;
   background: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 10%);
+  max-inline-size: 100%;
   min-inline-size: fit-content;
+  overflow-x: auto;
   padding-block: 24px;
   padding-inline: 24px;
 }
@@ -408,16 +544,16 @@ const openPdfViewer = async () => {
   color: #000;
   font-family: "Times New Roman", Times, serif;
   font-size: 7.5pt;
-
-  /* Custom size: 33.79cm x 27.8cm (Landscape) */
-  inline-size: 337.9mm;
+  inline-size: 100%;
   line-height: 1.25;
+  margin-block: 0;
+  margin-inline: auto;
   max-inline-size: 337.9mm;
   min-block-size: 278mm;
   padding-block: 9.5mm 0;
-
-  /* Margins: Top 0.95cm, Left 0.25cm, Right 0.25cm, Bottom 0cm */
   padding-inline: 2.5mm;
+  transform-origin: top center;
+  transition: transform 0.3s ease;
 }
 
 .transkrip-header {

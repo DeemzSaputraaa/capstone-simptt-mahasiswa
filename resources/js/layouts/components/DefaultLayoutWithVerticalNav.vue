@@ -61,9 +61,11 @@ import UserProfile from '@/layouts/components/UserProfile.vue'
         <NavbarThemeSwitcher class="me-2" />
 
         <!-- Language Selector -->
-        <IconBtn class="me-2">
+        <!--
+          <IconBtn class="me-2">
           <VIcon icon="ri-translate-2" />
-        </IconBtn>
+          </IconBtn> 
+        -->
 
         <UserProfile />
       </div>

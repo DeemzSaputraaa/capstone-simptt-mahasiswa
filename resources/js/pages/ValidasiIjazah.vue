@@ -109,21 +109,6 @@
           </VCard>
         </VDialog>
 
-        <!-- PDF Viewer -->
-        <div class="pdf-viewer">
-          <div class="pdf-toolbar">
-            <button @click="zoomOut">-</button>
-            <span>{{ Math.round(scale * 100) }}%</span>
-            <button @click="zoomIn">+</button>
-            <button @click="rotate">↻</button>
-            <button @click="download">⭳</button>
-            <button @click="print">🖨️</button>
-          </div>
-          <div class="pdf-container" ref="container">
-            <canvas ref="canvas"></canvas>
-          </div>
-        </div>
-
         <!-- Dialog untuk PDF Viewer -->
         <VDialog
           v-model="showPdfViewer"
@@ -316,6 +301,7 @@ export default {
         newComment.value = ''
       } catch (error) {
         console.error('Error saving comment:', error)
+
         // Tetap tambahkan ke state lokal jika gagal simpan
         comments.value.unshift(commentData)
         newComment.value = ''
@@ -323,33 +309,37 @@ export default {
     }
 
     // Fungsi untuk menyimpan komentar ke database
-    const saveCommentToDatabase = async (commentData) => {
+    const saveCommentToDatabase = async commentData => {
       try {
         console.log('Saving comment to database:', commentData)
+
         const response = await fetch('/api/comments', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
           },
           body: JSON.stringify({
             user_id: 1, // ID user, sesuaikan dengan data sebenarnya
             content: commentData.text,
             parent_id: null, // Komentar utama
-            validasi_ijazah_id: 1 // ID validasi ijazah, sesuaikan dengan data sebenarnya
-          })
+            validasi_ijazah_id: 1, // ID validasi ijazah, sesuaikan dengan data sebenarnya
+          }),
         })
 
         console.log('Save response status:', response.status)
 
         if (!response.ok) {
           const errorText = await response.text()
+
           console.error('Save failed:', response.status, response.statusText, errorText)
           throw new Error(`Failed to save comment: ${response.status}`)
         }
 
         const result = await response.json()
+
         console.log('Comment saved successfully:', result)
+        
         return result
       } catch (error) {
         console.error('Error in saveCommentToDatabase:', error)
@@ -361,16 +351,21 @@ export default {
     const loadCommentsFromDatabase = async () => {
       try {
         console.log('Loading comments from database...')
+
         const response = await fetch('/api/comments/1') // ID validasi ijazah
+
         console.log('Response status:', response.status)
         
         if (response.ok) {
           const data = await response.json()
+
           console.log('Comments loaded:', data)
           comments.value = data
         } else {
           console.error('Failed to load comments:', response.status, response.statusText)
+
           const errorText = await response.text()
+
           console.error('Error response:', errorText)
         }
       } catch (error) {
@@ -436,6 +431,7 @@ export default {
 
     const onLapor = async () => {
       showComments.value = true
+
       // Muat komentar dari database saat pertama kali menampilkan komentar
       await loadCommentsFromDatabase()
     }
@@ -596,13 +592,13 @@ export default {
         html2canvas: { 
           scale: 2,
           useCORS: true,
-          logging: true
+          logging: true,
         },
         jsPDF: { 
           unit: 'mm', 
           format: 'a4', 
-          orientation: 'portrait' 
-        }
+          orientation: 'portrait', 
+        },
       }
 
       // Generate PDF
@@ -621,12 +617,13 @@ export default {
       const viewport = page.getViewport({ scale: scale.value, rotation: rotation.value })
       
       const context = canvas.value.getContext('2d')
+
       canvas.value.height = viewport.height
       canvas.value.width = viewport.width
 
       await page.render({
         canvasContext: context,
-        viewport: viewport
+        viewport: viewport,
       }).promise
     }
 
@@ -647,6 +644,7 @@ export default {
 
     const download = () => {
       const link = document.createElement('a')
+
       link.href = props.pdfData
       link.download = 'document.pdf'
       link.click()
@@ -654,6 +652,7 @@ export default {
 
     const print = () => {
       const iframe = document.createElement('iframe')
+
       iframe.style.display = 'none'
       iframe.src = props.pdfData
       document.body.appendChild(iframe)
@@ -673,16 +672,15 @@ export default {
     const currentPdfData = ref('')
     const pdfTitle = ref('')
 
-    const generatePdfData = async (element) => {
+    const generatePdfData = async element => {
       const opt = {
         margin: 10,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       }
 
-      const pdf = await html2pdf().from(element).set(opt).outputPdf('datauristring')
-      return pdf
+      return await html2pdf().from(element).set(opt).outputPdf('datauristring')
     }
 
     const showIjazahPdf = async () => {
@@ -733,7 +731,7 @@ export default {
       currentPdfData,
       pdfTitle,
       showIjazahPdf,
-      showTranscriptPdf
+      showTranscriptPdf,
     }
   },
 }
@@ -944,6 +942,7 @@ export default {
   margin: auto;
   background: #fff;
   box-shadow: 0 2px 8px 0 rgba(33, 150, 243, 5%);
+
   /* A4 Landscape container */
   inline-size: fit-content;
   max-inline-size: 1200px;
