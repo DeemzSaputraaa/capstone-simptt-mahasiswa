@@ -265,12 +265,15 @@ export default {
         isLoading.value = true
         errorMessage.value = ''
         
+        const token = sessionStorage.getItem('jwt_token')
+
         // Menggunakan endpoint yang sesuai dengan route yang didefinisikan di Laravel
         const response = await axios.post('/api/pra-yudisium', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
             'X-Requested-With': 'XMLHttpRequest',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
           withCredentials: true,
         })

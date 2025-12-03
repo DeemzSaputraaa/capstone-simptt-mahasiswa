@@ -1,5 +1,8 @@
 <script setup>
 import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const user = ref({
   name: '',
@@ -8,7 +11,6 @@ const user = ref({
 // Fungsi untuk mengambil data user
 const fetchUserData = async () => {
   try {
-    // Ambil data dari session storage atau local storage
     const userData = JSON.parse(sessionStorage.getItem('user_data'))
     if (userData && userData.namalengkap) {
       user.value.name = userData.namalengkap
@@ -18,7 +20,28 @@ const fetchUserData = async () => {
   }
 }
 
-// Panggil fungsi saat komponen dimount
+const handleLogout = async () => {
+  const token = sessionStorage.getItem('jwt_token')
+
+  try {
+    await fetch('/api/logout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    })
+  } catch (error) {
+    console.error('Logout error:', error)
+  } finally {
+    sessionStorage.removeItem('jwt_token')
+    sessionStorage.removeItem('user_data')
+    localStorage.removeItem('login_as')
+    localStorage.removeItem('timeout')
+    router.push('/login')
+  }
+}
+
 onMounted(() => {
   fetchUserData()
 })
@@ -42,8 +65,7 @@ onMounted(() => {
 
     <!-- Dropdown Menu -->
     <VList>
-      <!-- 👉 Logout -->
-      <VListItem @click="$router.push('/login')">
+      <VListItem @click="handleLogout">
         <template #prepend>
           <VIcon
             class="me-2"

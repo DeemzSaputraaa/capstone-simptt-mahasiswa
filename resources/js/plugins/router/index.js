@@ -6,6 +6,18 @@ const router = createRouter({
   routes,
 })
 
+const publicPaths = ['/', '/login', '/register']
+
+router.beforeEach((to, from, next) => {
+  const token = sessionStorage.getItem('jwt_token')
+
+  if (!token && !publicPaths.includes(to.path)) {
+    return next('/login')
+  }
+
+  return next()
+})
+
 export default function (app) {
   app.use(router)
 }

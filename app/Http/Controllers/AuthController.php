@@ -7,8 +7,10 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Facades\JWTFactory;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AuthController extends Controller
 {
@@ -59,46 +61,11 @@ class AuthController extends Controller
     }
 
     /**
-     * Get authenticated user from token or session
-     */
-    protected function getAuthenticatedUser(Request $request)
-    {
-        // Try to get token from Authorization header
-        $authHeader = $request->header('Authorization');
-        $token = null;
-
-        if ($authHeader && strpos($authHeader, 'Bearer ') === 0) {
-            $token = substr($authHeader, 7);
-        }
-
-        // Get user data from session (if token matches or if no token provided)
-        $sessionToken = Session::get('auth_token');
-        $userData = Session::get('user_data');
-
-        // If token provided, validate it matches session token
-        if ($token) {
-            if ($sessionToken && $sessionToken === $token && $userData) {
-                return $userData;
-            }
-        } else {
-            // If no token provided, use session data
-            if ($userData) {
-                return $userData;
-            }
-        }
-
-        return null;
-    }
-
-    /**
      * Generate authentication token
      */
     protected function generateToken($remember, $data, $loginAs)
     {
         try {
-            // Generate a unique token
-            $token = Str::random(80);
-
             // Calculate TTL (Time To Live)
             $ttl = $remember ? 43200 : 1440; // 30 days if remember me, otherwise 1 day (in minutes)
 
@@ -110,16 +77,10 @@ class AuthController extends Controller
 
             // Set data based on login type
             if ($loginAs == 'mahasiswa') {
-                // $userData['id'] = $data->kdmahasiswa ?? null;
                 $userData['username'] = $data->nim ?? null;
                 $userData['name'] = $data->namalengkap ?? null;
                 $userData['email'] = null; // mh_v_nama tidak punya email
                 $userData['role'] = 'mahasiswa';
-                // $userData['kdperson'] = $data->kdperson ?? null;
-                // $userData['kdtamasuk'] = $data->kdtamasuk ?? null;
-                // $userData['nik'] = $data->nik ?? null;
-                // $userData['tempatlahir'] = $data->tempatlahir ?? null;
-                // $userData['tanggallahir'] = $data->tanggallahir ?? null;
             } else if ($loginAs == 'tendik') {
                 $userData['id'] = $data->kdperson ?? null;
                 $userData['username'] = $data->nip ?? null;
@@ -147,14 +108,20 @@ class AuthController extends Controller
                 $userData['alamat'] = $data->alamat ?? null;
             }
 
-            // Store token in session
-            Session::put('auth_token', $token);
-            Session::put('user_data', $userData);
+            $claims = array_merge($userData, [
+                'sub' => $userData['username'] ?? Str::random(16),
+            ]);
 
-            // Set session lifetime based on remember me
-            if ($remember) {
-                config(['session.lifetime' => 43200]); // 30 days
-            }
+            // Set TTL temporarily for this token
+            $factory = JWTAuth::factory();
+            $previousTtl = $factory->getTTL();
+            $factory->setTTL($ttl);
+
+            $payload = JWTFactory::customClaims($claims)->make();
+            $token = JWTAuth::encode($payload)->get();
+
+            // restore default TTL
+            $factory->setTTL($previousTtl);
 
             return [
                 'token' => $token,
@@ -342,6 +309,8 @@ class AuthController extends Controller
             // Step 10: Prepare response data
             $responseData = [
                 'isallowed' => true,
+                'token' => $tokenResponse['token'],
+                'token_type' => 'bearer',
                 'timeout' => $tokenResponse['ttl'],
                 'loginas' => $loginAs,
                 'username' => $data->nim ?? $data->kodeuser ?? $data->nip ?? null,
@@ -379,31 +348,19 @@ class AuthController extends Controller
     public function me(Request $request)
     {
         try {
-            // Get user data from token or session
-            $userData = $this->getAuthenticatedUser($request);
-
-            if (!$userData) {
-                return response()->json([
-                    'success' => false,
-                    'code' => 'UNAUTHORIZED',
-                    'message' => 'User not authenticated. Please login first.',
-                ], 401);
-            }
-
-            // Check if session expired
-            if (isset($userData['expires_at']) && $userData['expires_at'] < now()->timestamp) {
-                Session::flush();
-                return response()->json([
-                    'success' => false,
-                    'code' => 'SESSION_EXPIRED',
-                    'message' => 'Session has expired. Please login again.',
-                ], 401);
-            }
+            $token = JWTAuth::parseToken();
+            $payload = $token->getPayload()->toArray();
 
             return response()->json([
                 'success' => true,
-                'data' => $userData
+                'data' => $payload
             ], 200);
+        } catch (JWTException $e) {
+            return response()->json([
+                'success' => false,
+                'code' => 'UNAUTHORIZED',
+                'message' => 'User not authenticated. Please login first.',
+            ], 401);
         } catch (\Throwable $e) {
             Log::error('Get user data error', [
                 'error' => $e->getMessage(),
@@ -423,35 +380,8 @@ class AuthController extends Controller
     public function refresh(Request $request)
     {
         try {
-            // Get user data from token or session
-            $userData = $this->getAuthenticatedUser($request);
-
-            if (!$userData) {
-                return response()->json([
-                    'success' => false,
-                    'code' => 'UNAUTHORIZED',
-                    'message' => 'User not authenticated. Please login first.',
-                ], 401);
-            }
-
-            // Check if session expired
-            if (isset($userData['expires_at']) && $userData['expires_at'] < now()->timestamp) {
-                Session::flush();
-                return response()->json([
-                    'success' => false,
-                    'code' => 'SESSION_EXPIRED',
-                    'message' => 'Session has expired. Please login again.',
-                ], 401);
-            }
-
-            // Generate new token
-            $newToken = Str::random(80);
-            $ttl = 1440; // 1 day default
-
-            // Update session
-            Session::put('auth_token', $newToken);
-            $userData['expires_at'] = now()->addMinutes($ttl)->timestamp;
-            Session::put('user_data', $userData);
+            $newToken = JWTAuth::parseToken()->refresh();
+            $ttl = config('jwt.ttl', 60);
 
             return response()->json([
                 'success' => true,
@@ -459,6 +389,12 @@ class AuthController extends Controller
                 'expires_in' => $ttl * 60,
                 'token' => $newToken
             ], 200);
+        } catch (JWTException $e) {
+            return response()->json([
+                'success' => false,
+                'code' => 'UNAUTHORIZED',
+                'message' => 'User not authenticated. Please login first.',
+            ], 401);
         } catch (\Throwable $e) {
             Log::error('Token refresh error', [
                 'error' => $e->getMessage(),
@@ -478,13 +414,17 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         try {
-            // Clear session
-            Session::forget('auth_token');
-            Session::forget('user_data');
+            $token = JWTAuth::getToken();
 
-            // Optionally clear all session data
-            Session::flush();
+            if ($token) {
+                JWTAuth::invalidate($token);
+            }
 
+            return response()->json([
+                'success' => true,
+                'message' => 'Successfully logged out'
+            ], 200);
+        } catch (JWTException $e) {
             return response()->json([
                 'success' => true,
                 'message' => 'Successfully logged out'

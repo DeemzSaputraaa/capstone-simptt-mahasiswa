@@ -40,6 +40,11 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'jwt' => [
+            'driver' => 'jwt',
+            // provider tidak dipakai karena kita tidak memuat user dari DB
+            'provider' => 'users',
+        ],
     ],
 
     /*

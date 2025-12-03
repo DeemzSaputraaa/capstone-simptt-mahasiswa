@@ -97,6 +97,9 @@ const handleLogin = async () => {
 
       // Simpan ke session storage
       sessionStorage.setItem('user_data', JSON.stringify(userData))
+      if (data.token) {
+        sessionStorage.setItem('jwt_token', data.token)
+      }
       
       // Simpan data ke localStorage (opsional)
       localStorage.setItem('login_as', data.loginas)

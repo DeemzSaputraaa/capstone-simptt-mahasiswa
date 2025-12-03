@@ -14,51 +14,52 @@ Route::prefix('api')->group(function () {
     Route::post('/login', [AuthController::class, 'processLogin']);
 
     // Protected routes
-    Route::middleware(['auth.session'])->group(function () {
+    Route::middleware(['jwt.payload'])->group(function () {
         Route::get('/me', [AuthController::class, 'me']);
         Route::post('/refresh', [AuthController::class, 'refresh']);
         Route::post('/logout', [AuthController::class, 'logout']);
-    });
-    // Form Legalisasi routes
-    Route::resource('form-legalisasi', FormLegalisasiController::class);
 
-    // Mh Syarat routes
-    Route::resource('mh-syarat', MhSyaratController::class);
+        // Form Legalisasi routes
+        Route::resource('form-legalisasi', FormLegalisasiController::class);
 
-    // Ak Validasi Ijazah routes
-    Route::resource('ak-validasi-ijazah', AkValidasiIjazahController::class);
+        // Mh Syarat routes
+        Route::resource('mh-syarat', MhSyaratController::class);
 
-    // Ak Validasi Ijazah Comment routes
-    Route::resource('ak-validasi-ijazah-comments', AkValidasiIjazahCommentController::class);
+        // Ak Validasi Ijazah routes
+        Route::resource('ak-validasi-ijazah', AkValidasiIjazahController::class);
 
-    // Route khusus untuk testing
-    Route::get('comments/{id}', [AkValidasiIjazahCommentController::class, 'index']);
-    Route::post('comments', [AkValidasiIjazahCommentController::class, 'store']);
+        // Ak Validasi Ijazah Comment routes
+        Route::resource('ak-validasi-ijazah-comments', AkValidasiIjazahCommentController::class);
 
-    // Test endpoint sederhana
-    Route::get('test-comments', function () {
-        return response()->json([
-            'message' => 'API working',
-            'timestamp' => now(),
-            'table_exists' => Schema::hasTable('comment')
-        ]);
-    });
+        // Route khusus untuk testing
+        Route::get('comments/{id}', [AkValidasiIjazahCommentController::class, 'index']);
+        Route::post('comments', [AkValidasiIjazahCommentController::class, 'store']);
 
-    // Routes tambahan untuk data master
-    Route::get('form-legalisasi-status', function () {
-        return response()->json(\App\Models\FormLegalisasiStatus::all());
-    });
+        // Test endpoint sederhana
+        Route::get('test-comments', function () {
+            return response()->json([
+                'message' => 'API working',
+                'timestamp' => now(),
+                'table_exists' => Schema::hasTable('comment')
+            ]);
+        });
 
-    Route::get('mh-syarat-jenis', function () {
-        return response()->json(\App\Models\MhSyaratJenis::all());
-    });
+        // Routes tambahan untuk data master
+        Route::get('form-legalisasi-status', function () {
+            return response()->json(\App\Models\FormLegalisasiStatus::all());
+        });
 
-    Route::get('mh-syarat-paket', function () {
-        return response()->json(\App\Models\MhSyaratPaket::all());
-    });
+        Route::get('mh-syarat-jenis', function () {
+            return response()->json(\App\Models\MhSyaratJenis::all());
+        });
 
-    Route::get('ak-tahun-akademik', function () {
-        return response()->json(\App\Models\AkTahunAkademik::all());
+        Route::get('mh-syarat-paket', function () {
+            return response()->json(\App\Models\MhSyaratPaket::all());
+        });
+
+        Route::get('ak-tahun-akademik', function () {
+            return response()->json(\App\Models\AkTahunAkademik::all());
+        });
     });
 });
 

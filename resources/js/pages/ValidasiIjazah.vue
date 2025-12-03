@@ -260,6 +260,14 @@ export default {
       notifMessage.value = 'Ada komentar baru dari admin di Validasi Ijazah Anda. Silakan cek detail di bawah ini.'
     }
 
+    const getAuthHeaders = () => {
+      const token = sessionStorage.getItem('jwt_token')
+
+      return token
+        ? { Authorization: `Bearer ${token}` }
+        : {}
+    }
+
     const updateFileStatus = (field, file) => {
       if (file) {
         fileStatus.value[field] = `${file.name} (${formatFileSize(file.size)})`
@@ -318,6 +326,7 @@ export default {
           headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+            ...getAuthHeaders(),
           },
           body: JSON.stringify({
             user_id: 1, // ID user, sesuaikan dengan data sebenarnya
@@ -352,7 +361,11 @@ export default {
       try {
         console.log('Loading comments from database...')
 
-        const response = await fetch('/api/comments/1') // ID validasi ijazah
+        const response = await fetch('/api/comments/1', { // ID validasi ijazah
+          headers: {
+            ...getAuthHeaders(),
+          },
+        })
 
         console.log('Response status:', response.status)
         
