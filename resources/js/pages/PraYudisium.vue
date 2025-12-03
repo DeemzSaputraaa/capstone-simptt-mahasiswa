@@ -1,19 +1,32 @@
 <template>
   <VApp>
     <VMain>
-      <VContainer
-        fluid
+      <VContainer 
+        fluid 
         class="pa-6"
       >
+        <!-- Notifikasi Sukses -->
         <VAlert
-          v-if="showNotifAlert"
+          v-if="showSuccess"
           type="success"
           variant="tonal"
           class="mb-4"
           border="start"
           prominent
         >
-          <span>{{ notifMessage }}</span>
+          Data berhasil disimpan!
+        </VAlert>
+        
+        <!-- Notifikasi Error -->
+        <VAlert
+          v-if="errorMessage"
+          type="error"
+          variant="tonal"
+          class="mb-4"
+          border="start"
+          prominent
+        >
+          {{ errorMessage }}
         </VAlert>
         <VCard
           flat
@@ -23,34 +36,8 @@
             Formulir Pra Yudisium
           </VCardTitle>
           
-          <!-- Section 1: NIK -->
           <VCardText>
-            <div class="text-subtitle-1 font-weight-bold mb-2">
-              Masukkan NIK
-            </div>
-            <VTextField
-              v-model="form.nik"
-              label="NIK"
-              outlined
-              dense
-              hide-details
-              class="mb-4"
-            />
-            
-            <!-- Section 2: Nomor Telepon -->
-            <div class="text-subtitle-1 font-weight-bold mb-2">
-              Masukkan No Telepon
-            </div>
-            <VTextField
-              v-model="form.phone"
-              label="No Telepon"
-              outlined
-              dense
-              hide-details
-              class="mb-4"
-            />
-            
-            <!-- Section 3: Upload Foto 3x4 -->
+            <!-- Section 1: Upload Foto 3x4 -->
             <div class="text-subtitle-1 font-weight-bold mb-2">
               Upload Foto Berukuran 3×4 dan Berlatar Biru
             </div>
@@ -66,6 +53,7 @@
                 placeholder="Upload Foto 3x4 berlatar biru"
                 prepend-icon=""
                 class="file-upload-input"
+                @change="handleFileChange('photo3x4', $event)"
               />
             </div>
             <div class="text-caption grey--text">
@@ -82,12 +70,13 @@
               </VIcon>
               <VFileInput
                 v-model="form.photoSma"
-                accept="image/*"
+                accept="image/*,.pdf"
                 variant="outlined"
                 hide-details
-                placeholder="Upload Foto Ijazah SMA"
+                placeholder="Upload Ijazah Terakhir"
                 prepend-icon=""
                 class="file-upload-input"
+                @change="handleFileChange('photoSma', $event)"
               />
             </div>
             <div class="text-caption grey--text">
@@ -110,6 +99,7 @@
                 placeholder="Upload Foto KTP"
                 prepend-icon=""
                 class="file-upload-input"
+                @change="handleFileChange('photoCtp', $event)"
               />
             </div>
             <div class="text-caption grey--text">
@@ -120,25 +110,19 @@
           <!-- Submit Button -->
           <VCardActions>
             <VSpacer />
-            <!--
-              <VBtn
-              block
-              type="submit"
-              color="#17a2a6"
-              style="border-radius: 10px; background: #17a2a6; color: #fff; font-size: 1.1rem; font-weight: 500; min-block-size: 48px;"
-              @click="handleSubmit"
-              >
-              Submit
-              </VBtn> 
-            -->
             <VBtn
               block
               type="submit"
-              color="#17a2a6"
-              style="border-radius: 10px; background: rgb(var(--v-theme-primary)); color: #fff; font-size: 1.1rem; font-weight: 500; min-block-size: 48px;"
-              @click="handleSubmit"
+              color="primary"
+              :loading="isLoading"
+              :disabled="isLoading"
+              style="border-radius: 10px; font-size: 1.1rem; font-weight: 500; min-block-size: 48px;"
+              @click.prevent="submitForm"
             >
-              Submit
+              <span v-if="!isLoading">Submit</span>
+              <template #loader>
+                <span>Mengirim...</span>
+              </template>
             </VBtn>
           </VCardActions>
         </VCard>
@@ -172,18 +156,19 @@
 </template>
 
 <script>
+import axios from 'axios'
 import { ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
+
+// Notifikasi menggunakan Vuetify
 
 export default {
   name: 'PraYudisium',
   setup() {
     const form = ref({
-      nik: '',
-      phone: '',
       photo3x4: null,
       photoSma: null,
-      photoCtp: null,
+      photoCtp: null
     })
 
     const fileStatus = ref({
@@ -192,16 +177,17 @@ export default {
       photoCtp: '',
     })
 
+    const showSuccess = ref(false)
+    const errorMessage = ref('')
+    const isLoading = ref(false)
     const showValidationModal = ref(false)
     const validationMessage = ref('')
+    const router = useRouter()
 
-    const route = useRoute()
-    const notifId = route.query.notif
-    const showNotifAlert = ref(false)
-    const notifMessage = ref('')
-    if (notifId) {
-      showNotifAlert.value = true
-      notifMessage.value = 'Ada notifikasi baru terkait data Pra Yudisium Anda. Silakan cek detail di bawah ini.'
+    // Handle file change
+    const handleFileChange = (field, event) => {
+      form.value[field] = event.target.files[0]
+      updateFileStatus(field, event.target.files[0])
     }
 
     const updateFileStatus = (field, file) => {
@@ -221,37 +207,144 @@ export default {
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
     }
 
-    const handleSubmit = () => {
-      // Validate form
-      if (!form.value.nik || !form.value.phone) {
-        validationMessage.value = 'Mohon lengkapi NIK dan nomor telepon'
-        showValidationModal.value = true
+    const submitForm = async () => {
+      // Reset pesan error sebelumnya
+      errorMessage.value = ''
+      
+      // Validasi form
+      if (!form.value.photo3x4) {
+        errorMessage.value = 'Mohon unggah foto 3x4'
         
         return
       }
 
-      if (!form.value.photo3x4 || !form.value.photoSma || !form.value.photoCtp) {
-        validationMessage.value = 'Mohon lengkapi semua file yang diperlukan'
-        showValidationModal.value = true
+      if (!form.value.photoSma) {
+        errorMessage.value = 'Mohon unggah ijazah terakhir'
         
         return
       }
 
-      // TODO: Implement API call to submit form
-      console.log('Form submitted:', form.value)
-      validationMessage.value = 'Form berhasil dikirim'
-      showValidationModal.value = true
+      if (!form.value.photoCtp) {
+        errorMessage.value = 'Mohon unggah foto KTP'
+        
+        return
+      }
+
+      // Membuat FormData untuk mengirim file
+      const formData = new FormData()
+
+      // Validasi tipe file sebelum mengirim
+      const validImageTypes = ['image/jpeg', 'image/png', 'image/jpg']
+      const validPdfType = 'application/pdf'
+
+      if (form.value.photo3x4) {
+        if (!validImageTypes.includes(form.value.photo3x4.type)) {
+          errorMessage.value = 'Foto 3x4 harus dalam format JPEG, JPG, atau PNG'
+          return
+        }
+        formData.append('berkas_foto_ijazah', form.value.photo3x4)
+      }
+
+      if (form.value.photoSma) {
+        if (!validImageTypes.includes(form.value.photoSma.type) && form.value.photoSma.type !== validPdfType) {
+          errorMessage.value = 'Ijazah SMA harus dalam format JPEG, JPG, PNG, atau PDF'
+          return
+        }
+        formData.append('berkas_ijazah_terakhir', form.value.photoSma)
+      }
+
+      if (form.value.photoCtp) {
+        if (!validImageTypes.includes(form.value.photoCtp.type)) {
+          errorMessage.value = 'Foto KTP harus dalam format JPEG, JPG, atau PNG'
+          return
+        }
+        formData.append('berkas_kk_ktp', form.value.photoCtp)
+      }
+
+      try {
+        isLoading.value = true
+        errorMessage.value = ''
+        
+        // Menggunakan endpoint yang sesuai dengan route yang didefinisikan di Laravel
+        const response = await axios.post('/api/pra-yudisium', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+          withCredentials: true,
+        })
+
+        if (response.data.success) {
+          showSuccess.value = true
+          
+          // Reset form
+          form.value = {
+            photo3x4: null,
+            photoSma: null,
+            photoCtp: null
+          }
+          
+          // Tampilkan notifikasi sukses
+          showValidationModal.value = true
+          validationMessage.value = 'Data berhasil disimpan!'
+          
+          // Reset file inputs
+          const fileInputs = document.querySelectorAll('input[type="file"]')
+
+          fileInputs.forEach(input => {
+            input.value = ''
+          })
+          
+          // Reset file status
+          Object.keys(fileStatus.value).forEach(key => {
+            fileStatus.value[key] = ''
+          })
+          
+          // Tampilkan pesan sukses
+          showValidationModal.value = true
+          validationMessage.value = 'Data berhasil disimpan!'
+        }
+      } catch (error) {
+        console.error('Error:', error)
+        
+        let errorMsg = 'Terjadi kesalahan saat mengirim data'
+        
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          if (error.response.data.errors) {
+            // Jika ada error validasi dari Laravel
+            errorMsg = Object.values(error.response.data.errors).flat().join(' ')
+          } else if (error.response.data.message) {
+            errorMsg = error.response.data.message
+          }
+        } else if (error.request) {
+          // The request was made but no response was received
+          errorMsg = 'Tidak ada respon dari server. Silakan coba lagi nanti.'
+        }
+        
+        errorMessage.value = errorMsg
+        showValidationModal.value = true
+        validationMessage.value = errorMsg
+        showValidationModal.value = true
+        validationMessage.value = errorMsg
+      } finally {
+        isLoading.value = false
+      }
     }
 
     return {
       form,
       fileStatus,
       updateFileStatus,
-      handleSubmit,
+      handleFileChange,
+      submitForm,
+      showSuccess,
+      errorMessage,
+      isLoading,
       showValidationModal,
       validationMessage,
-      showNotifAlert,
-      notifMessage,
     }
   },
 }
