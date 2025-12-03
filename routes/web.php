@@ -7,6 +7,7 @@ use App\Http\Controllers\FormLegalisasiController;
 use App\Http\Controllers\MhSyaratController;
 use App\Http\Controllers\AkValidasiIjazahController;
 use App\Http\Controllers\AkValidasiIjazahCommentController;
+use App\Http\Controllers\PraYudisiumController;
 
 // API Routes untuk mengakses data dari database
 Route::prefix('api')->group(function () {
@@ -14,10 +15,12 @@ Route::prefix('api')->group(function () {
     Route::post('/login', [AuthController::class, 'processLogin']);
 
     // Protected routes
-    Route::middleware(['jwt.payload'])->group(function () {
+    Route::middleware([\App\Http\Middleware\JwtPayloadMiddleware::class])->group(function () {
         Route::get('/me', [AuthController::class, 'me']);
         Route::post('/refresh', [AuthController::class, 'refresh']);
         Route::post('/logout', [AuthController::class, 'logout']);
+
+        Route::post('/pra-yudisium', [PraYudisiumController::class, 'store']);
 
         // Form Legalisasi routes
         Route::resource('form-legalisasi', FormLegalisasiController::class);
