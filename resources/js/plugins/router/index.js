@@ -6,7 +6,7 @@ const router = createRouter({
   routes,
 })
 
-const publicPaths = ['/', '/login', '/register']
+const publicPaths = ['/', '/login', '/register', '/tendik/login']
 
 router.beforeEach((to, from, next) => {
   const token = sessionStorage.getItem('jwt_token')

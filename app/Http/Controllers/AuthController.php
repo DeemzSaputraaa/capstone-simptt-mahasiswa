@@ -140,9 +140,10 @@ class AuthController extends Controller
      */
     public function processLogin(Request $request)
     {
-        // Validate the request
+        // Validate the request (allow NIM or NIP)
         $validator = Validator::make($request->all(), [
-            'nim' => 'required',
+            'nim' => 'required_without:nip',
+            'nip' => 'required_without:nim',
             'password' => 'required',
             'remember_me' => 'boolean',
         ]);
@@ -156,12 +157,16 @@ class AuthController extends Controller
         }
 
         // Prepare variables
-        $credentials = $request->only('nim', 'password');
+        $username = $request->get('nim') ?? $request->get('nip');
+        $credentials = [
+            'nim' => $username,
+            'password' => $request->get('password'),
+        ];
         $remember = $request->get('remember_me', false);
 
         try {
             // Step 1: Check user using web service
-            $checkUserResponse = $this->allowed_user_using_web_service($credentials['nim'], $credentials['password']);
+            $checkUserResponse = $this->allowed_user_using_web_service($username, $credentials['password']);
 
             // Step 2: Handle web service response
             if ($checkUserResponse === false) {
@@ -201,7 +206,7 @@ class AuthController extends Controller
                 if ($loginAs == 'mahasiswa') {
                     // ✅ PERBAIKAN: Menggunakan mh_v_nama
                     $data = DB::table('mh_v_nama as m')
-                        ->where('m.nim', $credentials['nim'])
+                        ->where('m.nim', $username)
                         ->select(
                             // 'm.kdperson',
                             // 'm.kdmahasiswa',
@@ -216,12 +221,12 @@ class AuthController extends Controller
                 } else if ($loginAs == 'tendik') {
                     // ✅ Query untuk tendik tetap sama
                     $data = DB::table('vsdm_pegawai01 as p')
-                        ->where('p.nip', $credentials['nim'])
+                        ->where('p.nip', $username)
                         ->first();
                 } else if ($loginAs == 'dosen') {
                     // Query untuk dosen
                     $data = DB::table('v_dokubisa_dosen as d')
-                        ->where('d.kodeuser', $credentials['nim'])
+                        ->where('d.kodeuser', $username)
                         ->first();
                 } else {
                     // Default to preceptor
@@ -229,7 +234,7 @@ class AuthController extends Controller
                     $data = DB::table('ak_dokubisa_preceptor as p')
                         ->whereNull('p.deleted_at')
                         ->join('ak_dokubisa_lahan as l', 'l.kd_dokubisa_lahan', '=', 'p.kd_dokubisa_lahan')
-                        ->where('p.kode_preceptor', $credentials['nim'])
+                        ->where('p.kode_preceptor', $username)
                         ->select(
                             'p.kd_preceptor',
                             'p.nama_preceptor',
@@ -244,7 +249,7 @@ class AuthController extends Controller
                 }
             } catch (\Illuminate\Database\QueryException $e) {
                 Log::error('Database query error during login', [
-                    'username' => $credentials['nim'],
+                    'username' => $username,
                     'login_as' => $loginAs,
                     'error' => $e->getMessage(),
                 ]);
@@ -329,7 +334,7 @@ class AuthController extends Controller
             return response()->json($responseData, 200);
         } catch (\Throwable $e) {
             Log::error('Authentication process error', [
-                'username' => $credentials['nim'] ?? 'unknown',
+                'username' => $username ?? 'unknown',
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);

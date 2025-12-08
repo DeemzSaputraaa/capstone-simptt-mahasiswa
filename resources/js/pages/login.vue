@@ -9,16 +9,17 @@ import { useTheme } from 'vuetify'
 const form = ref({
   nim: '',
   password: '',
-  tahunAkademik: null,
+
+  // tahunAkademik: null,
   remember: false,
 })
 
-const tahunAkademikOptions = [
-  '2023/2024',
-  '2022/2023',
-  '2021/2022',
-  '2020/2021',
-]
+// const tahunAkademikOptions = [
+//   '2023/2024',
+//   '2022/2023',
+//   '2021/2022',
+//   '2020/2021',
+// ]
 
 const showLoginErrorModal = ref(false)
 const loginErrorMessage = ref('')
@@ -220,14 +221,16 @@ const handleLogin = async () => {
             </VCol>
 
             <!-- Tahun Akademik -->
-            <VCol cols="12">
+            <!--
+              <VCol cols="12">
               <VSelect
-                v-model="form.tahunAkademik"
-                :items="tahunAkademikOptions"
-                label="Tahun Akademik"
-                placeholder="Pilih Tahun Akademik"
+              v-model="form.tahunAkademik"
+              :items="tahunAkademikOptions"
+              label="Tahun Akademik"
+              placeholder="Pilih Tahun Akademik"
               />
-            </VCol>
+              </VCol> 
+            -->
 
             <!-- remember me checkbox and login button -->
             <VCol cols="12">
@@ -258,6 +261,18 @@ const handleLogin = async () => {
               >
                 {{ isLoggingIn ? 'Memproses...' : 'Login' }}
               </VBtn>
+            </VCol>
+
+            <VCol
+              cols="12"
+              class="text-center text-body-2"
+            >
+              <RouterLink
+                class="text-primary"
+                to="/tendik/login"
+              >
+                Login untuk Tendik?
+              </RouterLink>
             </VCol>
 
             <!-- create account -->

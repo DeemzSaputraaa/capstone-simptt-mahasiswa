@@ -3,17 +3,19 @@ import NavItems from '@/layouts/components/NavItems.vue'
 import NavItemsAdmin from '@/layouts/components/NavItemsAdmin.vue'
 import logo from '@images/logo_unisa.png'
 import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue'
-import { useRoute } from 'vue-router'
+import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
+import UserProfile from '@/layouts/components/UserProfile.vue'
 import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const isAdmin = computed(() => route.path.startsWith('/admin'))
-const headerTitle = computed(() => (isAdmin.value ? 'Pra Yudisium' : 'Dashboard'))
+const headerTitle = 'SIMPTT'
+const homeLink = computed(() => (isAdmin.value ? '/admin/prayudisium' : '/dashboard'))
 </script>
 
 <template>
   <VerticalNavLayout>
-<<<<<<< Updated upstream
     <!-- 👉 navbar -->
     <template #navbar="{ toggleVerticalOverlayNavActive }">
       <div class="d-flex h-100 align-center">
@@ -25,72 +27,36 @@ const headerTitle = computed(() => (isAdmin.value ? 'Pra Yudisium' : 'Dashboard'
           <VIcon icon="ri-menu-line" />
         </IconBtn>
 
-        <!-- 👉 Search -->
-        <!--
-          <div
-          class="d-flex align-center cursor-pointer"
-          style="user-select: none;"
-          >
-          👉 Search Trigger button
-          <IconBtn>
-          <VIcon icon="ri-search-line" />
-          </IconBtn>
-
-          <span class="d-none d-md-flex align-center text-disabled">
-          <span class="me-3">Mencari</span>
-          <span class="meta-key">&#8984;K</span>
-          </span>
-          </div> 
-        -->
-
         <VSpacer />
 
-        <!--
-          <IconBtn
-          href="https://github.com/themeselection/materio-vuetify-vuejs-laravel-admin-template-free"
-          target="_blank"
-          rel="noopener noreferrer"
-          >
-          <VIcon icon="ri-github-fill" />
-          </IconBtn> 
-        -->
-
-        <!--
-          <IconBtn>
-          <VIcon icon="ri-notification-line" />
-          </IconBtn> 
-        -->
-
         <NavbarThemeSwitcher class="me-2" />
-
-        <!-- Language Selector -->
-        <!--
-          <IconBtn class="me-2">
-          <VIcon icon="ri-translate-2" />
-          </IconBtn> 
-        -->
-
         <UserProfile />
       </div>
     </template>
 
-=======
->>>>>>> Stashed changes
     <template #vertical-nav-header="{ toggleIsOverlayNavActive }">
       <RouterLink
-        :to="isAdmin ? '/admin/prayudisium' : '/dashboard'"
+        :to="homeLink"
         class="app-logo app-title-wrapper"
       >
         <img
           :src="logo"
-          alt="UNISA logo"
+          alt="logo"
           class="d-flex"
           style="max-block-size: 30px;"
         >
+
         <h1 class="font-weight-medium leading-normal text-xl text-uppercase">
           {{ headerTitle }}
         </h1>
       </RouterLink>
+
+      <IconBtn
+        class="d-block d-lg-none"
+        @click="toggleIsOverlayNavActive(false)"
+      >
+        <VIcon icon="ri-close-line" />
+      </IconBtn>
     </template>
 
     <template #vertical-nav-content>
@@ -98,6 +64,31 @@ const headerTitle = computed(() => (isAdmin.value ? 'Pra Yudisium' : 'Dashboard'
       <NavItems v-else />
     </template>
 
+    <!-- 👉 Pages -->
     <slot />
   </VerticalNavLayout>
 </template>
+
+<style lang="scss" scoped>
+.meta-key {
+  border: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+  border-radius: 6px;
+  block-size: 1.5625rem;
+  line-height: 1.3125rem;
+  padding-block: 0.125rem;
+  padding-inline: 0.25rem;
+}
+
+.app-logo {
+  display: flex;
+  align-items: center;
+  column-gap: 0.75rem;
+
+  .app-logo-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.75rem;
+    text-transform: uppercase;
+  }
+}
+</style>

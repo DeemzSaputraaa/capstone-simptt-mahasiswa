@@ -16,3 +16,8 @@ registerPlugins(app)
 
 // Mount vue app
 app.mount('#app')
+
+// Hide initial loader once Vue is mounted
+const loader = document.getElementById('loading-bg')
+if (loader)
+  loader.style.display = 'none'

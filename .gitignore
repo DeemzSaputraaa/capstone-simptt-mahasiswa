@@ -1,12 +1,20 @@
 /.phpunit.cache
-/node_modules
 /public/build
 /public/hot
 /public/storage
 /storage/*.key
 /storage/pail
+/storage/logs/
+/storage/framework/
 /vendor
-.env
+/node_modules
+/bootstrap/cache/
+/.vite/
+.cache/
+
+# Env files
+.env*
+!.env.example
 .env.backup
 .env.production
 .phpactor.json
@@ -14,8 +22,6 @@
 Homestead.json
 Homestead.yaml
 auth.json
-npm-debug.log
-yarn-error.log
 /.fleet
 /.idea
 /.nova
@@ -30,11 +36,15 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
+# OS junk
 .DS_Store
+Thumbs.db
+*.local
+*.tmp
+
+# Build outputs
 dist
 dist-ssr
-*.local
 
 /cypress/videos/
 /cypress/screenshots/
@@ -61,11 +71,14 @@ resources/js/plugins/iconify/icons.css
 # Ignore MSW script
 public/mockServiceWorker.js
 
-# Env files
-.env*
-!.env.example
+# Coverage / reports
+coverage/
+reports/
+
+# Local-only components
+/resources/js/pages/components/TranskripNilai copy.vue
+
 
 /database/migrations/*.php
 /database/seeders/*.php
 /database/factories/*.php
-/resources/js/pages/components/TranskripNilai copy.vue

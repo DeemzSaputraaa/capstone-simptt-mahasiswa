@@ -1,3 +1,4 @@
+
 <template>
   <VApp>
     <VMain>
@@ -109,37 +110,6 @@
           </VCard>
         </VDialog>
 
-<<<<<<< Updated upstream
-=======
-        <!-- PDF Viewer -->
-        <div class="pdf-viewer">
-          <div class="pdf-toolbar">
-            <button @click="zoomOut">
-              -
-            </button>
-            <span>{{ Math.round(scale * 100) }}%</span>
-            <button @click="zoomIn">
-              +
-            </button>
-            <button @click="rotate">
-              ↻
-            </button>
-            <button @click="download">
-              ⭳
-            </button>
-            <button @click="print">
-              🖨️
-            </button>
-          </div>
-          <div
-            ref="container"
-            class="pdf-container"
-          >
-            <canvas ref="canvas" />
-          </div>
-        </div>
-
->>>>>>> Stashed changes
         <!-- Dialog untuk PDF Viewer -->
         <VDialog
           v-model="showPdfViewer"
@@ -346,7 +316,6 @@ export default {
         newComment.value = ''
       }
     }
-
     // Fungsi untuk menyimpan komentar ke database
     const saveCommentToDatabase = async commentData => {
       try {
@@ -357,10 +326,7 @@ export default {
           headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
-<<<<<<< Updated upstream
             ...getAuthHeaders(),
-=======
->>>>>>> Stashed changes
           },
           body: JSON.stringify({
             user_id: 1, // ID user, sesuaikan dengan data sebenarnya
@@ -395,15 +361,11 @@ export default {
       try {
         console.log('Loading comments from database...')
 
-<<<<<<< Updated upstream
         const response = await fetch('/api/comments/1', { // ID validasi ijazah
           headers: {
             ...getAuthHeaders(),
           },
         })
-=======
-        const response = await fetch('/api/comments/1') // ID validasi ijazah
->>>>>>> Stashed changes
 
         console.log('Response status:', response.status)
         
