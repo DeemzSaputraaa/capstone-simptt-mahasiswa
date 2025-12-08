@@ -4,145 +4,151 @@
       <div class="draft-ijazah-preview">
         <!-- Pindahkan tombol ke dalam draft-ijazah-pdf -->
         <div class="draft-ijazah-pdf">
-        <!-- Tombol PDF dipindah ke sini -->
-        <VBtn
-          color="primary"
-          icon
-          class="view-pdf-btn"
-          @click="openPdfViewer"
-        >
-          <VIcon>mdi-file-pdf-box</VIcon>
-        </VBtn>
+          <!-- Tombol PDF dipindah ke sini -->
+          <VBtn
+            color="primary"
+            icon
+            class="view-pdf-btn"
+            @click="openPdfViewer"
+          >
+            <VIcon>mdi-file-pdf-box</VIcon>
+          </VBtn>
         
-        <!-- Existing draft ijazah content -->
+          <!-- Existing draft ijazah content -->
 
-        <div class="ijazah-header">
-          <div class="ijazah-title">
+          <div class="ijazah-header">
+            <div class="ijazah-title">
             <!-- Space for university logo/seal -->
-          </div>
-        </div>
-        <div class="ijazah-body">
-          <table class="ijazah-table">
-            <tbody>
-              <tr>
-                <td class="label">
-                  Memberikan Kepada<br><span class="sub-label">Awarded to</span>
-                </td>
-                <td class="colon">
-                  :
-                </td>
-                <td class="value">
-                  <span class="value-main">{{ user.name?.toUpperCase() }}</span>
-                </td>
-              </tr>
-              <tr>
-                <td class="label">
-                  Tempat dan Tanggal Lahir<br><span class="sub-label">Place and Date of Birth</span>
-                </td>
-                <td class="colon">
-                  :
-                </td>
-                <td class="value">
-                  <span class="value-main">{{ user.birthPlace?.toUpperCase() }}, {{ user.birthDate?.toUpperCase() }}</span><br>
-                  <span class="value-sub">{{ user.birthPlace }}, {{ user.birthDate }}</span>
-                </td>
-              </tr>
-              <tr>
-                <td class="label">
-                  Nomor Induk Kependudukan<br><span class="sub-label">Identity Number</span>
-                </td>
-                <td class="colon">
-                  :
-                </td>
-                <td class="value">
-                  <span class="nik-block" />
-                </td>
-              </tr>
-              <tr>
-                <td class="label">
-                  N I M<br><span class="sub-label">Student Number</span>
-                </td>
-                <td class="colon">
-                  :
-                </td>
-                <td class="value">
-                  {{ user.nim }}
-                </td>
-              </tr>
-              <tr>
-                <td class="label">
-                  Program Studi<br><span class="sub-label">Study Program</span>
-                </td>
-                <td class="colon">
-                  :
-                </td>
-                <td class="value">
-                  <span class="value-main">TEKNOLOGI INFORMASI</span><br>
-                  <span class="value-sub">INFORMATION TECHNOLOGY</span>
-                </td>
-              </tr>
-              <tr>
-                <td class="label">
-                  Jenjang Pendidikan<br><span class="sub-label">Degree</span>
-                </td>
-                <td class="colon">
-                  :
-                </td>
-                <td class="value">
-                  <span class="value-main">SARJANA</span><br>
-                  <span class="value-sub">BACHELOR</span>
-                </td>
-              </tr>
-              <tr>
-                <td class="label">
-                  Tanggal Kelulusan<br><span class="sub-label">Date of Graduation</span>
-                </td>
-                <td class="colon">
-                  :
-                </td>
-                <td class="value">
-                  <span class="value-main">22 MARET 2025</span><br>
-                  <span class="value-sub">MARCH 22, 2025</span>
-                </td>
-              </tr>
-              <tr>
-                <td class="label">
-                  Status<br><span class="sub-label">Status</span>
-                </td>
-                <td class="colon">
-                  :
-                </td>
-                <td class="value">
-                  Akreditasi LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 tanggal 19 Maret 2024 dengan peringkat "Baik Sekali".<br><span class="sub-label">Accredited "Very Good" by LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 on March 19, 2024.</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="ijazah-explanation">
-            Ijazah ini diserahkan setelah yang bersangkutan memenuhi semua persyaratan yang ditentukan, dan kepadanya dilimpahkan segala wewenang dan hak yang berhubungan dengan ijazah yang dimilikinya, serta berhak memakai gelar Sarjana Komputer (S.Kom.).<br>
-            <span class="sub-label">This certificate is awarded in recognition of fulfillment of the requirements for the degree. Therefore, the person has been awarded the degree of Bachelor of Computer Science with all rights and privileges associated with the degree.</span>
-          </div>
-        </div>
-        <div class="ijazah-signatures">
-          <div class="rektor">
-            <div class="signature-label">REKTOR,<br><span class="sub-label">RECTOR,</span></div>
-            <div class="ttd-space" />
-            <div class="nama">
-              Dr. WARSITI, S.Kp., M.Kep., Sp.Mat.
             </div>
           </div>
-          <div class="stamp-area">
-            <div class="stamp-box" />
-          </div>
-          <div class="dekan">
-            <div class="date-location">YOGYAKARTA, 22 MARET 2025<br><span class="sub-label">YOGYAKARTA, MARCH 22, 2025</span></div>
-            <div class="signature-label">DEKAN FAKULTAS SAINS DAN TEKNOLOGI,<br><span class="sub-label">DEAN OF FACULTY OF SCIENCE AND TECHNOLOGY,</span></div>
-            <div class="ttd-space" />
-            <div class="nama">
-              Ar. TIKA AINUNNISA FITRIA, S.T., M.T., Ph.D
+          <div class="ijazah-body">
+            <table class="ijazah-table">
+              <tbody>
+                <tr>
+                  <td class="label">
+                    Memberikan Kepada<br><span class="sub-label">Awarded to</span>
+                  </td>
+                  <td class="colon">
+                    :
+                  </td>
+                  <td class="value">
+                    <span class="value-main">{{ user.name?.toUpperCase() }}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="label">
+                    Tempat dan Tanggal Lahir<br><span class="sub-label">Place and Date of Birth</span>
+                  </td>
+                  <td class="colon">
+                    :
+                  </td>
+                  <td class="value">
+                    <span class="value-main">{{ user.birthPlace?.toUpperCase() }}, {{ user.birthDate?.toUpperCase() }}</span><br>
+                    <span class="value-sub">{{ user.birthPlace }}, {{ user.birthDate }}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="label">
+                    Nomor Induk Kependudukan<br><span class="sub-label">Identity Number</span>
+                  </td>
+                  <td class="colon">
+                    :
+                  </td>
+                  <td class="value">
+                    <span class="nik-block" />
+                  </td>
+                </tr>
+                <tr>
+                  <td class="label">
+                    N I M<br><span class="sub-label">Student Number</span>
+                  </td>
+                  <td class="colon">
+                    :
+                  </td>
+                  <td class="value">
+                    {{ user.nim }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="label">
+                    Program Studi<br><span class="sub-label">Study Program</span>
+                  </td>
+                  <td class="colon">
+                    :
+                  </td>
+                  <td class="value">
+                    <span class="value-main">TEKNOLOGI INFORMASI</span><br>
+                    <span class="value-sub">INFORMATION TECHNOLOGY</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="label">
+                    Jenjang Pendidikan<br><span class="sub-label">Degree</span>
+                  </td>
+                  <td class="colon">
+                    :
+                  </td>
+                  <td class="value">
+                    <span class="value-main">SARJANA</span><br>
+                    <span class="value-sub">BACHELOR</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="label">
+                    Tanggal Kelulusan<br><span class="sub-label">Date of Graduation</span>
+                  </td>
+                  <td class="colon">
+                    :
+                  </td>
+                  <td class="value">
+                    <span class="value-main">22 MARET 2025</span><br>
+                    <span class="value-sub">MARCH 22, 2025</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="label">
+                    Status<br><span class="sub-label">Status</span>
+                  </td>
+                  <td class="colon">
+                    :
+                  </td>
+                  <td class="value">
+                    Akreditasi LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 tanggal 19 Maret 2024 dengan peringkat "Baik Sekali".<br><span class="sub-label">Accredited "Very Good" by LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 on March 19, 2024.</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="ijazah-explanation">
+              Ijazah ini diserahkan setelah yang bersangkutan memenuhi semua persyaratan yang ditentukan, dan kepadanya dilimpahkan segala wewenang dan hak yang berhubungan dengan ijazah yang dimilikinya, serta berhak memakai gelar Sarjana Komputer (S.Kom.).<br>
+              <span class="sub-label">This certificate is awarded in recognition of fulfillment of the requirements for the degree. Therefore, the person has been awarded the degree of Bachelor of Computer Science with all rights and privileges associated with the degree.</span>
             </div>
           </div>
-        </div>
+          <div class="ijazah-signatures">
+            <div class="rektor">
+              <div class="signature-label">
+                REKTOR,<br><span class="sub-label">RECTOR,</span>
+              </div>
+              <div class="ttd-space" />
+              <div class="nama">
+                Dr. WARSITI, S.Kp., M.Kep., Sp.Mat.
+              </div>
+            </div>
+            <div class="stamp-area">
+              <div class="stamp-box" />
+            </div>
+            <div class="dekan">
+              <div class="date-location">
+                YOGYAKARTA, 22 MARET 2025<br><span class="sub-label">YOGYAKARTA, MARCH 22, 2025</span>
+              </div>
+              <div class="signature-label">
+                DEKAN FAKULTAS SAINS DAN TEKNOLOGI,<br><span class="sub-label">DEAN OF FACULTY OF SCIENCE AND TECHNOLOGY,</span>
+              </div>
+              <div class="ttd-space" />
+              <div class="nama">
+                Ar. TIKA AINUNNISA FITRIA, S.T., M.T., Ph.D
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -155,7 +161,7 @@ import { computed } from 'vue'
 
 const props = defineProps({
   user: { type: Object, required: true },
-  matakuliah: { type: Array, required: true }
+  matakuliah: { type: Array, required: true },
 })
 
 const openPdfViewer = async () => {
@@ -177,14 +183,14 @@ const openPdfViewer = async () => {
     html2canvas: { 
       scale: 2,
       useCORS: true,
-      logging: false
+      logging: false,
     },
     jsPDF: { 
       unit: 'mm', 
       format: 'a4', 
-      orientation: 'landscape'
+      orientation: 'landscape',
     },
-    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
   }
 
   try {
@@ -198,6 +204,7 @@ const openPdfViewer = async () => {
     const pdfWindow = window.open('', '_blank')
     if (!pdfWindow) {
       alert('Please allow popups for this website')
+      
       return
     }
 
@@ -247,7 +254,7 @@ const columns = computed(() => {
   const enrichedData = props.matakuliah.map(mk => ({
     ...mk,
     bobot: getNilaiBobot(mk.nilai),
-    kredit: (mk.sks * getNilaiBobot(mk.nilai)).toFixed(2)
+    kredit: (mk.sks * getNilaiBobot(mk.nilai)).toFixed(2),
   }))
 
   // Distribute data into 3 columns with proper numbering
@@ -257,12 +264,12 @@ const columns = computed(() => {
 
   const col1 = enrichedData.slice(0, col1Count).map((mk, i) => ({
     ...mk,
-    no: i + 1
+    no: i + 1,
   }))
 
   const col2 = enrichedData.slice(col1Count, col1Count + col2Count).map((mk, i) => ({
     ...mk,
-    no: i + 28
+    no: i + 28,
   }))
 
   const col3Data = enrichedData.slice(col1Count + col2Count)
@@ -272,7 +279,7 @@ const columns = computed(() => {
   col3Data.forEach((mk, i) => {
     col3.push({
       ...mk,
-      no: i + 55
+      no: i + 55,
     })
   })
 
@@ -290,7 +297,7 @@ const columns = computed(() => {
       nilai: '',
       bobot: '',
       kredit: '',
-      isEmpty: true
+      isEmpty: true,
     })
   }
 

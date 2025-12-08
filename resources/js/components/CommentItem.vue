@@ -96,27 +96,27 @@
 </template>
 
 <script>
-import { computed, ref } from 'vue';
+import { computed, ref } from 'vue'
 
 export default {
   name: 'CommentItem',
   props: {
     comment: {
       type: Object,
-      required: true
+      required: true,
     },
     depth: {
       type: Number,
-      default: 0
+      default: 0,
     },
     maxDepth: {
       type: Number,
-      default: 10 // Batas maksimal depth, bisa disesuaikan
+      default: 10, // Batas maksimal depth, bisa disesuaikan
     },
     currentUser: {
       type: Object,
-      default: () => ({ name: 'Mahasiswa' })
-    }
+      default: () => ({ name: 'Mahasiswa' }),
+    },
   },
   emits: ['add-reply'],
   setup(props, { emit }) {
@@ -127,6 +127,7 @@ export default {
     const avatarSize = computed(() => {
       const baseSize = 36
       const sizeReduction = Math.min(props.depth * 4, 20) // Max reduction 20px
+      
       return Math.max(baseSize - sizeReduction, 16) // Min size 16px
     })
 
@@ -140,7 +141,7 @@ export default {
 
     const isNested = computed(() => props.depth > 0)
 
-    const formatDate = (date) => {
+    const formatDate = date => {
       return new Intl.DateTimeFormat('id-ID', {
         dateStyle: 'medium',
         timeStyle: 'short',
@@ -167,7 +168,7 @@ export default {
         user: props.currentUser?.name || 'Mahasiswa',
         text: newReplyText.value,
         date: new Date(),
-        replies: []
+        replies: [],
       }
 
       emit('add-reply', props.comment.id, replyData)
@@ -191,9 +192,9 @@ export default {
       showReplyForm,
       cancelReply,
       submitReply,
-      handleAddReply
+      handleAddReply,
     }
-  }
+  },
 }
 </script>
 

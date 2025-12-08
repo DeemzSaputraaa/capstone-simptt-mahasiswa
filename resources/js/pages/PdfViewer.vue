@@ -1,25 +1,48 @@
 <template>
   <div class="pdf-viewer">
     <div class="pdf-toolbar">
-      <v-btn icon small @click="zoomOut">
-        <v-icon>mdi-minus</v-icon>
-      </v-btn>
+      <VBtn
+        icon
+        small
+        @click="zoomOut"
+      >
+        <VIcon>mdi-minus</VIcon>
+      </VBtn>
       <span class="zoom-text">{{ Math.round(scale * 100) }}%</span>
-      <v-btn icon small @click="zoomIn">
-        <v-icon>mdi-plus</v-icon>
-      </v-btn>
-      <v-btn icon small @click="rotate">
-        <v-icon>mdi-rotate-right</v-icon>
-      </v-btn>
-      <v-btn icon small @click="download">
-        <v-icon>mdi-download</v-icon>
-      </v-btn>
-      <v-btn icon small @click="print">
-        <v-icon>mdi-printer</v-icon>
-      </v-btn>
+      <VBtn
+        icon
+        small
+        @click="zoomIn"
+      >
+        <VIcon>mdi-plus</VIcon>
+      </VBtn>
+      <VBtn
+        icon
+        small
+        @click="rotate"
+      >
+        <VIcon>mdi-rotate-right</VIcon>
+      </VBtn>
+      <VBtn
+        icon
+        small
+        @click="download"
+      >
+        <VIcon>mdi-download</VIcon>
+      </VBtn>
+      <VBtn
+        icon
+        small
+        @click="print"
+      >
+        <VIcon>mdi-printer</VIcon>
+      </VBtn>
     </div>
-    <div class="pdf-container" ref="container">
-      <canvas ref="pdfCanvas"></canvas>
+    <div
+      ref="container"
+      class="pdf-container"
+    >
+      <canvas ref="pdfCanvas" />
     </div>
   </div>
 </template>
@@ -36,8 +59,8 @@ export default {
   props: {
     pdfData: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   setup(props) {
     const container = ref(null)
@@ -61,7 +84,7 @@ export default {
 
       const renderContext = {
         canvasContext: context,
-        viewport: viewport
+        viewport: viewport,
       }
 
       try {
@@ -97,6 +120,7 @@ export default {
 
     const download = () => {
       const link = document.createElement('a')
+
       link.href = props.pdfData
       link.download = 'document.pdf'
       link.click()
@@ -104,6 +128,7 @@ export default {
 
     const print = () => {
       const iframe = document.createElement('iframe')
+
       iframe.style.display = 'none'
       iframe.src = props.pdfData
       document.body.appendChild(iframe)
@@ -126,9 +151,9 @@ export default {
       zoomOut,
       rotate,
       download,
-      print
+      print,
     }
-  }
+  },
 }
 </script>
 

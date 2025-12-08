@@ -111,7 +111,7 @@ const handleLogin = async () => {
         await router.push('/dashboard')
         break
       case 'tendik':
-        await router.push('/admin/dashboard')
+        await router.push('/admin/prayudisium')
         break
       case 'dosen':
         await router.push('/dosen/dashboard')

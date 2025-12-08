@@ -7,20 +7,20 @@
       >
         <div v-if="!showWizard">
           <div class="d-flex flex-wrap justify-space-between align-center mb-6">
-          <VBtn
-            color="#17a2a6"
-            style="border-radius: 10px; background: rgb(var(--v-theme-primary)); color: #fff; font-size: 1.1rem; font-weight: 500; margin-block-end: 32px; min-block-size: 48px;"
-            @click="showWizard = true"
-          >
-            Pengajuan Legalisasi
-          </VBtn>
-          <VBtn
-            color="#17a2a6"
-            style="border-radius: 10px; background: rgb(var(--v-theme-primary)); color: #fff; font-size: 1.1rem; font-weight: 500; margin-block-end: 32px; min-block-size: 48px;"
-            @click="openCaraPembayaran"
-          >
-            Cara Pembayaran
-          </VBtn>
+            <VBtn
+              color="#17a2a6"
+              style="border-radius: 10px; background: rgb(var(--v-theme-primary)); color: #fff; font-size: 1.1rem; font-weight: 500; margin-block-end: 32px; min-block-size: 48px;"
+              @click="showWizard = true"
+            >
+              Pengajuan Legalisasi
+            </VBtn>
+            <VBtn
+              color="#17a2a6"
+              style="border-radius: 10px; background: rgb(var(--v-theme-primary)); color: #fff; font-size: 1.1rem; font-weight: 500; margin-block-end: 32px; min-block-size: 48px;"
+              @click="openCaraPembayaran"
+            >
+              Cara Pembayaran
+            </VBtn>
           </div>
 
           <VAlert
@@ -34,62 +34,71 @@
             <span>{{ notifMessage }}</span>
           </VAlert>
 
-      <div class="table-wrapper">
-        <table class="pengajuan-table">
+          <div class="table-wrapper">
+            <table class="pengajuan-table">
               <colgroup>
-                <col class="col-no" />
-                <col class="col-tanggal" />
-                <col class="col-tagihan" />
-                <col class="col-va" />
-                <col class="col-resi" />
-                <col class="col-status" />
+                <col class="col-no">
+                <col class="col-tanggal">
+                <col class="col-tagihan">
+                <col class="col-va">
+                <col class="col-resi">
+                <col class="col-status">
               </colgroup>
-      <thead>
-        <tr>
-          <th>No</th>
-          <th>Tanggal Pengajuan</th>
-          <th>Tagihan</th>
-          <th>No. VA</th>
-          <th>No. Resi</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(item, index) in paginatedData" :key="item.id" :class="{ 'done-row': item.status === 'Done' }" >
-          <td>{{ (currentPage - 1)* itemsPerPage + index + 1}}</td>
-          <td>{{ item.tanggal }}</td>
-          <td>{{ item.tagihan }}</td>
-          <td>{{ item.noVA || '-' }}</td>
-          <td v-if="item.noResi">
-            <a
-            :href="`https://www.posindonesia.co.id/en/tracking/${item.noResi}`"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-blue-600 underline hover:text-blue-800"
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Tanggal Pengajuan</th>
+                  <th>Tagihan</th>
+                  <th>No. VA</th>
+                  <th>No. Resi</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(item, index) in paginatedData"
+                  :key="item.id"
+                  :class="{ 'done-row': item.status === 'Done' }"
+                >
+                  <td>{{ (currentPage - 1)* itemsPerPage + index + 1 }}</td>
+                  <td>{{ item.tanggal }}</td>
+                  <td>{{ item.tagihan }}</td>
+                  <td>{{ item.noVA || '-' }}</td>
+                  <td v-if="item.noResi">
+                    <a
+                      :href="`https://www.posindonesia.co.id/en/tracking/${item.noResi}`"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-blue-600 underline hover:text-blue-800"
+                    >
+                      {{ item.noResi }}
+                    </a>
+                  </td>
+                  <td v-else>
+                    -
+                  </td>
+                  <!-- <td>{{ item.noResi || '-' }}</td> -->
+                  <td :class="statusClass(item.status)">
+                    {{ item.status }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div
+              class="d-flex justify-start align-center mb-2"
+              style="gap: 0.3rem;  padding-block-start: 14px;"
             >
-            {{ item.noResi }}
-          </a>
-        </td>
-        <td v-else>-</td>
-          <!-- <td>{{ item.noResi || '-' }}</td> -->
-          <td :class="statusClass(item.status)">
-            {{ item.status }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
-        <div class="d-flex justify-start align-center mb-2" style="gap: 0.3rem;  padding-block-start: 14px;">
-          <span style="font-size: 1rem; font-weight: 400;">Page:</span>
-<VSelect
-  v-model="itemsPerPage"
-  :items="[5, 10, 20, 50]"
-  density="compact"
-  hide-details
-  style="max-inline-size: 85px;"
-/>
+              <span style="font-size: 1rem; font-weight: 400;">Page:</span>
+              <VSelect
+                v-model="itemsPerPage"
+                :items="[5, 10, 20, 50]"
+                density="compact"
+                hide-details
+                style="max-inline-size: 85px;"
+              />
+            </div>
+          </div>
         </div>
-  </div>
-</div>
         <div v-else>
           <!-- Stepper Wizard -->
           <div class="wizard-steps mb-8 d-flex justify-center align-center">
@@ -119,6 +128,26 @@
             <VCardText>
               <!-- Step 1: Pengajuan Legalisasi -->
               <div v-if="currentStep === 1">
+                <div class="text-subtitle-1 font-weight-bold mb-2">
+                  Jenis Dokumen
+                </div>
+                <div
+                  class="d-flex align-center mb-4"
+                  style="gap: 16px;"
+                >
+                  <VCheckbox
+                    v-model="form.jenisDokumen"
+                    value="Ijazah"
+                    label="Ijazah"
+                    density="compact"
+                  />
+                  <VCheckbox
+                    v-model="form.jenisDokumen"
+                    value="Transkrip"
+                    label="Transkrip"
+                    density="compact"
+                  />
+                </div>
                 <div class="text-subtitle-1 font-weight-bold mb-2">
                   Jumlah (Jml)
                 </div>
@@ -171,6 +200,14 @@
                 </div>
                 <table class="summary-table styled-summary-table">
                   <tbody>
+                    <tr>
+                      <td class="label">
+                        Jenis Dokumen
+                      </td>
+                      <td class="value">
+                        {{ (form.jenisDokumen && form.jenisDokumen.length) ? form.jenisDokumen.join(', ') : '-' }}
+                      </td>
+                    </tr>
                     <tr>
                       <td class="label">
                         Jumlah
@@ -268,7 +305,10 @@
     class="payment-dialog"
   >
     <VCard class="payment-card-wrapper">
-      <VCardTitle class="text-h4 text-center pa-6" style="background: #f5f5f5;">
+      <VCardTitle
+        class="text-h4 text-center pa-6"
+        style="background: #f5f5f5;"
+      >
         Cara Melakukan Pembayaran
       </VCardTitle>
       <VCardText class="pa-8">
@@ -276,12 +316,20 @@
           <!-- Card 1: ATM BPD DIY -->
           <div class="payment-card">
             <div class="payment-card-header">
-              <h3 class="payment-card-title">ATM BPD DIY</h3>
+              <h3 class="payment-card-title">
+                ATM BPD DIY
+              </h3>
             </div>
             <div class="payment-card-body">
-              <div class="payment-amount">Rp 400.000</div>
-              <div class="payment-description">Pembayaran melalui ATM BPD DIY</div>
-              <div class="payment-id">ID: 2211501033</div>
+              <div class="payment-amount">
+                Rp 400.000
+              </div>
+              <div class="payment-description">
+                Pembayaran melalui ATM BPD DIY
+              </div>
+              <div class="payment-id">
+                ID: 2211501033
+              </div>
               <ul class="payment-steps">
                 <li>✓ Siapkan Kartu ATM Bank BPD DIY</li>
                 <li>✓ Masukkan PIN dan pilih bahasa</li>
@@ -298,12 +346,20 @@
           <!-- Card 2: Internet Banking BSI -->
           <div class="payment-card">
             <div class="payment-card-header">
-              <h3 class="payment-card-title">Internet Banking BSI</h3>
+              <h3 class="payment-card-title">
+                Internet Banking BSI
+              </h3>
             </div>
             <div class="payment-card-body">
-              <div class="payment-amount">Rp 400.000</div>
-              <div class="payment-description">Nominal otomatis muncul di Ibanking</div>
-              <div class="payment-id">ID: 2211501033</div>
+              <div class="payment-amount">
+                Rp 400.000
+              </div>
+              <div class="payment-description">
+                Nominal otomatis muncul di Ibanking
+              </div>
+              <div class="payment-id">
+                ID: 2211501033
+              </div>
               <ul class="payment-steps">
                 <li>✓ Pilih menu Pembayaran</li>
                 <li>✓ Jenis Pembayaran: Institusi</li>
@@ -318,12 +374,20 @@
           <!-- Card 3: Mobile Banking BSI -->
           <div class="payment-card">
             <div class="payment-card-header">
-              <h3 class="payment-card-title">Mobile Banking BSI</h3>
+              <h3 class="payment-card-title">
+                Mobile Banking BSI
+              </h3>
             </div>
             <div class="payment-card-body">
-              <div class="payment-amount">Rp 400.000</div>
-              <div class="payment-description">Nominal otomatis muncul di Mbanking</div>
-              <div class="payment-id">ID: 2211501033</div>
+              <div class="payment-amount">
+                Rp 400.000
+              </div>
+              <div class="payment-description">
+                Nominal otomatis muncul di Mbanking
+              </div>
+              <div class="payment-id">
+                ID: 2211501033
+              </div>
               <ul class="payment-steps">
                 <li>✓ Pilih menu Pembayaran</li>
                 <li>✓ Jenis Pembayaran: Akademik</li>
@@ -338,12 +402,20 @@
           <!-- Card 4: ATM Bank BSI -->
           <div class="payment-card">
             <div class="payment-card-header">
-              <h3 class="payment-card-title">ATM Bank BSI</h3>
+              <h3 class="payment-card-title">
+                ATM Bank BSI
+              </h3>
             </div>
             <div class="payment-card-body">
-              <div class="payment-amount">Rp 400.000</div>
-              <div class="payment-description">Nominal otomatis muncul di ATM</div>
-              <div class="payment-id">ID: 2211501033</div>
+              <div class="payment-amount">
+                Rp 400.000
+              </div>
+              <div class="payment-description">
+                Nominal otomatis muncul di ATM
+              </div>
+              <div class="payment-id">
+                ID: 2211501033
+              </div>
               <ul class="payment-steps">
                 <li>✓ Pilih menu Pembayaran/Pembelian</li>
                 <li>✓ Pilih menu Akademik</li>
@@ -356,7 +428,10 @@
           </div>
         </div>
       </VCardText>
-      <VCardActions class="pa-6" style="background: #f5f5f5;">
+      <VCardActions
+        class="pa-6"
+        style="background: #f5f5f5;"
+      >
         <VSpacer />
         <VBtn
           color="#17a2a6"
@@ -371,8 +446,8 @@
 </template>
 
 <script>
-import { computed, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { computed, ref } from 'vue'
+import { useRoute } from 'vue-router'
 
 export default {
   name: 'PendaftaranLegalisasi',
@@ -391,20 +466,23 @@ export default {
       { id: 7, tanggal: '2025-10-07', tagihan: 'Menunggu Tagihan', noVA: '', noResi: '', status: 'Pending' },
       { id: 8,  tanggal: '2025-10-08', tagihan: 'Rp 40.000,00', noVA: '2211233313', noResi: '', status: 'Proses' },
     ])
+
     const currentPage = ref(1)
     const itemsPerPage = ref(5)
     
     const totalPages = computed(() => Math.ceil(pengajuanList.value.length / itemsPerPage.value))
+
     const paginatedData = computed(() => {
       const start = (currentPage.value - 1) * itemsPerPage.value
       const end = start + itemsPerPage.value
+      
       return pengajuanList.value.slice(start, end)
     })
     
     const statusClass = status => {
       switch(status.toLowerCase()) {
-        case 'done': return 'bg-green'
-        default: return 'bg-white'
+      case 'done': return 'bg-green'
+      default: return 'bg-white'
       }
     }
 
@@ -417,6 +495,7 @@ export default {
 
     const form = ref({
       // Step 1
+      jenisDokumen: [],
       jml: '',
       alamat: '',
       namaPenerima: '',
@@ -502,10 +581,10 @@ export default {
       
       if (validationMessage.value.includes('berhasil')) {
         // Balik ke list pengajuan
-         showWizard.value = false
-         currentStep.value = 1
-        }
+        showWizard.value = false
+        currentStep.value = 1
       }
+    }
 
     return {
       showWizard,
@@ -884,119 +963,121 @@ export default {
 
 /* Payment Dialog Styles */
 .payment-dialog .v-overlay__content {
-  max-width: 1400px !important;
+  max-inline-size: 1400px !important;
 }
 
 .payment-card-wrapper {
-  background: rgb(var(--v-theme-surface));
-  border-radius: 12px;
   overflow: hidden;
+  border-radius: 12px;
+  background: rgb(var(--v-theme-surface));
 }
 
 .payment-cards-container {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
   padding: 0;
+  gap: 20px;
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .payment-card {
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
   border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
   border-radius: 12px;
   background: rgb(var(--v-theme-surface-variant));
-  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 10%);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .payment-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 24px rgba(23, 162, 166, 0.3);
   border-color: #17a2a6;
+  box-shadow: 0 8px 24px rgba(23, 162, 166, 30%);
+  transform: translateY(-5px);
 }
 
 .payment-card-header {
   background: linear-gradient(135deg, #17a2a6 0%, #129990 100%);
-  padding: 20px 16px;
+  padding-block: 20px;
+  padding-inline: 16px;
   text-align: center;
 }
 
 .payment-card-title {
+  margin: 0;
   color: #fff;
   font-size: 1.2rem;
   font-weight: 600;
-  margin: 0;
   line-height: 1.3;
 }
 
 .payment-card-body {
-  padding: 20px 16px;
-  flex: 1;
   display: flex;
+  flex: 1;
   flex-direction: column;
   background: rgb(var(--v-theme-surface-bright));
+  padding-block: 20px;
+  padding-inline: 16px;
 }
 
 .payment-amount {
+  color: #17a2a6;
   font-size: 1.8rem;
   font-weight: 700;
-  color: #17a2a6;
+  margin-block-end: 8px;
   text-align: center;
-  margin-bottom: 8px;
 }
 
 .payment-description {
-  font-size: 0.9rem;
   color: rgb(var(--v-theme-on-surface-variant));
-  text-align: center;
-  margin-bottom: 12px;
+  font-size: 0.9rem;
   font-style: italic;
+  margin-block-end: 12px;
   opacity: 0.8;
+  text-align: center;
 }
 
 .payment-id {
-  font-size: 0.95rem;
-  color: #17a2a6;
-  text-align: center;
-  font-weight: 600;
-  margin-bottom: 16px;
   padding: 8px;
-  background: rgba(23, 162, 166, 0.15);
+  border: 1px solid rgba(23, 162, 166, 30%);
   border-radius: 6px;
-  border: 1px solid rgba(23, 162, 166, 0.3);
+  background: rgba(23, 162, 166, 15%);
+  color: #17a2a6;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-block-end: 16px;
+  text-align: center;
 }
 
 .payment-steps {
-  list-style: none;
+  flex: 1;
   padding: 0;
   margin: 0;
-  flex: 1;
+  list-style: none;
 }
 
 .payment-steps li {
-  font-size: 0.85rem;
   color: rgb(var(--v-theme-on-surface));
-  margin-bottom: 10px;
-  padding-left: 4px;
+  font-size: 0.85rem;
   line-height: 1.4;
+  margin-block-end: 10px;
   opacity: 0.9;
+  padding-inline-start: 4px;
 }
 
 .payment-steps li::before {
   color: #17a2a6;
-  margin-right: 6px;
+  margin-inline-end: 6px;
 }
 
 /* Light Mode Specific */
 .v-theme--light .payment-card {
-  background: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 8%);
 }
 
 .v-theme--light .payment-card-body {
-  background: #ffffff;
+  background: #fff;
 }
 
 .v-theme--light .payment-amount {
@@ -1013,9 +1094,9 @@ export default {
 
 /* Dark Mode Specific */
 .v-theme--dark .payment-card {
+  border-color: #333;
   background: #1a1a1a;
-  border-color: #333333;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 60%);
 }
 
 .v-theme--dark .payment-card-body {
@@ -1024,7 +1105,7 @@ export default {
 
 .v-theme--dark .payment-amount {
   color: #5ce1e6;
-  text-shadow: 0 0 20px rgba(92, 225, 230, 0.3);
+  text-shadow: 0 0 20px rgba(92, 225, 230, 30%);
 }
 
 .v-theme--dark .payment-description {
@@ -1038,20 +1119,20 @@ export default {
 }
 
 .v-theme--dark .payment-id {
-  background: linear-gradient(135deg, rgba(92, 225, 230, 0.2) 0%, rgba(23, 162, 166, 0.15) 100%);
-  border: 1px solid rgba(92, 225, 230, 0.4);
+  border: 1px solid rgba(92, 225, 230, 40%);
+  background: linear-gradient(135deg, rgba(92, 225, 230, 20%) 0%, rgba(23, 162, 166, 15%) 100%);
+  box-shadow: 0 0 15px rgba(92, 225, 230, 10%);
   color: #5ce1e6;
-  box-shadow: 0 0 15px rgba(92, 225, 230, 0.1);
 }
 
 .v-theme--dark .payment-card:hover {
-  box-shadow: 0 8px 32px rgba(92, 225, 230, 0.25);
   border-color: #5ce1e6;
+  box-shadow: 0 8px 32px rgba(92, 225, 230, 25%);
 }
 
 .v-theme--dark .payment-steps li::before {
   color: #5ce1e6;
-  filter: drop-shadow(0 0 2px rgba(92, 225, 230, 0.5));
+  filter: drop-shadow(0 0 2px rgba(92, 225, 230, 50%));
 }
 
 .v-theme--dark .payment-card-wrapper {

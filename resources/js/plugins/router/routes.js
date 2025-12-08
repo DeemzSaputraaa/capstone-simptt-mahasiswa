@@ -1,5 +1,6 @@
 export const routes = [
   { path: '/', redirect: '/login' },
+  { path: '/admin', redirect: '/admin/prayudisium' },
   {
     path: '/',
     component: () => import('@/layouts/default.vue'),
@@ -49,6 +50,24 @@ export const routes = [
       {
         path: 'edit-profile',
         component: () => import('@/pages/EditProfile.vue'),
+      },
+    ],
+  },
+  {
+    path: '/admin',
+    component: () => import('@/layouts/default.vue'),
+    children: [
+      {
+        path: 'prayudisium',
+        component: () => import('@/pages/admin/PraYudisium.vue'),
+      },
+      {
+        path: 'validasiijazah',
+        component: () => import('@/pages/admin/ValidasiIjazah.vue'),
+      },
+      {
+        path: 'legalisasi',
+        component: () => import('@/pages/admin/Legalisasi.vue'),
       },
     ],
   },
