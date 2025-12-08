@@ -83,7 +83,7 @@ const handleLogin = async () => {
         localStorage.setItem('timeout', data.timeout)
       }
 
-      await router.push('/admin/dashboard')
+      await router.push('/admin/prayudisium')
     } else {
       const errorMessage = data?.message || 'NIP atau Password yang Anda masukkan salah. Silakan coba lagi.'
       loginErrorMessage.value = errorMessage

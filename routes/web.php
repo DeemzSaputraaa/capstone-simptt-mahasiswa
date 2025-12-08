@@ -20,6 +20,7 @@ Route::prefix('api')->group(function () {
         Route::post('/refresh', [AuthController::class, 'refresh']);
         Route::post('/logout', [AuthController::class, 'logout']);
 
+        Route::get('/pra-yudisium', [PraYudisiumController::class, 'index']);
         Route::post('/pra-yudisium', [PraYudisiumController::class, 'store']);
 
         // Form Legalisasi routes

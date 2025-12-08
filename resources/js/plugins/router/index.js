@@ -11,9 +11,8 @@ const publicPaths = ['/', '/login', '/register', '/tendik/login']
 router.beforeEach((to, from, next) => {
   const token = sessionStorage.getItem('jwt_token')
 
-  if (!token && !publicPaths.includes(to.path)) {
+  if (!token && !publicPaths.includes(to.path))
     return next('/login')
-  }
 
   return next()
 })

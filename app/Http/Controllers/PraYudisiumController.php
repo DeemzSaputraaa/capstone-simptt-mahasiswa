@@ -14,6 +14,44 @@ class PraYudisiumController extends Controller
     /**
      * Simpan data Pra Yudisium.
      */
+    public function index()
+    {
+        try {
+            $records = AkPraYudisium::query()
+                ->leftJoin('mh_v_nama as m', 'm.kdmahasiswa', '=', 'ak_pra_yudisium.kdmahasiswa')
+                ->select(
+                    'ak_pra_yudisium.kdprayudisium',
+                    'ak_pra_yudisium.kdmahasiswa',
+                    'ak_pra_yudisium.berkas_foto_ijazah',
+                    'ak_pra_yudisium.berkas_ijazah_terakhir',
+                    'ak_pra_yudisium.berkas_kk_ktp',
+                    'ak_pra_yudisium.is_validate',
+                    'ak_pra_yudisium.tgl_validate',
+                    'ak_pra_yudisium.comment',
+                    'ak_pra_yudisium.create_at',
+                    'm.nim',
+                    'm.namalengkap'
+                )
+                ->orderByDesc('ak_pra_yudisium.create_at')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $records,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('PraYudisium index error', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'code' => 'INTERNAL_SERVER_ERROR',
+                'message' => 'Failed to fetch Pra Yudisium data',
+            ], 500);
+        }
+    }
+
     public function store(Request $request)
     {
         try {

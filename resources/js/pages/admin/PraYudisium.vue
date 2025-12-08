@@ -1,47 +1,64 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
 const itemsPerPage = ref(5)
+const loading = ref(false)
+const errorMessage = ref('')
+const mahasiswaList = ref([])
 
-// Data dummy mahasiswa
-const mahasiswaList = ref([
-  {
-    kode: 'API234',
-    nik: '2232920009220019I',
-    pasFoto: 'https://via.placeholder.com/80x100?text=Foto+1',
-    ijazah: 'https://via.placeholder.com/80x100?text=Ijazah+1',
-    ktp: 'https://via.placeholder.com/80x100?text=KTP+1',
-    tanggalPengajuan: '2025-06-01',
-  },
-  {
-    kode: 'AP2345',
-    nik: '2232920009220019I',
-    pasFoto: 'https://via.placeholder.com/80x100?text=Foto+2',
-    ijazah: 'https://via.placeholder.com/80x100?text=Ijazah+2',
-    ktp: 'https://via.placeholder.com/80x100?text=KTP+2',
-    tanggalPengajuan: '2025-06-01',
-  },
-  {
-    kode: 'AP3456',
-    nik: '2232920009220019I',
-    pasFoto: 'https://via.placeholder.com/80x100?text=Foto+3',
-    ijazah: 'https://via.placeholder.com/80x100?text=Ijazah+3',
-    ktp: 'https://via.placeholder.com/80x100?text=KTP+3',
-    tanggalPengajuan: '2025-06-01',
-  },
-])
+const storageBase = `${window.location.origin}/storage/`
+const fileUrl = path => (path ? `${storageBase}${path}` : '')
+const isImage = path => /\.(png|jpe?g|gif|bmp|webp)$/i.test(path || '')
+const showPreview = ref(false)
+const previewUrl = ref('')
+const previewTitle = ref('Pratinjau')
+const formatDate = date => date ? new Date(date).toLocaleDateString('id-ID') : '-'
+
+const fetchData = async () => {
+  loading.value = true
+  errorMessage.value = ''
+  try {
+    const headers = {
+      Accept: 'application/json',
+    }
+    const token = sessionStorage.getItem('jwt_token')
+    if (token)
+      headers.Authorization = `Bearer ${token}`
+
+    const res = await fetch('/api/pra-yudisium', { headers })
+    if (!res.ok) {
+      throw new Error(`Gagal memuat data (${res.status})`)
+    }
+    const json = await res.json()
+    if (json.success && Array.isArray(json.data)) {
+      mahasiswaList.value = json.data
+    } else {
+      throw new Error(json.message || 'Response tidak valid')
+    }
+  } catch (err) {
+    errorMessage.value = err.message || 'Gagal memuat data'
+  } finally {
+    loading.value = false
+  }
+}
 
 const editItem = item => {
   console.log('Edit:', item)
-
-  // TODO: Implement edit logic
 }
 
 const deleteItem = item => {
   console.log('Delete:', item)
-
-  // TODO: Implement delete logic
 }
+
+const openPreview = (path, title) => {
+  const url = fileUrl(path)
+  if (!url) return
+  previewUrl.value = url
+  previewTitle.value = title || 'Pratinjau'
+  showPreview.value = true
+}
+
+onMounted(fetchData)
 </script>
 
 <template>
@@ -50,9 +67,26 @@ const deleteItem = item => {
     <VCardSubtitle>Daftar pengajuan pra yudisium</VCardSubtitle>
     <VDivider />
 
-    <div class="d-flex align-center justify-end mb-4">
+    <div class="d-flex align-center justify-between mb-4">
       <div>Total: {{ mahasiswaList.length }}</div>
+      <VBtn
+        size="small"
+        variant="tonal"
+        :loading="loading"
+        @click="fetchData"
+      >
+        Muat Ulang
+      </VBtn>
     </div>
+
+    <VAlert
+      v-if="errorMessage"
+      type="error"
+      variant="tonal"
+      class="mb-4"
+    >
+      {{ errorMessage }}
+    </VAlert>
 
     <VTable class="pra-yudisium-table w-auto">
       <thead>
@@ -72,33 +106,75 @@ const deleteItem = item => {
       <tbody>
         <tr
           v-for="(m, i) in mahasiswaList.slice(0, itemsPerPage)"
-          :key="m.kode"
+          :key="m.kdprayudisium"
         >
           <td>{{ i + 1 }}</td>
-          <td>{{ m.kode }}</td>
-          <td>{{ m.nik }}</td>
+          <td>{{ m.kdprayudisium }}</td>
+          <td>{{ m.nim || m.kdmahasiswa }}</td>
           <td>
-            <img
-              :src="m.pasFoto"
-              alt="Pas Foto"
-              class="foto-preview"
-            >
+            <template v-if="isImage(m.berkas_foto_ijazah)">
+              <img
+                :src="fileUrl(m.berkas_foto_ijazah)"
+                alt="Pas Foto"
+                class="foto-preview"
+                role="button"
+                @click="openPreview(m.berkas_foto_ijazah, 'Pas Foto')"
+              >
+            </template>
+            <template v-else>
+              <VBtn
+                variant="text"
+                size="small"
+                :href="fileUrl(m.berkas_foto_ijazah)"
+                target="_blank"
+              >
+                Lihat
+              </VBtn>
+            </template>
           </td>
           <td>
-            <img
-              :src="m.ijazah"
-              alt="Ijazah"
-              class="dokumen-preview"
-            >
+            <template v-if="isImage(m.berkas_ijazah_terakhir)">
+              <img
+                :src="fileUrl(m.berkas_ijazah_terakhir)"
+                alt="Ijazah"
+                class="dokumen-preview"
+                role="button"
+                @click="openPreview(m.berkas_ijazah_terakhir, 'Ijazah')"
+              >
+            </template>
+            <template v-else>
+              <VBtn
+                variant="text"
+                size="small"
+                :href="fileUrl(m.berkas_ijazah_terakhir)"
+                target="_blank"
+              >
+                Lihat
+              </VBtn>
+            </template>
           </td>
           <td>
-            <img
-              :src="m.ktp"
-              alt="KTP"
-              class="dokumen-preview"
-            >
+            <template v-if="isImage(m.berkas_kk_ktp)">
+              <img
+                :src="fileUrl(m.berkas_kk_ktp)"
+                alt="KTP"
+                class="dokumen-preview"
+                role="button"
+                @click="openPreview(m.berkas_kk_ktp, 'KTP')"
+              >
+            </template>
+            <template v-else>
+              <VBtn
+                variant="text"
+                size="small"
+                :href="fileUrl(m.berkas_kk_ktp)"
+                target="_blank"
+              >
+                Lihat
+              </VBtn>
+            </template>
           </td>
-          <td>{{ m.tanggalPengajuan }}</td>
+          <td>{{ formatDate(m.create_at) }}</td>
           <td class="text-center">
             <div class="d-flex justify-center">
               <VBtn
@@ -150,6 +226,32 @@ const deleteItem = item => {
         style="max-inline-size: 80px;"
       />
     </div>
+
+    <VDialog
+      v-model="showPreview"
+      max-width="600"
+    >
+      <VCard>
+        <VCardTitle>{{ previewTitle }}</VCardTitle>
+        <VCardText class="d-flex justify-center">
+          <VImg
+            :src="previewUrl"
+            max-width="540"
+            cover
+          />
+        </VCardText>
+        <VCardActions>
+          <VSpacer />
+          <VBtn
+            variant="text"
+            color="primary"
+            @click="showPreview = false"
+          >
+            Tutup
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
   </VCard>
 </template>
 
