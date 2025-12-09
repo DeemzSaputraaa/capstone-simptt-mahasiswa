@@ -13,8 +13,27 @@ class FormLegalisasiController extends Controller
      */
     public function index()
     {
-        $formLegalisasi = FormLegalisasi::with(['status', 'history'])->get();
-        return response()->json($formLegalisasi);
+        // Filter by logged-in mahasiswa (berdasarkan nim -> kdmahasiswa)
+        $payload = request()->attributes->get('jwt_payload', []);
+        $nim = $payload['username'] ?? null;
+        $kdmahasiswa = null;
+
+        if ($nim) {
+            $kdmahasiswa = \DB::table('mh_v_nama')->where('nim', $nim)->value('kdmahasiswa');
+        }
+
+        $query = FormLegalisasi::query()->orderByDesc('create_at');
+
+        if ($kdmahasiswa) {
+            $query->where('kdmahasiswa', $kdmahasiswa);
+        }
+
+        $formLegalisasi = $query->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $formLegalisasi,
+        ]);
     }
 
     /**
@@ -32,11 +51,36 @@ class FormLegalisasiController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            // Tambahkan validasi sesuai dengan struktur tabel
+            'kdmahasiswa' => 'nullable|integer',
+            'jumlah_legalisasi' => 'required|integer|min:1',
+            'biaya_legalisasi' => 'nullable|numeric',
+            'alamat_kirim' => 'required|string',
+            'nama_penerima_legalisasi' => 'required|string|max:255',
+            'noresi' => 'nullable|string|max:100',
+            'idtagihan' => 'nullable|string|max:100',
+            'tgl_dikirim' => 'nullable|date',
+            'kdlegalisasi_sebelum' => 'nullable|integer',
+            'telp_penerima' => 'nullable|string|max:50',
+            'comment' => 'nullable|string',
         ]);
 
+        // Jika kdmahasiswa tidak dikirim, ambil dari payload JWT (nim -> kdmahasiswa)
+        if (empty($validated['kdmahasiswa'])) {
+            $payload = $request->attributes->get('jwt_payload', []);
+            $nim = $payload['username'] ?? null;
+            if ($nim) {
+                $kd = \DB::table('mh_v_nama')->where('nim', $nim)->value('kdmahasiswa');
+                if ($kd) {
+                    $validated['kdmahasiswa'] = $kd;
+                }
+            }
+        }
+
         $formLegalisasi = FormLegalisasi::create($validated);
-        return response()->json($formLegalisasi, 201);
+        return response()->json([
+            'success' => true,
+            'data' => $formLegalisasi,
+        ], 201);
     }
 
     /**
@@ -67,12 +111,26 @@ class FormLegalisasiController extends Controller
     public function update(Request $request, string $id)
     {
         $validated = $request->validate([
-            // Tambahkan validasi sesuai dengan struktur tabel
+            'kdmahasiswa' => 'sometimes|required|integer',
+            'jumlah_legalisasi' => 'sometimes|required|integer|min:1',
+            'biaya_legalisasi' => 'nullable|numeric',
+            'alamat_kirim' => 'sometimes|required|string',
+            'nama_penerima_legalisasi' => 'sometimes|required|string|max:255',
+            'noresi' => 'nullable|string|max:100',
+            'idtagihan' => 'nullable|string|max:100',
+            'tgl_dikirim' => 'nullable|date',
+            'kdlegalisasi_sebelum' => 'nullable|integer',
+            'telp_penerima' => 'nullable|string|max:50',
+            'comment' => 'nullable|string',
         ]);
 
         $formLegalisasi = FormLegalisasi::findOrFail($id);
         $formLegalisasi->update($validated);
-        return response()->json($formLegalisasi);
+
+        return response()->json([
+            'success' => true,
+            'data' => $formLegalisasi,
+        ]);
     }
 
     /**

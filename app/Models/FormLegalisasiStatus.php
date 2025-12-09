@@ -9,7 +9,8 @@ class FormLegalisasiStatus extends Model
     protected $table = 'form_legalisasi_status';
 
     protected $fillable = [
-        // Tambahkan kolom-kolom yang bisa diisi mass assignment
+        'nama',
+        'keterangan',
     ];
 
     public $timestamps = false;

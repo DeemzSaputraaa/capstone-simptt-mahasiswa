@@ -57,29 +57,28 @@
               <tbody>
                 <tr
                   v-for="(item, index) in paginatedData"
-                  :key="item.id"
-                  :class="{ 'done-row': item.status === 'Done' }"
+                  :key="item.kdlegalisasi || item.id || index"
+                  :class="{ 'done-row': statusText(item) === 'Done' }"
                 >
                   <td>{{ (currentPage - 1)* itemsPerPage + index + 1 }}</td>
-                  <td>{{ item.tanggal }}</td>
-                  <td>{{ item.tagihan }}</td>
-                  <td>{{ item.noVA || '-' }}</td>
-                  <td v-if="item.noResi">
+                  <td>{{ formatDate(item.create_at || item.tgl_dikirim) }}</td>
+                  <td>{{ item.biaya_legalisasi ?? '-' }}</td>
+                  <td>{{ item.idtagihan || '-' }}</td>
+                  <td v-if="item.noresi">
                     <a
-                      :href="`https://www.posindonesia.co.id/en/tracking/${item.noResi}`"
+                      :href="`https://www.posindonesia.co.id/en/tracking/${item.noresi}`"
                       target="_blank"
                       rel="noopener noreferrer"
                       class="text-blue-600 underline hover:text-blue-800"
                     >
-                      {{ item.noResi }}
+                      {{ item.noresi }}
                     </a>
                   </td>
                   <td v-else>
                     -
                   </td>
-                  <!-- <td>{{ item.noResi || '-' }}</td> -->
-                  <td :class="statusClass(item.status)">
-                    {{ item.status }}
+                  <td :class="statusClass(statusText(item))">
+                    {{ statusText(item) }}
                   </td>
                 </tr>
               </tbody>
@@ -283,7 +282,7 @@
   >
     <VCard>
       <VCardTitle class="text-h5">
-        {{ validationMessage.includes('berhasil') ? 'Sukses' : 'Peringatan' }}
+        {{ modalType === 'success' ? 'Sukses' : modalType === 'error' ? 'Gagal' : 'Peringatan' }}
       </VCardTitle>
       <VCardText>
         {{ validationMessage }}
@@ -292,7 +291,8 @@
         <VSpacer />
         <VBtn
           color="primary"
-          @click="closeValidationModal"
+          type="button"
+          @click.stop.prevent="closeValidationModal"
         >
           OK
         </VBtn>
@@ -456,16 +456,11 @@ export default {
     const currentStep = ref(1)
 
     // Dummy data pengajuan legalisasi
-    const pengajuanList = ref([
-      { id: 1, tanggal: '2025-06-01', tagihan: 'Menunggu Tagihan', noVA: '', noResi: '', status: 'Pending' },
-      { id: 2, tanggal: '2025-05-17', tagihan: 'Rp 20.000,00', noVA: '2211501047', noResi: 'P2303300137564', status: 'Done' },
-      { id: 3, tanggal: '2025-04-20', tagihan: 'Rp 65.000,00', noVA: '2211501047', noResi: '', status: 'Proses' },
-      { id: 4, tanggal: '2025-04-17', tagihan: 'Menunggu Tagihan', noVA: '', noResi: '', status: 'Pending' },
-      { id: 5, tanggal: '2025-04-08', tagihan: 'Menunggu Tagihan', noVA: '', noResi: '', status: 'Pending' }, 
-      { id: 6, tanggal: '2025-10-06', tagihan: 'Rp 80.000,00', noVA: '2211505666', noResi: 'P2345678901234', status: 'Done' },
-      { id: 7, tanggal: '2025-10-07', tagihan: 'Menunggu Tagihan', noVA: '', noResi: '', status: 'Pending' },
-      { id: 8,  tanggal: '2025-10-08', tagihan: 'Rp 40.000,00', noVA: '2211233313', noResi: '', status: 'Proses' },
-    ])
+    const pengajuanList = ref([])
+    const loading = ref(false)
+    const submitLoading = ref(false)
+    const errorMessage = ref('')
+    const successMessage = ref('')
 
     const currentPage = ref(1)
     const itemsPerPage = ref(5)
@@ -480,10 +475,19 @@ export default {
     })
     
     const statusClass = status => {
-      switch(status.toLowerCase()) {
+      if (!status) return 'bg-white'
+      switch((status || '').toLowerCase()) {
       case 'done': return 'bg-green'
+      case 'dikirim': return 'bg-white'
       default: return 'bg-white'
       }
+    }
+
+    const formatDate = date => date ? new Date(date).toLocaleDateString('id-ID') : '-'
+
+    const statusText = item => {
+      if (item?.tgl_dikirim) return 'Dikirim'
+      return 'Pending'
     }
 
     // State pengajuan yang dipilih
@@ -500,10 +504,18 @@ export default {
       alamat: '',
       namaPenerima: '',
       noTelpPenerima: '',
+      comment: '',
     })
 
     const showValidationModal = ref(false)
     const validationMessage = ref('')
+    const modalType = ref('warning') // 'success' | 'error' | 'warning'
+
+    const openModal = (type = 'warning', message = '') => {
+      modalType.value = type
+      validationMessage.value = message
+      showValidationModal.value = true
+    }
 
     const showNotifAlert = ref(false)
     const notifMessage = ref('')
@@ -529,16 +541,94 @@ export default {
       }
     }
 
-    const handleSubmit = () => {
-      // Validasi contoh, sesuaikan dengan kebutuhan
-      if (!form.value.jml || !form.value.alamat || !form.value.namaPenerima || !form.value.noTelpPenerima) {
-        validationMessage.value = 'Mohon lengkapi semua data pendaftaran legalisasi'
-        showValidationModal.value = true
-        
+    const resetForm = () => {
+      form.value = {
+        jenisDokumen: [],
+        jml: '',
+        alamat: '',
+        namaPenerima: '',
+        noTelpPenerima: '',
+        comment: '',
+      }
+    }
+
+    const fetchList = async () => {
+      loading.value = true
+      errorMessage.value = ''
+      try {
+        const headers = { Accept: 'application/json' }
+        const token = sessionStorage.getItem('jwt_token')
+        if (token)
+          headers.Authorization = `Bearer ${token}`
+
+        const res = await fetch('/api/form-legalisasi', { headers })
+        const json = await res.json()
+        if (!res.ok || json.success === false)
+          throw new Error(json.message || `Gagal memuat data (${res.status})`)
+
+        const data = json.data ?? json
+        pengajuanList.value = Array.isArray(data) ? data : []
+      } catch (e) {
+        errorMessage.value = e.message || 'Gagal memuat data'
+      } finally {
+        loading.value = false
+      }
+    }
+
+    const handleSubmit = async () => {
+      if (currentStep.value === 1) {
+        if (!form.value.jml || !form.value.alamat || !form.value.namaPenerima || !form.value.noTelpPenerima) {
+          openModal('warning', 'Mohon lengkapi semua data pendaftaran legalisasi')
+          return
+        }
+        currentStep.value = 2
         return
       }
-      validationMessage.value = 'Form berhasil dikirim'
-      showValidationModal.value = true
+
+      // Step 2: submit ke backend
+      submitLoading.value = true
+      validationMessage.value = ''
+      errorMessage.value = ''
+      successMessage.value = ''
+
+      const payload = {
+        jumlah_legalisasi: Number(form.value.jml) || 0,
+        alamat_kirim: form.value.alamat,
+        nama_penerima_legalisasi: form.value.namaPenerima,
+        telp_penerima: form.value.noTelpPenerima,
+        comment: form.value.comment || (Array.isArray(form.value.jenisDokumen) ? form.value.jenisDokumen.join(', ') : ''),
+      }
+
+      try {
+        const headers = {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        }
+        const token = sessionStorage.getItem('jwt_token')
+        if (token)
+          headers.Authorization = `Bearer ${token}`
+
+        const res = await fetch('/api/form-legalisasi', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(payload),
+        })
+        const json = await res.json()
+        if (!res.ok || json.success === false)
+          throw new Error(json.message || 'Gagal mengirim pengajuan')
+
+        const dataBaru = json.data ?? null
+        if (dataBaru)
+          pengajuanList.value.unshift(dataBaru)
+
+        openModal('success', 'Form berhasil dikirim')
+        successMessage.value = 'Pengajuan berhasil disimpan'
+      } catch (e) {
+        errorMessage.value = e.message || 'Gagal mengirim pengajuan'
+        openModal('error', errorMessage.value)
+      } finally {
+        submitLoading.value = false
+      }
     }
 
     // Fungsi untuk membuka cara pembayaran dalam dialog/modal
@@ -567,24 +657,27 @@ export default {
     // Nomor resi dummy, bisa diganti sesuai data pengajuan
     const defaultResi = 'P2303300137522'
 
-
     // Fungsi untuk tracking
     const trackingResi = item => {
-      // Ganti dengan item.resi jika ada field resi di data pengajuan
-      const resi = item.noResi || defaultResi
-
+      const resi = item.noresi || item.noResi || defaultResi
       window.open(`https://www.posindonesia.co.id/en/tracking/${resi}`, '_blank')
     }
 
     const closeValidationModal = () => {
       showValidationModal.value = false
-      
-      if (validationMessage.value.includes('berhasil')) {
+
+      const isSuccess = modalType.value === 'success' || (validationMessage.value || '').toLowerCase().includes('berhasil') || successMessage.value
+
+      if (isSuccess) {
         // Balik ke list pengajuan
         showWizard.value = false
         currentStep.value = 1
+        resetForm()
+        fetchList()
       }
     }
+
+    onMounted(fetchList)
 
     return {
       showWizard,
@@ -596,6 +689,7 @@ export default {
       form,
       showValidationModal,
       validationMessage,
+      modalType,
       handleSubmit,
       nextStep,
       prevStep,
@@ -608,6 +702,13 @@ export default {
       notifMessage,
       showCaraBayarDialog,
       trackingResi,
+      fetchList,
+      loading,
+      submitLoading,
+      errorMessage,
+      successMessage,
+      formatDate,
+      statusText,
       paginatedData,
       currentPage,
       itemsPerPage,

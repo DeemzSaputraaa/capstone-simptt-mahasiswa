@@ -8,12 +8,25 @@ class FormLegalisasi extends Model
 {
     protected $table = 'form_legalisasi';
 
+    // Sesuaikan kolom dengan struktur tabel Anda
     protected $fillable = [
-        // Tambahkan kolom-kolom yang bisa diisi mass assignment
-        // Sesuaikan dengan struktur tabel di database
+        'kdmahasiswa',
+        'jumlah_legalisasi',
+        'biaya_legalisasi',
+        'alamat_kirim',
+        'nama_penerima_legalisasi',
+        'noresi',
+        'idtagihan',
+        'tgl_dikirim',
+        'kdlegalisasi_sebelum',
+        'telp_penerima',
+        'comment',
     ];
 
-    public $timestamps = false; // Jika tabel tidak memiliki created_at dan updated_at
+    public $timestamps = true;
+    const CREATED_AT = 'create_at';
+    const UPDATED_AT = 'update_at';
+    const DELETED_AT = 'delete_at';
 
     // Relasi dengan tabel lain
     public function history()

@@ -9,7 +9,10 @@ class FormLegalisasiHistory extends Model
     protected $table = 'form_legalisasi_history';
 
     protected $fillable = [
-        // Tambahkan kolom-kolom yang bisa diisi mass assignment
+        'form_legalisasi_id',
+        'status',
+        'catatan',
+        'created_at',
     ];
 
     public $timestamps = false;

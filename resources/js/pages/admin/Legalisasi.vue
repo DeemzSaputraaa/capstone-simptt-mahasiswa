@@ -1,36 +1,104 @@
 
 
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
 const itemsPerPage = ref(10)
+const daftarLegalisasi = ref([])
+const loading = ref(false)
+const errorMessage = ref('')
+const successMessage = ref('')
 
-const daftarLegalisasi = ref([
-  { nama: 'Syahrur Ramadhan', jumlah: 2, dokumen: 'Ijazah dan transkrip', tanggal: '2025 - 06 - 01', telp: '087678342122', alamat: 'Sleman, D.I Yogyakarta', tagihan: 'Lunas' },
-  { nama: 'Dimas Edwin Saputra', jumlah: 8, dokumen: 'Ijazah dan transkrip', tanggal: '2025 - 06 - 01', telp: '081234567890', alamat: 'Bantul, D.I Yogyakarta', tagihan: 'Lunas' },
-  { nama: 'Pandanunda Primadifani Kafah', jumlah: 5, dokumen: 'Ijazah', tanggal: '2025 - 06 - 01', telp: '082345678901', alamat: 'Gunungkidul, D.I Yogyakarta', tagihan: 'Belum Lunas' },
-])
+const form = ref({
+  kdmahasiswa: '',
+  jumlah_legalisasi: 1,
+  biaya_legalisasi: '',
+  alamat_kirim: '',
+  nama_penerima_legalisasi: '',
+  noresi: '',
+  idtagihan: '',
+  tgl_dikirim: '',
+  kdlegalisasi_sebelum: '',
+  telp_penerima: '',
+  comment: '',
+})
 
-const showHargaDialog = ref(false)
-const selectedItem = ref(null)
-const nomorResi = ref('')
-
-const openHarga = item => {
-  selectedItem.value = item
-  nomorResi.value = ''
-  showHargaDialog.value = true
+const resetForm = () => {
+  form.value = {
+    kdmahasiswa: '',
+    jumlah_legalisasi: 1,
+    biaya_legalisasi: '',
+    alamat_kirim: '',
+    nama_penerima_legalisasi: '',
+    noresi: '',
+    idtagihan: '',
+    tgl_dikirim: '',
+    kdlegalisasi_sebelum: '',
+    telp_penerima: '',
+    comment: '',
+  }
 }
 
-const openResi = item => { console.log('Resi:', item) }
+const fetchData = async () => {
+  loading.value = true
+  errorMessage.value = ''
+  try {
+    const headers = { Accept: 'application/json' }
+    const token = sessionStorage.getItem('jwt_token')
+    if (token)
+      headers.Authorization = `Bearer ${token}`
 
-const saveHarga = () => {
-  console.log('Simpan harga/resi untuk:', selectedItem.value, 'resi:', nomorResi.value)
-  showHargaDialog.value = false
+    const res = await fetch('/api/form-legalisasi', { headers })
+    if (!res.ok)
+      throw new Error(`Gagal memuat data (${res.status})`)
+
+    const json = await res.json()
+    if (json.success ?? Array.isArray(json.data)) {
+      daftarLegalisasi.value = json.data ?? json
+    } else {
+      throw new Error(json.message || 'Response tidak valid')
+    }
+  } catch (e) {
+    errorMessage.value = e.message || 'Gagal memuat data'
+  } finally {
+    loading.value = false
+  }
 }
 
-const closeHargaDialog = () => {
-  showHargaDialog.value = false
+const submitForm = async () => {
+  errorMessage.value = ''
+  successMessage.value = ''
+  try {
+    const headers = {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    }
+    const token = sessionStorage.getItem('jwt_token')
+    if (token)
+      headers.Authorization = `Bearer ${token}`
+
+    const res = await fetch('/api/form-legalisasi', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(form.value),
+    })
+
+    const json = await res.json()
+    if (!res.ok || json.success === false)
+      throw new Error(json.message || 'Gagal menyimpan pengajuan')
+
+    // prepend data baru
+    if (json.data)
+      daftarLegalisasi.value.unshift(json.data)
+
+    successMessage.value = 'Pengajuan legalisasi berhasil disimpan'
+    resetForm()
+  } catch (e) {
+    errorMessage.value = e.message || 'Gagal menyimpan pengajuan'
+  }
 }
+
+onMounted(fetchData)
 </script>
 
 <template>
@@ -38,58 +106,140 @@ const closeHargaDialog = () => {
     <VCardTitle>Legalisasi</VCardTitle>
     <VDivider />
 
+    <VAlert
+      v-if="errorMessage"
+      type="error"
+      variant="tonal"
+      class="mb-4"
+    >
+      {{ errorMessage }}
+    </VAlert>
+    <VAlert
+      v-if="successMessage"
+      type="success"
+      variant="tonal"
+      class="mb-4"
+    >
+      {{ successMessage }}
+    </VAlert>
+
+    <VCard
+      variant="outlined"
+      class="pa-4 mb-6"
+    >
+      <div class="text-subtitle-1 font-weight-bold mb-3">
+        Form Pengajuan Legalisasi
+      </div>
+      <VRow>
+        <VCol cols="12" md="6">
+          <VTextField
+            v-model="form.kdmahasiswa"
+            label="KDMahasiswa"
+            placeholder="Isi kdmahasiswa"
+            type="number"
+          />
+        </VCol>
+        <VCol cols="12" md="3">
+          <VTextField
+            v-model="form.jumlah_legalisasi"
+            label="Jumlah Legalisasi"
+            type="number"
+            min="1"
+          />
+        </VCol>
+        <VCol cols="12" md="3">
+          <VTextField
+            v-model="form.biaya_legalisasi"
+            label="Biaya Legalisasi"
+            type="number"
+          />
+        </VCol>
+        <VCol cols="12" md="6">
+          <VTextField
+            v-model="form.alamat_kirim"
+            label="Alamat Kirim"
+            placeholder="Alamat lengkap"
+          />
+        </VCol>
+        <VCol cols="12" md="6">
+          <VTextField
+            v-model="form.nama_penerima_legalisasi"
+            label="Nama Penerima"
+          />
+        </VCol>
+        <VCol cols="12" md="4">
+          <VTextField
+            v-model="form.telp_penerima"
+            label="Telepon Penerima"
+          />
+        </VCol>
+        <VCol cols="12" md="4">
+          <VTextField
+            v-model="form.idtagihan"
+            label="ID Tagihan"
+          />
+        </VCol>
+        <VCol cols="12" md="4">
+          <VTextField
+            v-model="form.noresi"
+            label="No. Resi"
+          />
+        </VCol>
+        <VCol cols="12" md="4">
+          <VTextField
+            v-model="form.tgl_dikirim"
+            label="Tanggal Dikirim"
+            type="date"
+          />
+        </VCol>
+        <VCol cols="12" md="4">
+          <VTextField
+            v-model="form.kdlegalisasi_sebelum"
+            label="KD Legalisasi Sebelumnya"
+            type="number"
+          />
+        </VCol>
+        <VCol cols="12">
+          <VTextarea
+            v-model="form.comment"
+            label="Catatan"
+            rows="2"
+          />
+        </VCol>
+        <VCol cols="12" class="d-flex justify-end">
+          <VBtn
+            color="primary"
+            :loading="loading"
+            @click="submitForm"
+          >
+            Simpan Pengajuan
+          </VBtn>
+        </VCol>
+      </VRow>
+    </VCard>
+
     <VTable class="legalisasi-table w-auto">
       <thead>
         <tr>
           <th>No</th>
-          <th>Nama Mahasiswa</th>
+          <th>KDMahasiswa</th>
           <th>Jumlah</th>
-          <th>Dokumen</th>
-          <th>Tanggal Pengajuan</th>
-          <th class="text-center">
-            Action
-          </th>
+          <th>Biaya</th>
+          <th>Penerima</th>
+          <th>Tgl Dikirim</th>
         </tr>
       </thead>
       <tbody>
         <tr
           v-for="(m, i) in daftarLegalisasi.slice(0, itemsPerPage)"
-          :key="m.nama"
+          :key="m.kdlegalisasi || i"
         >
           <td>{{ i + 1 }}</td>
-          <td>{{ m.nama }}</td>
-          <td>{{ m.jumlah }}</td>
-          <td>{{ m.dokumen }}</td>
-          <td>{{ m.tanggal }}</td>
-          <td class="text-center">
-            <div class="d-flex justify-center">
-              <VBtn
-                icon
-                variant="text"
-                class="me-2"
-                title="Harga"
-                @click="openHarga(m)"
-              >
-                <VIcon
-                  icon="ri-money-dollar-circle-line"
-                  size="22"
-                  color="success"
-                />
-              </VBtn>
-              <VBtn
-                icon
-                variant="text"
-                title="Resi"
-                @click="openResi(m)"
-              >
-                <VIcon
-                  icon="ri-file-text-line"
-                  size="22"
-                  color="primary"
-                />
-              </VBtn>
-            </div>
-          </td>
+          <td>{{ m.kdmahasiswa }}</td>
+          <td>{{ m.jumlah_legalisasi }}</td>
+          <td>{{ m.biaya_legalisasi }}</td>
+          <td>{{ m.nama_penerima_legalisasi }}</td>
+          <td>{{ m.tgl_dikirim }}</td>
         </tr>
       </tbody>
     </VTable>

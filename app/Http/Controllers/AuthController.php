@@ -29,6 +29,7 @@ class AuthController extends Controller
             // Send a POST request to the web service
             $response = Http::timeout(30)->asForm()->post('https://service.unisayogya.ac.id/loginall.php', $data);
 
+            // dd($response->body());
             // Check if the request was successful
             if ($response->failed()) {
                 throw new \Exception('Failed to connect to the authentication web service. HTTP Status: ' . $response->status());
