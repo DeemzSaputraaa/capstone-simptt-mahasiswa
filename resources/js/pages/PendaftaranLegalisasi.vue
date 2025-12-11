@@ -275,8 +275,7 @@
         </div>
       </VContainer>
     </VMain>
-  </VApp>
-  <VDialog
+    <VDialog
     v-model="showValidationModal"
     max-width="400"
   >
@@ -443,10 +442,11 @@
       </VCardActions>
     </VCard>
   </VDialog>
+  </VApp>
 </template>
 
 <script>
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 
 export default {
@@ -690,6 +690,7 @@ export default {
       showValidationModal,
       validationMessage,
       modalType,
+      closeValidationModal,
       handleSubmit,
       nextStep,
       prevStep,
