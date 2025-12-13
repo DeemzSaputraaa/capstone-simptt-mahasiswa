@@ -11,7 +11,7 @@
             class="view-pdf-btn"
             @click="openPdfViewer"
           >
-            <VIcon>mdi-file-pdf-box</VIcon>
+            <VIcon>mdi-square-edit-outline</VIcon>  <!-- ← EDIT BOX ICON -->
           </VBtn>
         
           <!-- Existing draft ijazah content -->
@@ -310,22 +310,30 @@ const columns = computed(() => {
 .draft-wrapper {
   display: flex;
   overflow: auto hidden;
+  box-sizing: border-box;
   align-items: center;
   justify-content: center;
-  background: #f5f5f5;
-  margin-inline: calc(-1 * var(--v-container-padding-x, 24px));
-  min-block-size: 100%;
-  padding-block: 20px;
+
+  /* make outermost layer white and align with container */
+  background: #fff;
+  inline-size: 100%;
+  margin-inline: 0; /* align with parent page container */
+
+  /* adjust spacing so preview matches top layer */
+  padding-block: 60px 1px;    /* PADDING BAWAH */  /* PADDING ATAS */
+  padding-inline: var(--v-container-padding-x, 24px);
 }
 
 .draft-ijazah-preview {
   display: inline-block;
   background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 10%);
+  box-shadow: none;
   inline-size: 100%;
-  max-inline-size: 1200px;
-  padding-block: 24px;
-  padding-inline: 24px;
+  margin-block: 0; /* remove extra top/bottom gap */
+  margin-inline: auto;
+  max-inline-size: 980px; /* limit width to match top layer/card */
+  padding-block: 20px; /* keep internal spacing small */
+  padding-inline: 20px;
 }
 
 .draft-ijazah-pdf {
@@ -339,12 +347,14 @@ const columns = computed(() => {
   font-family: "Times New Roman", Times, serif;
   font-size: 10pt;
   inline-size: 100%;
+
+  /* keep paper area proportional but not extend outer background */
+  max-block-size: 793px;
   max-inline-size: 1122px;
-  aspect-ratio: 1122 / 793;
 
   /* Padding disesuaikan untuk tampilan layar yang proporsional */
-  padding-block: 15px;
-  padding-inline: clamp(24px, 6vw, 80px);
+  padding-block: 12px; /* smaller vertical padding */
+  padding-inline: clamp(20px, 4vw, 60px);
 }
 
 .ijazah-nomor-top {
@@ -559,9 +569,9 @@ const columns = computed(() => {
 
 @media (max-width: 1024px) {
   .draft-wrapper {
+    justify-content: flex-start;
     margin-inline: 0;
     padding-inline: 16px;
-    justify-content: flex-start;
   }
 
   .draft-ijazah-preview {

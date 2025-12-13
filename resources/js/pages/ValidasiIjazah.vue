@@ -131,7 +131,7 @@
                 icon
                 @click="showPdfViewer = false"
               >
-                <VIcon>mdi-close</VIcon>
+                <VIcon>mdi-square-edit-outline</VIcon>
               </VBtn>
               <VToolbarTitle>{{ pdfTitle }}</VToolbarTitle>
             </VToolbar>
