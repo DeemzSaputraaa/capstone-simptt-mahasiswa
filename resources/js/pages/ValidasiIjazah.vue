@@ -4,7 +4,7 @@
     <VMain>
       <VContainer
         fluid
-        class="pa-6"
+        class="pa-6 page-container"
       >
         <VAlert
           v-if="showNotifAlert"
@@ -17,20 +17,25 @@
           <span>{{ notifMessage }}</span>
         </VAlert>
 
-        <DraftIjazah
-          ref="ijazahPreview"
-          :user="user"
-        />
-        <TranskripNilai
-          ref="transcriptPreview"
-          :user="user"
-          :matakuliah="matakuliah"
-        />
+        <div class="preview-grid">
+          <div class="preview-shell">
+            <DraftIjazah
+              ref="ijazahPreview"
+              :user="user"
+            />
+          </div>
+          <div class="preview-shell">
+            <TranskripNilai
+              ref="transcriptPreview"
+              :user="user"
+              :matakuliah="matakuliah"
+            />
+          </div>
+        </div>
 
-        <div class="d-flex justify-end mb-6">
+        <div class="action-bar">
           <VBtn
             color="error"
-            class="mr-3"
             @click="onLapor"
           >
             Lapor
@@ -957,9 +962,17 @@ export default {
   box-shadow: 0 2px 8px 0 rgba(33, 150, 243, 5%);
 
   /* A4 Landscape container */
-  inline-size: fit-content;
+  inline-size: 100%;
   max-inline-size: 1200px;
   min-block-size: auto;
+  overflow-x: auto;
+}
+
+.transcript-preview {
+  inline-size: 100%;
+  max-inline-size: 1200px;
+  margin: auto;
+  overflow-x: auto;
 }
 
 .position-relative {
@@ -1058,6 +1071,54 @@ canvas {
 .dialog-bottom-transition-enter,
 .dialog-bottom-transition-leave-to {
   transform: translateY(100%);
+}
+
+/* Layout helpers */
+.page-container {
+  max-inline-size: 1280px;
+  margin-inline: auto;
+}
+
+.preview-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.preview-shell {
+  border: 1px solid rgba(0, 0, 0, 8%);
+  border-radius: 12px;
+  background: rgb(var(--v-theme-surface));
+  padding: 16px;
+  overflow: hidden;
+}
+
+.action-bar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-block: 20px 24px;
+}
+
+@media (max-width: 960px) {
+  .page-container {
+    padding-inline: 16px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .preview-shell {
+    padding: 12px;
+  }
+
+  .action-bar {
+    justify-content: stretch;
+  }
+
+  .action-bar .v-btn {
+    flex: 1 1 100%;
+  }
 }
 </style>
 

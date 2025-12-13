@@ -231,6 +231,11 @@
                   </td>
                 </tr>
               </tbody>
+              <tbody v-if="idx !== 2">
+                <tr class="spacer-row">
+                  <td colspan="6" />
+                </tr>
+              </tbody>
             </table>
           </div>
         </div>
@@ -646,24 +651,25 @@ const openPdfViewer = async () => {
 }
 
 .transkrip-tables {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 5px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(280px, 1fr));
+  gap: 8px;
   margin-block-end: 0;
+  width: 100%;
+  align-items: stretch;
 }
 
 .transkrip-table {
   flex: 1;
-  align-self: flex-start;
+  align-self: stretch;
   border: 0.5px solid #000;
   background: #fff;
   border-collapse: collapse;
   font-size: 6.5pt;
-  inline-size: 33.33%;
+  inline-size: 100%;
   margin-block-end: 0;
   vertical-align: top;
+  table-layout: fixed;
 }
 
 .transkrip-table th {
@@ -697,6 +703,22 @@ const openPdfViewer = async () => {
 .matkul-center {
   text-align: center !important;
   vertical-align: middle;
+}
+
+.th-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 7pt;
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+.th-sub {
+  font-size: 6pt;
+  font-style: italic;
+  font-weight: normal;
+  line-height: 1.1;
 }
 
 .th-vertical {
@@ -755,6 +777,7 @@ const openPdfViewer = async () => {
   padding-block: 2px;
   padding-inline: 2px;
   vertical-align: top;
+  text-align: center;
 }
 
 .td-no {
@@ -902,6 +925,13 @@ const openPdfViewer = async () => {
 
 .transkrip-table tr.empty-row {
   background: transparent !important;
+}
+
+.spacer-row td {
+  block-size: 220px;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
 }
 
 /* Remove any extra spacing in table cells */

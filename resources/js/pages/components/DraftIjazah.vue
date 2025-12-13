@@ -322,7 +322,8 @@ const columns = computed(() => {
   display: inline-block;
   background: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 10%);
-  min-inline-size: fit-content;
+  inline-size: 100%;
+  max-inline-size: 1200px;
   padding-block: 24px;
   padding-inline: 24px;
 }
@@ -333,19 +334,17 @@ const columns = computed(() => {
   box-sizing: border-box;
   border: 2px solid #000;
   background: #fff;
-  block-size: 793px;
+  block-size: auto;
   color: #000;
   font-family: "Times New Roman", Times, serif;
   font-size: 10pt;
-
-  /* A4 Landscape: 29.7cm x 21cm = 1122px x 793px (at 96 DPI) */
-  inline-size: 1122px;
-  max-block-size: 793px;
+  inline-size: 100%;
   max-inline-size: 1122px;
+  aspect-ratio: 1122 / 793;
 
   /* Padding disesuaikan untuk tampilan layar yang proporsional */
   padding-block: 15px;
-  padding-inline: 80px;
+  padding-inline: clamp(24px, 6vw, 80px);
 }
 
 .ijazah-nomor-top {
@@ -556,5 +555,47 @@ const columns = computed(() => {
 .empty-row {
   display: table-row !important;
   visibility: visible !important;
+}
+
+@media (max-width: 1024px) {
+  .draft-wrapper {
+    margin-inline: 0;
+    padding-inline: 16px;
+    justify-content: flex-start;
+  }
+
+  .draft-ijazah-preview {
+    padding: 16px;
+  }
+
+  .draft-ijazah-pdf {
+    font-size: 9pt;
+  }
+
+  .ijazah-table .label {
+    inline-size: 150px;
+  }
+}
+
+@media (max-width: 640px) {
+  .draft-wrapper {
+    padding-inline: 12px;
+  }
+
+  .draft-ijazah-preview {
+    padding: 12px;
+  }
+
+  .draft-ijazah-pdf {
+    padding-inline: clamp(16px, 5vw, 32px);
+  }
+
+  .ijazah-table .label {
+    inline-size: 130px;
+  }
+
+  .ijazah-table .value {
+    line-height: 1.4;
+  }
 }
 </style>
