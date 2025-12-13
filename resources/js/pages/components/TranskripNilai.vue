@@ -19,12 +19,12 @@
               <div class="info-row">
                 <span class="info-label-center">NIM/NAMA LENGKAP</span>
                 <span class="info-separator">:</span>
-                <span class="info-value-center">{{ user.nim }} / {{ user.name }}</span>
+                <span class="info-value-center">{{ userDisplay.nim }} / {{ userDisplay.name }}</span>
               </div>
               <div class="info-row">
                 <span class="info-label-center">TEMPAT/TANGGAL LAHIR</span>
                 <span class="info-separator">:</span>
-                <span class="info-value-center">{{ user.birthPlace }}, {{ user.birthDate }}</span>
+                <span class="info-value-center">{{ userDisplay.birthPlace }}, {{ userDisplay.birthDate }}</span>
               </div>
               <div class="info-row">
                 <span
@@ -35,7 +35,7 @@
               <div class="info-row">
                 <span class="info-label-center">PROGRAM STUDI / JENJANG</span>
                 <span class="info-separator">:</span>
-                <span class="info-value-center">{{ user.studyProgram }} / {{ user.degree }}</span>
+                <span class="info-value-center">{{ userDisplay.studyProgram }} / {{ userDisplay.degree }}</span>
               </div>
               <div class="info-row">
                 <span
@@ -46,7 +46,7 @@
               <div class="info-row">
                 <span class="info-label-center">TANGGAL KELULUSAN</span>
                 <span class="info-separator">:</span>
-                <span class="info-value-center">{{ user.graduationDate }}</span>
+                <span class="info-value-center">{{ userDisplay.graduationDate }}</span>
               </div>
               <div class="info-row">
                 <span
@@ -100,6 +100,7 @@
               </div>
             </div>
           </div>
+
           <div class="transkrip-tables">
             <table
               v-for="(col, idx) in columns"
@@ -113,18 +114,20 @@
                     class="th-no"
                   >
                     NO
+                    <span class="th-sub">NO</span>
                   </th>
                   <th
                     rowspan="3"
                     class="th-kode"
                   >
                     KODE
+                    <span class="th-sub">CODE</span>
                   </th>
-                  <th
-                    rowspan="3"
-                    class="th-matkul matkul-center"
-                  >
+                  <th class="th-matkul">
                     MATA KULIAH
+                    <div class="th-sub th-sub-block">
+                      SUBJECTS
+                    </div>
                   </th>
                   <th
                     rowspan="3"
@@ -171,7 +174,11 @@
                 <tr
                   v-for="(mk, i) in col"
                   :key="mk.no + mk.kode + i"
-                  :class="[{ 'empty-row': mk.isEmpty }, { 'last-empty-row': mk.isLastEmpty }]"
+                  :class="[
+                    { 'empty-row': mk.isEmpty },
+                    { 'last-empty-row': mk.isLastEmpty },
+                    { 'tight-row': mk.no && mk.no >= 55 && mk.no <= 59 }
+                  ]"
                 >
                   <template v-if="!mk.isEmpty">
                     <td class="td-no">
@@ -204,36 +211,40 @@
                     colspan="6"
                     class="ta-ttd-cell"
                   >
-                    <div class="judul-ta-label">
-                      <b>JUDUL TUGAS AKHIR:</b>
-                    </div>
-                    <div class="judul-ta">
-                      SISTEM INFORMASI PENDAFTARAN PADA KLINIK FISIOTERAPI<br>
-                      UNIVERSITAS AISYIYAH YOGYAKARTA MENGGUNAKAN METODE RAD<br>
-                      (RAPID APPLICATION DEVELOPMENT)<br>
-                      <span class="italic-text">REGISTRATION INFORMATION SYSTEM AT AISYIYAH UNIVERSITY PHYSIOTHERAPY CLINIC<br>
-                        YOGYAKARTA USING RAD METHOD (RAPID APPLICATION DEVELOPMENT)</span>
-                    </div>
-                    <div class="ttd-section">
-                      <div class="dekan">
-                        <div class="ttd-space" />
-                        <div class="location-date">
-                          Yogyakarta, 22 Maret 2025<br>
-                          <span class="italic-text">Yogyakarta, March 22, 2025</span>
+                    <div class="ta-ttd-content">
+                      <div>
+                        <div class="judul-ta-label">
+                          <div><b>JUDUL TUGAS AKHIR</b></div>
+                          <div class="italic-text">
+                            THESIS TITLE
+                          </div>
                         </div>
-                        DEKAN FAKULTAS SAINS DAN TEKNOLOGI,<br>
-                        <span class="italic-text">DEAN OF FACULTY OF SCIENCE AND TECHNOLOGY,</span>
+                        <div class="judul-ta">
+                          SISTEM INFORMASI PENDAFTARAN PADA KLINIK FISIOTERAPI<br>
+                          UNIVERSITAS AISYIAH YOGYAKARTA MENGGUNAKAN METODE RAD<br>
+                          (RAPID APPLICATION DEVELOPMENT)
+                        </div>
+                        <div class="judul-ta italic-text">
+                          REGISTRATION INFORMATION SYSTEM AT AISYIYAH UNIVERSITY PHYSIOTHERAPY CLINIC<br>
+                          YOGYAKARTA USING RAD METHOD (RAPID APPLICATION DEVELOPMENT)
+                        </div>
+                      </div>
+
+                      <div class="ta-signature">
+                        <div class="location-date">
+                          YOGYAKARTA, 22 MARET 2025<br>
+                          <span class="italic-text">YOGYAKARTA, MARCH 22, 2025</span>
+                        </div>
+                        <div class="dekan">
+                          DEKAN FAKULTAS SAINS DAN TEKNOLOGI,<br>
+                          <span class="italic-text">DEAN OF FACULTY OF SCIENCE AND TECHNOLOGY,</span>
+                        </div>
                         <div class="nama">
-                          <u>Ir. Ar. TIKA AINUNNISA FITRIA, S.T., M.T., Ph.D</u>
+                          <u>Ar. TIKA AINUNNISA FITRIA, S.T., M.T., Ph.D</u>
                         </div>
                       </div>
                     </div>
                   </td>
-                </tr>
-              </tbody>
-              <tbody v-if="idx !== 2">
-                <tr class="spacer-row">
-                  <td colspan="6" />
                 </tr>
               </tbody>
             </table>
@@ -252,6 +263,35 @@ const props = defineProps({
   user: { type: Object, required: true },
   matakuliah: { type: Array, required: true },
 })
+
+// Ambil data user dari localStorage (hasil login) bila props belum lengkap
+const authUser = computed(() => {
+  if (typeof window === 'undefined') return {}
+
+  try {
+    return JSON.parse(localStorage.getItem('user') || '{}')
+  } catch (error) {
+    console.warn('Failed to parse stored user', error)
+
+    return {}
+  }
+})
+
+const baseUser = computed(() => {
+  const hasProps = props.user && Object.keys(props.user).length > 0
+
+  return hasProps ? props.user : authUser.value
+})
+
+const userDisplay = computed(() => ({
+  nim: baseUser.value?.nim ?? '',
+  name: baseUser.value?.namalengkap ?? baseUser.value?.name ?? '',
+  birthPlace: baseUser.value?.tempatlahir ?? baseUser.value?.birthPlace ?? '',
+  birthDate: baseUser.value?.tanggallahir ?? baseUser.value?.birthDate ?? '',
+  studyProgram: baseUser.value?.prodi ?? baseUser.value?.studyProgram ?? '',
+  degree: baseUser.value?.degree ?? baseUser.value?.jenjang ?? '',
+  graduationDate: baseUser.value?.tanggallulus ?? baseUser.value?.graduationDate ?? '',
+}))
 
 // Helper function untuk konversi nilai ke bobot
 const getNilaiBobot = nilai => {
@@ -472,11 +512,12 @@ const openPdfViewer = async () => {
   }
 
   .transkrip-info-center {
-    margin-inline-start: 30px;
+    justify-self: center;
+    margin-inline-start: 0;
   }
 
   .transkrip-nomor {
-    margin-inline-start: 30px;
+    margin-inline-start: 0;
   }
 }
 
@@ -487,11 +528,11 @@ const openPdfViewer = async () => {
   }
 
   .transkrip-info-center {
-    margin-inline-start: 10px;
+    margin-inline-start: 0;
   }
 
   .transkrip-nomor {
-    margin-inline-start: 10px;
+    margin-inline-start: 0;
   }
 }
 
@@ -555,25 +596,25 @@ const openPdfViewer = async () => {
   margin-inline: auto;
   max-inline-size: 337.9mm;
   min-block-size: 278mm;
-  padding-block: 9.5mm 0;
-  padding-inline: 2.5mm;
+  padding-block: 8mm 2mm;
+  padding-inline: 4mm;
   transform-origin: top center;
   transition: transform 0.3s ease;
 }
 
 .transkrip-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 40px;
-  margin-block-end: 6px;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr auto 1fr;
+  margin-block-end: 8px;
+  place-items: flex-start center;
 }
 
 .transkrip-info-center {
-  flex: 0 0 auto;
   font-size: 6.5pt;
+  grid-column: 2;
   line-height: 1.2;
-  margin-inline-start: 50px;
+  margin-inline-start: 0;
   text-align: start;
 }
 
@@ -652,11 +693,11 @@ const openPdfViewer = async () => {
 
 .transkrip-tables {
   display: grid;
-  grid-template-columns: repeat(3, minmax(280px, 1fr));
-  gap: 8px;
-  margin-block-end: 0;
-  width: 100%;
   align-items: stretch;
+  gap: 4px;
+  grid-template-columns: repeat(3, minmax(260px, 1fr));
+  inline-size: 100%;
+  margin-block-end: 0;
 }
 
 .transkrip-table {
@@ -668,8 +709,8 @@ const openPdfViewer = async () => {
   font-size: 6.5pt;
   inline-size: 100%;
   margin-block-end: 0;
-  vertical-align: top;
   table-layout: fixed;
+  vertical-align: top;
 }
 
 .transkrip-table th {
@@ -719,6 +760,15 @@ const openPdfViewer = async () => {
   font-style: italic;
   font-weight: normal;
   line-height: 1.1;
+}
+
+.th-matkul {
+  padding-inline-start: 4px;
+  text-align: center;
+}
+
+.th-sub-block {
+  display: block;
 }
 
 .th-vertical {
@@ -776,8 +826,15 @@ const openPdfViewer = async () => {
   line-height: 1.1;
   padding-block: 2px;
   padding-inline: 2px;
-  vertical-align: top;
   text-align: center;
+  vertical-align: top;
+}
+
+.transkrip-table tr.tight-row td {
+  block-size: auto;
+  line-height: 1;
+  min-block-size: 0;
+  padding-block: 0;
 }
 
 .td-no {
@@ -804,7 +861,7 @@ const openPdfViewer = async () => {
   line-height: 1.1;
   padding-block: 2px !important;
   padding-inline: 3px !important;
-  text-align: start;
+  text-align: start !important;
   vertical-align: top;
 }
 
@@ -830,6 +887,12 @@ const openPdfViewer = async () => {
   margin-block-start: 1px;
 }
 
+.tight-row .course-subtitle {
+  display: block;
+  margin: 0;
+  line-height: 1;
+}
+
 .judul-ta-label {
   font-size: 6.5pt;
   font-weight: bold;
@@ -844,45 +907,71 @@ const openPdfViewer = async () => {
   text-align: center;
 }
 
+.ta-ttd-cell {
+  min-block-size: 360px;
+  padding-block: 12px;
+  padding-inline: 14px;
+}
+
+.ta-ttd-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  inline-size: 100%;
+  min-block-size: 100%;
+}
+
+.ta-signature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-block-start: auto;
+  padding-block-start: 40px;
+}
+
+.ta-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-block-start: 26px;
+  margin-inline: auto;
+  max-inline-size: 70%;
+  padding-block: 16px 36px;
+  text-align: center;
+}
+
+.ta-section .judul-ta {
+  margin: 0;
+  max-inline-size: 100%;
+  text-align: center;
+  white-space: normal;
+  word-break: normal;
+}
+
 .location-date {
   font-size: 6.5pt;
+  font-weight: bold;
   line-height: 1.2;
-  margin-block-end: 4px;
+  margin-block-start: 28px;
   text-align: center;
-}
-
-.ttd-section {
-  display: flex;
-  justify-content: center;
-}
-
-.ta-ttd-cell {
-  background: #fff;
-  border-block-end: 0.5px solid #000 !important;
-  border-inline-end: 0.5px solid #000;
-  border-inline-start: 0.5px solid #000;
-  padding-block: 4px;
-  padding-block-end: 18px;
-  padding-inline: 4px;
-  text-align: center;
-  vertical-align: top;
 }
 
 .dekan {
   font-size: 6.5pt;
-  line-height: 1.15;
-  min-inline-size: 170px;
+  font-weight: bold;
+  line-height: 1.25;
+  margin-block-start: 22px;
   text-align: center;
-}
-
-.ttd-space {
-  min-block-size: 380px;
 }
 
 .nama {
   font-size: 6.5pt;
   font-weight: bold;
-  margin-block-start: 2px;
+  line-height: 1.25;
+  margin-block-start: 50px;
   text-align: center;
 }
 
@@ -925,13 +1014,6 @@ const openPdfViewer = async () => {
 
 .transkrip-table tr.empty-row {
   background: transparent !important;
-}
-
-.spacer-row td {
-  block-size: 220px;
-  border: none !important;
-  background: transparent !important;
-  padding: 0 !important;
 }
 
 /* Remove any extra spacing in table cells */

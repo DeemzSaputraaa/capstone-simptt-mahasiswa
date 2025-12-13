@@ -321,6 +321,8 @@ export default {
         newComment.value = ''
       }
     }
+
+
     // Fungsi untuk menyimpan komentar ke database
     const saveCommentToDatabase = async commentData => {
       try {
@@ -969,9 +971,9 @@ export default {
 }
 
 .transcript-preview {
+  margin: auto;
   inline-size: 100%;
   max-inline-size: 1200px;
-  margin: auto;
   overflow-x: auto;
 }
 
@@ -1075,8 +1077,8 @@ canvas {
 
 /* Layout helpers */
 .page-container {
-  max-inline-size: 1280px;
   margin-inline: auto;
+  max-inline-size: 1280px;
 }
 
 .preview-grid {
@@ -1086,18 +1088,18 @@ canvas {
 }
 
 .preview-shell {
+  overflow: hidden;
+  padding: 16px;
   border: 1px solid rgba(0, 0, 0, 8%);
   border-radius: 12px;
   background: rgb(var(--v-theme-surface));
-  padding: 16px;
-  overflow: hidden;
 }
 
 .action-bar {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 12px;
-  flex-wrap: wrap;
   margin-block: 20px 24px;
 }
 
