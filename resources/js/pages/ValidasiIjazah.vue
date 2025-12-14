@@ -183,15 +183,15 @@ export default {
     const ijazahPreview = ref(null)
     const transcriptPreview = ref(null)
 
-    // Dummy user login data (ganti dengan data user login sebenarnya jika sudah ada mekanisme login)
+    // Default fallback; akan diganti setelah fetch profil login
     const user = ref({
-      name: 'IRWANDA BUDI PANGESTU',
-      nim: '1911501007',
-      birthPlace: 'ASTRA KSETRA',
-      birthDate: '17 DESEMBER 2000',
-      studyProgram: 'TEKNOLOGI INFORMASI',
-      degree: 'SARJANA',
-      graduationDate: '22 MARET 2025',
+      name: '',
+      nim: '',
+      birthPlace: '',
+      birthDate: '',
+      studyProgram: '',
+      degree: '',
+      graduationDate: '',
     })
 
     // Daftar matakuliah (array of object)
@@ -272,6 +272,33 @@ export default {
       return token
         ? { Authorization: `Bearer ${token}` }
         : {}
+    }
+
+    const fetchCurrentUser = async () => {
+      try {
+        const response = await fetch('/api/me', {
+          headers: {
+            ...getAuthHeaders(),
+          },
+        })
+
+        if (!response.ok) throw new Error(`Gagal memuat data user: ${response.status}`)
+
+        const data = await response.json()
+        const profile = data.data || data // API /api/me mengembalikan { success, data }
+
+        user.value = {
+          name: profile.name || profile.namalengkap || '',
+          nim: profile.nim || profile.username || '',
+          birthPlace: profile.tempatlahir || profile.birth_place || '',
+          birthDate: profile.tanggallahir || profile.birth_date || '',
+          studyProgram: profile.study_program || profile.prodi || profile.studyProgram || '',
+          degree: profile.degree || profile.gelar || '',
+          graduationDate: profile.graduation_date || profile.tglkelulusan || profile.graduationDate || '',
+        }
+      } catch (error) {
+        console.error('Tidak bisa memuat data user:', error)
+      }
     }
 
     const updateFileStatus = (field, file) => {
@@ -586,6 +613,8 @@ export default {
 
     // Load comments saat komponen dimount jika ada notifikasi
     onMounted(async () => {
+      await fetchCurrentUser()
+
       if (notifId) {
         showComments.value = true
         await loadCommentsFromDatabase()

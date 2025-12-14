@@ -2,6 +2,7 @@
   <div class="position-relative mb-6">
     <div class="draft-wrapper">
       <div class="draft-ijazah-preview">
+        Draft Ijazah
         <!-- Pindahkan tombol ke dalam draft-ijazah-pdf -->
         <div class="draft-ijazah-pdf">
           <!-- Tombol PDF dipindah ke sini -->
@@ -77,8 +78,8 @@
                     :
                   </td>
                   <td class="value">
-                    <span class="value-main">TEKNOLOGI INFORMASI</span><br>
-                    <span class="value-sub">INFORMATION TECHNOLOGY</span>
+                    <span class="value-main">{{ user.studyProgram?.toUpperCase() }}</span><br>
+                    <span class="value-sub">{{ user.studyProgram }}</span>
                   </td>
                 </tr>
                 <tr>
@@ -89,8 +90,8 @@
                     :
                   </td>
                   <td class="value">
-                    <span class="value-main">SARJANA</span><br>
-                    <span class="value-sub">BACHELOR</span>
+                    <span class="value-main">{{ user.degree?.toUpperCase() }}</span><br>
+                    <span class="value-sub">{{ user.degree }}</span>
                   </td>
                 </tr>
                 <tr>
@@ -101,8 +102,8 @@
                     :
                   </td>
                   <td class="value">
-                    <span class="value-main">22 MARET 2025</span><br>
-                    <span class="value-sub">MARCH 22, 2025</span>
+                    <span class="value-main">{{ user.graduationDate?.toUpperCase() }}</span><br>
+                    <span class="value-sub">{{ user.graduationDate }}</span>
                   </td>
                 </tr>
                 <tr>

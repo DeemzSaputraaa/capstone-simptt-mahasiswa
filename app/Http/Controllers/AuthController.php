@@ -357,9 +357,72 @@ class AuthController extends Controller
             $token = JWTAuth::parseToken();
             $payload = $token->getPayload()->toArray();
 
+            $loginAs = $payload['login_as'] ?? $payload['loginas'] ?? null;
+            $username = $payload['username'] ?? null;
+
+            $profile = null;
+            $yudisiumInfo = null;
+            $yudisiumMeta = null;
+
+            if ($loginAs === 'mahasiswa' && $username) {
+                // Ambil profil mahasiswa detail dari view
+                $profile = DB::table('mh_v_nama as m')
+                    ->where('m.nim', $username)
+                    ->select(
+                        'm.nim',
+                        'm.namalengkap',
+                        'm.tempatlahir',
+                        'm.tanggallahir',
+                        'm.prodi',
+                        'm.kdprodi',
+                        'm.kdjenjang',
+                        'm.kdunitkerjaprodi',
+                        'm.kdunitkerjafakultas'
+                    )
+                    ->first();
+
+                // Cari info yudisium (gelar, tanggal kelulusan, pejabat) berdasarkan kdyudisium dari nilai terbaik
+                $kdyudisiumRow = DB::table('ak_v_nilaikrs_terbaik')
+                    ->where('nim', $username)
+                    ->select('kdyudisium')
+                    ->orderByDesc('kdyudisium')
+                    ->first();
+
+                $kdyudisium = $kdyudisiumRow->kdyudisium ?? null;
+
+                if ($kdyudisium) {
+                    $yudisiumInfo = DB::table('ak_v_infoyudisium')
+                        ->where('kdyudisium', $kdyudisium)
+                        ->first();
+
+                    $yudisiumMeta = DB::table('ak_v_yudisium')
+                        ->where('kdyudisium', $kdyudisium)
+                        ->first();
+                }
+            }
+
+            // Normalisasi output untuk frontend
+            $normalized = [
+                'name' => $profile->namalengkap ?? $payload['name'] ?? $payload['namalengkap'] ?? null,
+                'nim' => $profile->nim ?? $payload['username'] ?? null,
+                'birth_place' => $profile->tempatlahir ?? null,
+                'birth_date' => $profile->tanggallahir ?? null,
+                'study_program' => $yudisiumInfo->namaprodi ?? $profile->prodi ?? null,
+                'degree' => $yudisiumInfo->gelar ?? null,
+                'graduation_date' => $yudisiumInfo->tglkelulusan ?? $yudisiumMeta->tgllulus ?? null,
+                'meta' => [
+                    'login_as' => $loginAs,
+                    'kdprodi' => $profile->kdprodi ?? null,
+                    'kdjenjang' => $profile->kdjenjang ?? null,
+                    'kdunitkerjaprodi' => $profile->kdunitkerjaprodi ?? null,
+                    'kdunitkerjafakultas' => $profile->kdunitkerjafakultas ?? null,
+                    'kdyudisium' => $kdyudisium ?? null,
+                ],
+            ];
+
             return response()->json([
                 'success' => true,
-                'data' => $payload
+                'data' => $normalized,
             ], 200);
         } catch (JWTException $e) {
             return response()->json([
