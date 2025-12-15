@@ -130,4 +130,55 @@ class PraYudisiumController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Update komentar Pra Yudisium.
+     */
+    public function updateComment(Request $request, $id)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'comment' => 'nullable|string',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'code' => 'BAD_REQUEST',
+                    'errors' => $validator->errors()->toArray(),
+                ], 400);
+            }
+
+            $affected = AkPraYudisium::where('kdprayudisium', $id)->update([
+                'comment' => $request->get('comment'),
+                'update_at' => now(),
+            ]);
+
+            if (!$affected) {
+                return response()->json([
+                    'success' => false,
+                    'code' => 'NOT_FOUND',
+                    'message' => 'Record not found',
+                ], 404);
+            }
+
+            $updated = AkPraYudisium::where('kdprayudisium', $id)->first();
+
+            return response()->json([
+                'success' => true,
+                'data' => $updated,
+            ], 200);
+        } catch (\Throwable $e) {
+            Log::error('PraYudisium updateComment error', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'code' => 'INTERNAL_SERVER_ERROR',
+                'message' => 'Failed to update comment',
+            ], 500);
+        }
+    }
 }

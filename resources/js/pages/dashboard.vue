@@ -3,6 +3,7 @@ import { onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const userName = ref('')
+const userNim = ref('')
 
 // Get user data from session storage
 const fetchUserData = () => {
@@ -10,6 +11,9 @@ const fetchUserData = () => {
     const userData = JSON.parse(sessionStorage.getItem('user_data'))
     if (userData && userData.namalengkap) {
       userName.value = userData.namalengkap
+    }
+    if (userData && (userData.nim || userData.username)) {
+      userNim.value = userData.nim || userData.username
     }
   } catch (error) {
     console.error('Error fetching user data:', error)
@@ -21,6 +25,7 @@ onMounted(() => {
   fetchUserData()
   updateToday()
   timer = setInterval(updateToday, 1000)
+  loadNotifications()
 })
 
 const totalProfit = {
@@ -162,50 +167,59 @@ function trackShipment() {
   }
 }
 
-const notifications = ref([
-  {
-    id: 1,
-    icon: 'ri-calendar-event-line',
-    color: 'warning',
-    title: 'Ada data Pra Yudisium yang masih salah.',
-    type: 'pra-yudisium',
-    route: '/pra-yudisium',
-    dataId: 123,
-  },
-  {
-    id: 2,
-    icon: 'ri-user-3-line',
-    color: 'info',
-    title: 'Komentar baru dari admin di Validasi Ijazah.',
-    type: 'validasi-ijazah',
-    route: '/validasi-ijazah',
-    dataId: 456,
-  },
-  {
-    id: 3,
-    icon: 'ri-file-copy-line',
-    color: 'success',
-    title: 'Pengajuan legalisasi Anda telah di-ACC.',
-    type: 'legalisasi',
-    route: '/pendaftaran-legalisasi',
-    dataId: 789,
-  },
-  {
-    id: 4,
-    icon: 'ri-truck-line',
-    color: 'primary',
-    title: 'Informasi pengiriman legalisasi Anda telah diperbarui.',
-    type: 'legalisasi',
-    route: '/pendaftaran-legalisasi',
-    dataId: 790,
-  },
-])
+const notifications = ref([])
 
 const showNotificationsModal = ref(false)
 const router = useRouter()
 function goToNotification(notification) {
-  if (notification.route) {
-    router.push({ path: notification.route, query: { notif: notification.id, dataId: notification.dataId } })
+  const targetPath = notification.type === 'pra-yudisium'
+    ? '/pra-yudisium'
+    : notification.route
+
+  if (!targetPath) return
+
+  // Untuk admin route, sertakan dataId agar bisa dipakai memuat entri terkait
+  router.push({
+    path: targetPath,
+    query: {
+      notif: notification.id,
+      dataId: notification.dataId,
+      comment: notification.comment,
+    },
+  })
+}
+
+const loadNotifications = async () => {
+  try {
+    const headers = { Accept: 'application/json' }
+    const token = sessionStorage.getItem('jwt_token')
+    if (token)
+      headers.Authorization = `Bearer ${token}`
+
+    const res = await fetch('/api/pra-yudisium', { headers })
+    if (!res.ok)
+      throw new Error('Gagal memuat notifikasi')
+
+    const json = await res.json()
+    const data = Array.isArray(json.data) ? json.data : []
+
+    const studentNotifications = data
+      .filter(item => item.nim === userNim.value || String(item.kdmahasiswa) === String(userNim.value))
+      .filter(item => !!item.comment)
+      .map(item => ({
+        id: `pra-${item.kdprayudisium}`,
+        icon: 'ri-chat-3-line',
+        color: 'warning',
+        title: item.comment,
+        type: 'pra-yudisium',
+        route: '/pra-yudisium',
+        dataId: item.kdprayudisium,
+        comment: item.comment,
+      }))
+
+    notifications.value = studentNotifications
+  } catch (err) {
+    console.error(err)
   }
 }
 </script>

@@ -22,6 +22,7 @@ Route::prefix('api')->group(function () {
 
         Route::get('/pra-yudisium', [PraYudisiumController::class, 'index']);
         Route::post('/pra-yudisium', [PraYudisiumController::class, 'store']);
+        Route::patch('/pra-yudisium/{id}/comment', [PraYudisiumController::class, 'updateComment']);
 
         // Form Legalisasi routes
         Route::resource('form-legalisasi', FormLegalisasiController::class);

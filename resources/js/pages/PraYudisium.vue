@@ -16,6 +16,17 @@
         >
           Data berhasil disimpan!
         </VAlert>
+
+        <VAlert
+          v-if="infoMessage"
+          type="info"
+          variant="tonal"
+          class="mb-4"
+          border="start"
+          prominent
+        >
+          {{ infoMessage }}
+        </VAlert>
         
         <!-- Notifikasi Error -->
         <VAlert
@@ -157,8 +168,8 @@
 
 <script>
 import axios from 'axios'
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 // Notifikasi menggunakan Vuetify
 
@@ -183,6 +194,8 @@ export default {
     const showValidationModal = ref(false)
     const validationMessage = ref('')
     const router = useRouter()
+    const route = useRoute()
+    const infoMessage = ref('')
 
     // Handle file change
     const handleFileChange = (field, event) => {
@@ -337,6 +350,12 @@ export default {
       }
     }
 
+    onMounted(() => {
+      if (route.query.comment) {
+        infoMessage.value = route.query.comment
+      }
+    })
+
     return {
       form,
       fileStatus,
@@ -348,6 +367,7 @@ export default {
       isLoading,
       showValidationModal,
       validationMessage,
+      infoMessage,
     }
   },
 }

@@ -14,6 +14,12 @@ const previewUrl = ref('')
 const previewTitle = ref('Pratinjau')
 const formatDate = date => date ? new Date(date).toLocaleDateString('id-ID') : '-'
 
+const showCommentDialog = ref(false)
+const selectedItem = ref(null)
+const newComment = ref('')
+const commentText = ref('')
+const savingComment = ref(false)
+
 const fetchData = async () => {
   loading.value = true
   errorMessage.value = ''
@@ -21,6 +27,7 @@ const fetchData = async () => {
     const headers = {
       Accept: 'application/json',
     }
+
     const token = sessionStorage.getItem('jwt_token')
     if (token)
       headers.Authorization = `Bearer ${token}`
@@ -50,6 +57,49 @@ const deleteItem = item => {
   console.log('Delete:', item)
 }
 
+const openComments = item => {
+  selectedItem.value = item
+  commentText.value = item.comment || ''
+  newComment.value = item.comment || ''
+  showCommentDialog.value = true
+}
+
+const saveComment = async () => {
+  if (!selectedItem.value) return
+  savingComment.value = true
+  try {
+    const headers = {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    }
+    const token = sessionStorage.getItem('jwt_token')
+    if (token)
+      headers.Authorization = `Bearer ${token}`
+
+    const res = await fetch(`/api/pra-yudisium/${selectedItem.value.kdprayudisium}/comment`, {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify({ comment: newComment.value }),
+    })
+
+    const json = await res.json()
+    if (!res.ok || json.success === false)
+      throw new Error(json.message || 'Gagal menyimpan komentar')
+
+    commentText.value = newComment.value
+    selectedItem.value.comment = newComment.value
+    // perbarui di list utama
+    mahasiswaList.value = mahasiswaList.value.map(row => row.kdprayudisium === selectedItem.value.kdprayudisium
+      ? { ...row, comment: newComment.value }
+      : row)
+    showCommentDialog.value = false
+  } catch (err) {
+    errorMessage.value = err.message || 'Gagal menyimpan komentar'
+  } finally {
+    savingComment.value = false
+  }
+}
+
 const openPreview = (path, title) => {
   const url = fileUrl(path)
   if (!url) return
@@ -63,21 +113,10 @@ onMounted(fetchData)
 
 <template>
   <VCard>
-    <VCardTitle>Pra Yudisium</VCardTitle>
-    <VCardSubtitle>Daftar pengajuan pra yudisium</VCardSubtitle>
-    <VDivider />
+    <VCardTitle class="admin-card-title">
+      Pra Yudisium
+    </VCardTitle>
 
-    <div class="d-flex align-center justify-between mb-4">
-      <div>Total: {{ mahasiswaList.length }}</div>
-      <VBtn
-        size="small"
-        variant="tonal"
-        :loading="loading"
-        @click="fetchData"
-      >
-        Muat Ulang
-      </VBtn>
-    </div>
 
     <VAlert
       v-if="errorMessage"
@@ -194,6 +233,7 @@ onMounted(fetchData)
                 variant="text"
                 color="secondary"
                 class="action-btn"
+                @click="openComments(m)"
               >
                 <VIcon
                   icon="ri-chat-3-line"
@@ -252,69 +292,289 @@ onMounted(fetchData)
         </VCardActions>
       </VCard>
     </VDialog>
+
+    <VDialog
+      v-model="showCommentDialog"
+      max-width="800"
+    >
+      <VCard class="comment-card">
+        <VCardTitle class="text-h6 font-weight-bold text-center">
+          Komentar
+        </VCardTitle>
+        <VCardText>
+          <div class="comment-input d-flex align-center mb-6">
+            <div class="avatar-chip">A</div>
+            <VTextarea
+              v-model="newComment"
+              placeholder="Tulis komentar..."
+              auto-grow
+              rows="1"
+              max-rows="3"
+              class="flex-grow-1 ms-4"
+              variant="solo-filled"
+            />
+            <VBtn
+              color="primary"
+              class="ms-4"
+              :loading="savingComment"
+              @click="saveComment"
+            >
+              Kirim
+            </VBtn>
+          </div>
+
+          <div
+            v-if="commentText"
+            class="comment-item d-flex mb-5"
+          >
+            <div class="avatar-chip">A</div>
+            <div class="ms-4">
+              <div class="d-flex align-center gap-2">
+                <span class="author">Admin</span>
+              </div>
+              <div class="comment-text">
+                {{ commentText }}
+              </div>
+            </div>
+          </div>
+        </VCardText>
+        <VCardActions class="justify-end">
+          <VBtn
+            variant="text"
+            color="primary"
+            @click="showCommentDialog = false"
+          >
+            Tutup
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
   </VCard>
 </template>
 
 <style scoped>
+/* Card Header */
+.admin-card-title {
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(
+    135deg,
+    rgb(var(--v-theme-primary)) 0%,
+    rgba(var(--v-theme-primary), 0.85) 100%
+  );
+  color: rgb(var(--v-theme-on-primary)) !important;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding-block: 1rem !important;
+  padding-inline: 1.5rem !important;
+}
+
+.v-card-subtitle {
+  background-color: rgb(var(--v-theme-surface));
+  border-block-end: 1px solid rgba(var(--v-theme-on-surface), 0.1);
+  color: rgba(var(--v-theme-on-surface), 0.7) !important;
+  padding-block: 0.5rem !important;
+  padding-inline: 1.5rem !important;
+}
+
+/* Table Styling */
 .pra-yudisium-table {
-  border: 1px solid #e0e0e0;
+  overflow: hidden;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  border-radius: 4px;
+  background-color: rgb(var(--v-theme-surface));
+  color: rgb(var(--v-theme-on-surface));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .pra-yudisium-table thead {
-  background-color: #f5f5f5;
+  background: linear-gradient(
+    to right,
+    rgba(var(--v-theme-on-surface), 0.04),
+    rgba(var(--v-theme-on-surface), 0.06)
+  );
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .pra-yudisium-table thead th {
-  border-block-end: 2px solid #e0e0e0;
-  color: #333;
-  font-size: 14px;
+  border: none;
+  color: rgba(var(--v-theme-on-surface), 0.85);
+  font-size: 0.8rem;
   font-weight: 600;
-  padding-block: 12px;
-  padding-inline: 8px;
+  letter-spacing: 0.5px;
+  padding-block: 1rem;
+  padding-inline: 0.75rem;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .pra-yudisium-table tbody td {
-  background-color: #f7f8fb;
-  border-block-end: 1px solid #e0e0e0;
-  font-size: 13px;
-  padding-block: 12px;
-  padding-inline: 8px;
+  background-color: rgba(var(--v-theme-surface), 0.9);
+  border-block-end: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  color: rgba(var(--v-theme-on-surface), 0.8);
+  font-size: 0.875rem;
+  padding-block: 1rem;
+  padding-inline: 0.75rem;
+  transition: all 0.2s ease;
+  vertical-align: middle;
 }
 
-.pra-yudisium-table tbody tr:hover {
-  background-color: #fafafa;
+.pra-yudisium-table tbody tr:not(:last-child) td {
+  border-block-end: 1px solid rgba(var(--v-theme-on-surface), 0.08);
 }
 
-.foto-preview {
-  border-radius: 4px;
-  block-size: 75px;
-  inline-size: 60px;
-  object-fit: cover;
+.pra-yudisium-table tbody tr:hover td {
+  background-color: rgba(var(--v-theme-on-surface), 0.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
 }
 
+/* Document Previews */
+.foto-preview,
 .dokumen-preview {
-  border-radius: 4px;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  border-radius: 6px;
   block-size: 75px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
   inline-size: 60px;
   object-fit: cover;
+  transition: all 0.2s ease;
 }
 
-.text-center {
-  text-align: center;
+.foto-preview:hover,
+.dokumen-preview:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: scale(1.05);
 }
 
-.w-auto {
-  inline-size: auto !important;
+/* Action Buttons */
+.action-btn {
+  margin-block: 0;
+  margin-inline: 2px;
+  opacity: 0.8;
+  transition: all 0.2s ease;
 }
 
+.action-btn:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 10%);
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+/* Table Footer & Pagination */
 .table-footer {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-block-start: 16px;
+  justify-content: space-between;
+  padding: 1rem;
+  border-radius: 0 0 4px 4px;
+  background-color: rgba(var(--v-theme-surface), 0.9);
+  border-block-start: 1px solid rgba(var(--v-theme-on-surface), 0.08);
 }
 
-.action-btn {
-  margin-inline: 4px;
+/* Empty State */
+.empty-state {
+  color: rgba(var(--v-theme-on-surface), 0.6);
+  padding-block: 3rem;
+  padding-inline: 1rem;
+  text-align: center;
+}
+
+.empty-state-icon {
+  color: rgba(var(--v-theme-on-surface), 0.2);
+  font-size: 4rem;
+  margin-block-end: 1rem;
+}
+
+/* Loading State */
+.loading-overlay {
+  position: absolute;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background: rgba(var(--v-theme-surface), 0.85);
+  inset: 0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 960px) {
+  .pra-yudisium-table {
+    display: block;
+    -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
+  }
+
+  .v-card-title,
+  .v-card-subtitle {
+    padding-block: 0.75rem !important;
+    padding-inline: 1rem !important;
+  }
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.v-table {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@media (prefers-color-scheme: dark) {
+  .pra-yudisium-table {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  }
+
+  .pra-yudisium-table thead {
+    background: linear-gradient(to right, #0f0f0f, #141414);
+  }
+
+  .table-footer {
+    background-color: rgba(var(--v-theme-surface), 0.92);
+  }
+
+  .loading-overlay {
+    background: rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* Comment Modal */
+.comment-card {
+  background-color: rgb(var(--v-theme-surface));
+  color: rgb(var(--v-theme-on-surface));
+}
+
+.avatar-chip {
+  inline-size: 44px;
+  block-size: 44px;
+  border-radius: 50%;
+  background-color: rgb(var(--v-theme-primary));
+  color: rgb(var(--v-theme-on-primary));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.comment-input .v-textarea {
+  background-color: rgba(var(--v-theme-on-surface), 0.03);
+  border-radius: 8px;
+}
+
+.comment-item .author {
+  font-weight: 700;
+}
+
+.comment-item .time {
+  font-size: 12px;
+  color: rgba(var(--v-theme-on-surface), 0.7);
+}
+
+.comment-text {
+  margin-top: 6px;
+  line-height: 1.5;
 }
 </style>

@@ -11,10 +11,9 @@ const user = ref({
 // Fungsi untuk mengambil data user
 const fetchUserData = async () => {
   try {
-    const userData = JSON.parse(sessionStorage.getItem('user_data'))
-    if (userData && userData.namalengkap) {
-      user.value.name = userData.namalengkap
-    }
+    const userData = JSON.parse(sessionStorage.getItem('user_data') || '{}')
+    const displayName = userData.namalengkap || userData.name || userData.username
+    user.value.name = displayName || 'Admin'
   } catch (error) {
     console.error('Error fetching user data:', error)
   }

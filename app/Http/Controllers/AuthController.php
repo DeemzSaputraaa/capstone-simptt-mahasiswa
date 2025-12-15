@@ -85,28 +85,13 @@ class AuthController extends Controller
             } else if ($loginAs == 'tendik') {
                 $userData['id'] = $data->kdperson ?? null;
                 $userData['username'] = $data->nip ?? null;
-                $userData['name'] = $data->nama ?? null;
+                $userData['name'] = $data->namalengkap ?? $data->nama ?? null;
                 $userData['email'] = $data->email ?? null;
-                $userData['role'] = $data->role ?? 'admin_akademik';
-                $userData['kdunitkerja'] = $data->kdunitkerja ?? null;
+                $userData['role'] = 'tendik';
+                $userData['kdunitkerja'] = $data->kdunitkerja ?? $data->unitkerja ?? null;
                 $userData['nip'] = $data->nip ?? null;
-            } else if ($loginAs == 'dosen') {
-                $userData['id'] = $data->kdperson ?? null;
-                $userData['username'] = $data->kodeuser ?? null;
-                $userData['name'] = $data->nama ?? null;
-                $userData['email'] = $data->email ?? null;
-                $userData['role'] = $data->role ?? 'dosen_pembimbing';
-                $userData['kdunitkerja'] = $data->kdunitkerja ?? null;
-            } else if ($loginAs == 'preceptor') {
-                $userData['id'] = $data->kd_preceptor ?? null;
-                $userData['username'] = $data->kode_preceptor ?? null;
-                $userData['name'] = $data->nama_preceptor ?? null;
-                $userData['email'] = $data->email ?? null;
-                $userData['role'] = 'preceptor';
-                $userData['kd_dokubisa_lahan'] = $data->kd_dokubisa_lahan ?? null;
-                $userData['nama_lahan'] = $data->nama_lahan ?? null;
-                $userData['telepon'] = $data->telepon ?? null;
-                $userData['alamat'] = $data->alamat ?? null;
+            } else {
+                throw new \Exception('Unsupported login type');
             }
 
             $claims = array_merge($userData, [
@@ -199,13 +184,21 @@ class AuthController extends Controller
 
             // Step 5: Get login type from web service response
             $loginAs = $checkUserResponse['loginas'] ?? 'mahasiswa';
+            $allowedLoginTypes = ['mahasiswa', 'tendik'];
+            if (!in_array($loginAs, $allowedLoginTypes, true)) {
+                return response()->json([
+                    'success' => false,
+                    'code' => 'UNSUPPORTED_ROLE',
+                    'message' => 'Jenis login tidak didukung',
+                ], 400);
+            }
 
             // Step 6: Get user data from database based on login type
             $data = null;
 
             try {
                 if ($loginAs == 'mahasiswa') {
-                    // ✅ PERBAIKAN: Menggunakan mh_v_nama
+                    // バ. PERBAIKAN: Menggunakan mh_v_nama
                     $data = DB::table('mh_v_nama as m')
                         ->where('m.nim', $username)
                         ->select(
@@ -213,39 +206,16 @@ class AuthController extends Controller
                             // 'm.kdmahasiswa',
                             // 'm.kdtamasuk',
                             'm.nim',
-                            'm.namalengkap',
+                            'm.namalengkap'
                             // 'm.nik',
                             // 'm.tempatlahir',
                             // 'm.tanggallahir'
                         )
                         ->first();
-                } else if ($loginAs == 'tendik') {
-                    // ✅ Query untuk tendik tetap sama
+                } else {
+                    // loginAs == tendik
                     $data = DB::table('vsdm_pegawai01 as p')
                         ->where('p.nip', $username)
-                        ->first();
-                } else if ($loginAs == 'dosen') {
-                    // Query untuk dosen
-                    $data = DB::table('v_dokubisa_dosen as d')
-                        ->where('d.kodeuser', $username)
-                        ->first();
-                } else {
-                    // Default to preceptor
-                    $loginAs = "preceptor";
-                    $data = DB::table('ak_dokubisa_preceptor as p')
-                        ->whereNull('p.deleted_at')
-                        ->join('ak_dokubisa_lahan as l', 'l.kd_dokubisa_lahan', '=', 'p.kd_dokubisa_lahan')
-                        ->where('p.kode_preceptor', $username)
-                        ->select(
-                            'p.kd_preceptor',
-                            'p.nama_preceptor',
-                            'p.email',
-                            'p.kode_preceptor',
-                            'p.telepon',
-                            'p.alamat',
-                            'l.kd_dokubisa_lahan',
-                            'l.nama_lahan'
-                        )
                         ->first();
                 }
             } catch (\Illuminate\Database\QueryException $e) {
@@ -272,30 +242,12 @@ class AuthController extends Controller
             }
 
             // Step 8: Set user role
-            if ($loginAs == 'dosen' || $loginAs == 'tendik') {
-                $getRole = DB::table('ak_dokubisa_role')->where('kd_user', '=', $data->kdperson)->first();
-
-                if ($getRole) {
-                    $data->role = $getRole->role;
-                } else {
-                    // Create new role if doesn't exist
-                    $id = DB::table('ak_dokubisa_role')->insertGetId([
-                        'role' => $loginAs == 'tendik' ? 'admin_akademik' : 'dosen_pembimbing',
-                        'login_as' => $loginAs,
-                        'kd_user' => $data->kdperson,
-                        'kd_unitkerja' => $data->kdunitkerja ?? null,
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ]);
-
-                    $dataRole = DB::table('ak_dokubisa_role')->where('kd_dokubisa_role', $id)->first();
-                    $data->role = $dataRole->role;
-                }
-            } else if ($loginAs == 'mahasiswa') {
-                // ✅ Role mahasiswa
+            if ($loginAs == 'mahasiswa') {
+                // バ. Role mahasiswa
                 $data->role = 'mahasiswa';
-            } else if ($loginAs == 'preceptor') {
-                $data->role = 'preceptor';
+            } else {
+                // loginAs == tendik
+                $data->role = 'tendik';
             }
 
             // Set loginAs property
@@ -319,7 +271,7 @@ class AuthController extends Controller
                 'token_type' => 'bearer',
                 'timeout' => $tokenResponse['ttl'],
                 'loginas' => $loginAs,
-                'username' => $data->nim ?? $data->kodeuser ?? $data->nip ?? null,
+                'username' => $data->nim ?? $data->nip ?? null,
                 'role' => $data->role ?? $loginAs,
             ];
 
@@ -327,9 +279,10 @@ class AuthController extends Controller
             if ($loginAs === 'mahasiswa' && isset($data->namalengkap)) {
                 $responseData['namalengkap'] = $data->namalengkap;
             }
-            // Add name for other roles
-            elseif (isset($data->nama)) {
-                $responseData['name'] = $data->nama;
+            // Add name for tendik (prioritize namalengkap if available)
+            elseif ($loginAs === 'tendik') {
+                $responseData['name'] = $data->namalengkap ?? $data->nama ?? null;
+                $responseData['namalengkap'] = $data->namalengkap ?? $data->nama ?? null;
             }
 
             return response()->json($responseData, 200);

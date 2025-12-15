@@ -103,8 +103,10 @@ onMounted(fetchData)
 
 <template>
   <VCard>
-    <VCardTitle>Legalisasi</VCardTitle>
-    <VDivider />
+    <VCardTitle class="admin-card-title">
+      Legalisasi
+    </VCardTitle>
+    <VCardSubtitle>Daftar pengajuan legalisasi</VCardSubtitle>
 
     <VAlert
       v-if="errorMessage"
@@ -123,6 +125,7 @@ onMounted(fetchData)
       {{ successMessage }}
     </VAlert>
 
+    <!--
     <VCard
       variant="outlined"
       class="pa-4 mb-6"
@@ -217,32 +220,35 @@ onMounted(fetchData)
         </VCol>
       </VRow>
     </VCard>
+    -->
 
-    <VTable class="legalisasi-table w-auto">
-      <thead>
-        <tr>
-          <th>No</th>
-          <th>KDMahasiswa</th>
-          <th>Jumlah</th>
-          <th>Biaya</th>
-          <th>Penerima</th>
-          <th>Tgl Dikirim</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="(m, i) in daftarLegalisasi.slice(0, itemsPerPage)"
-          :key="m.kdlegalisasi || i"
-        >
-          <td>{{ i + 1 }}</td>
-          <td>{{ m.kdmahasiswa }}</td>
-          <td>{{ m.jumlah_legalisasi }}</td>
-          <td>{{ m.biaya_legalisasi }}</td>
-          <td>{{ m.nama_penerima_legalisasi }}</td>
-          <td>{{ m.tgl_dikirim }}</td>
-        </tr>
-      </tbody>
-    </VTable>
+    <div class="table-wrapper">
+      <VTable class="legalisasi-table w-auto">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>KDMahasiswa</th>
+            <th>Jumlah</th>
+            <th>Biaya</th>
+            <th>Penerima</th>
+            <th>Tgl Dikirim</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(m, i) in daftarLegalisasi.slice(0, itemsPerPage)"
+            :key="m.kdlegalisasi || i"
+          >
+            <td data-label="No">{{ i + 1 }}</td>
+            <td data-label="KDMahasiswa">{{ m.kdmahasiswa }}</td>
+            <td data-label="Jumlah">{{ m.jumlah_legalisasi }}</td>
+            <td data-label="Biaya">{{ m.biaya_legalisasi }}</td>
+            <td data-label="Penerima">{{ m.nama_penerima_legalisasi }}</td>
+            <td data-label="Tgl Dikirim">{{ m.tgl_dikirim }}</td>
+          </tr>
+        </tbody>
+      </VTable>
+    </div>
 
     <div class="table-footer">
       <span>Showing per Page</span>
@@ -315,33 +321,81 @@ onMounted(fetchData)
 </template>
 
 <style scoped>
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.admin-card-title {
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(
+    135deg,
+    rgb(var(--v-theme-primary)) 0%,
+    rgba(var(--v-theme-primary), 0.85) 100%
+  );
+  color: rgb(var(--v-theme-on-primary)) !important;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding-block: 1rem !important;
+  padding-inline: 1.5rem !important;
+}
+
+.v-card-subtitle {
+  background-color: rgb(var(--v-theme-surface));
+  border-block-end: 1px solid rgba(var(--v-theme-on-surface), 0.1);
+  color: rgba(var(--v-theme-on-surface), 0.7) !important;
+  padding-block: 0.5rem !important;
+  padding-inline: 1.5rem !important;
+}
+
 .legalisasi-table {
-  border: 1px solid #e0e0e0;
+  overflow: hidden;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  border-radius: 4px;
+  background-color: rgb(var(--v-theme-surface));
+  color: rgb(var(--v-theme-on-surface));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .legalisasi-table thead {
-  background-color: #f5f5f5;
+  background: linear-gradient(
+    to right,
+    rgba(var(--v-theme-on-surface), 0.04),
+    rgba(var(--v-theme-on-surface), 0.06)
+  );
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .legalisasi-table thead th {
-  border-block-end: 2px solid #e0e0e0;
-  color: #333;
-  font-size: 14px;
+  border: none;
+  color: rgba(var(--v-theme-on-surface), 0.85);
+  font-size: 0.8rem;
   font-weight: 600;
-  padding-block: 12px;
-  padding-inline: 8px;
+  letter-spacing: 0.5px;
+  padding-block: 1rem;
+  padding-inline: 0.75rem;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .legalisasi-table tbody td {
-  background-color: #f7f8fb;
-  border-block-end: 1px solid #e0e0e0;
-  font-size: 13px;
-  padding-block: 12px;
-  padding-inline: 8px;
+  background-color: rgba(var(--v-theme-surface), 0.9);
+  border-block-end: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  color: rgba(var(--v-theme-on-surface), 0.8);
+  font-size: 0.875rem;
+  padding-block: 1rem;
+  padding-inline: 0.75rem;
+  transition: all 0.2s ease;
+  vertical-align: middle;
 }
 
-.legalisasi-table tbody tr:hover {
-  background-color: #fafafa;
+.legalisasi-table tbody tr:not(:last-child) td {
+  border-block-end: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+}
+
+.legalisasi-table tbody tr:hover td {
+  background-color: rgba(var(--v-theme-on-surface), 0.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
 }
 
 .text-center { text-align: center; }
@@ -350,8 +404,11 @@ onMounted(fetchData)
 .table-footer {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-block-start: 16px;
+  justify-content: space-between;
+  padding: 1rem;
+  border-radius: 0 0 4px 4px;
+  background-color: rgba(var(--v-theme-surface), 0.9);
+  border-block-start: 1px solid rgba(var(--v-theme-on-surface), 0.08);
 }
 
 .summary {
@@ -367,5 +424,48 @@ onMounted(fetchData)
 
 .summary-label {
   font-weight: 600;
+}
+
+@media (max-width: 960px) {
+  .legalisasi-table thead {
+    display: none;
+  }
+
+  .legalisasi-table tbody tr {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .legalisasi-table tbody td {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    background-color: rgba(var(--v-theme-surface), 0.9);
+  }
+
+  .legalisasi-table tbody td::before {
+    content: attr(data-label);
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(var(--v-theme-on-surface), 0.7);
+    text-transform: uppercase;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .legalisasi-table {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  }
+
+  .legalisasi-table thead {
+    background: linear-gradient(to right, #0f0f0f, #141414);
+  }
+
+  .table-footer {
+    background-color: rgba(var(--v-theme-surface), 0.92);
+  }
 }
 </style>

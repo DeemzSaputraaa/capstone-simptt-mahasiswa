@@ -68,7 +68,8 @@ const handleLogin = async () => {
 
       const userData = {
         username: data.username || form.value.nip,
-        name: data.name || '',
+        name: data.namalengkap || data.name || data.username || form.value.nip,
+        namalengkap: data.namalengkap || data.name || data.username || form.value.nip,
         role: data.role || 'admin_akademik',
         loginAs: data.loginas || 'tendik',
       }
