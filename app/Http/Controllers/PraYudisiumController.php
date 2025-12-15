@@ -181,4 +181,58 @@ class PraYudisiumController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Hapus data Pra Yudisium beserta berkasnya.
+     */
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+
+        try {
+            $record = AkPraYudisium::where('kdprayudisium', $id)->first();
+
+            if (!$record) {
+                return response()->json([
+                    'success' => false,
+                    'code' => 'NOT_FOUND',
+                    'message' => 'Record not found',
+                ], 404);
+            }
+
+            // Hapus file yang tersimpan di storage (jika ada)
+            $paths = [
+                $record->berkas_foto_ijazah,
+                $record->berkas_ijazah_terakhir,
+                $record->berkas_kk_ktp,
+            ];
+
+            foreach ($paths as $path) {
+                if ($path) {
+                    Storage::disk('public')->delete($path);
+                }
+            }
+
+            $record->forceDelete();
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pra Yudisium berhasil dihapus',
+            ], 200);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            Log::error('PraYudisium destroy error', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'code' => 'INTERNAL_SERVER_ERROR',
+                'message' => 'Failed to delete record',
+            ], 500);
+        }
+    }
 }

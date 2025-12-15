@@ -5,6 +5,9 @@ const itemsPerPage = ref(5)
 const loading = ref(false)
 const errorMessage = ref('')
 const mahasiswaList = ref([])
+const deletingId = ref(null)
+const showDeleteDialog = ref(false)
+const deleteTarget = ref(null)
 
 const storageBase = `${window.location.origin}/storage/`
 const fileUrl = path => (path ? `${storageBase}${path}` : '')
@@ -53,8 +56,48 @@ const editItem = item => {
   console.log('Edit:', item)
 }
 
-const deleteItem = item => {
-  console.log('Delete:', item)
+const openDeleteDialog = item => {
+  if (!item) return
+  deleteTarget.value = item
+  showDeleteDialog.value = true
+}
+
+const closeDeleteDialog = () => {
+  showDeleteDialog.value = false
+  deleteTarget.value = null
+}
+
+const deleteItem = async () => {
+  if (!deleteTarget.value || deletingId.value) return
+
+  deletingId.value = deleteTarget.value.kdprayudisium
+  errorMessage.value = ''
+
+  try {
+    const headers = {
+      Accept: 'application/json',
+    }
+
+    const token = sessionStorage.getItem('jwt_token')
+    if (token)
+      headers.Authorization = `Bearer ${token}`
+
+    const res = await fetch(`/api/pra-yudisium/${deleteTarget.value.kdprayudisium}`, {
+      method: 'DELETE',
+      headers,
+    })
+
+    const json = await res.json().catch(() => ({}))
+    if (!res.ok || json.success === false)
+      throw new Error(json.message || 'Gagal menghapus data')
+
+    mahasiswaList.value = mahasiswaList.value.filter(row => row.kdprayudisium !== deleteTarget.value.kdprayudisium)
+    closeDeleteDialog()
+  } catch (err) {
+    errorMessage.value = err.message || 'Gagal menghapus data'
+  } finally {
+    deletingId.value = null
+  }
 }
 
 const openComments = item => {
@@ -245,7 +288,9 @@ onMounted(fetchData)
                 variant="text"
                 color="error"
                 class="action-btn"
-                @click="deleteItem(m)"
+                :loading="deletingId === m.kdprayudisium"
+                :disabled="deletingId !== null"
+                @click="openDeleteDialog(m)"
               >
                 <VIcon
                   icon="ri-delete-bin-line"
@@ -345,6 +390,43 @@ onMounted(fetchData)
             @click="showCommentDialog = false"
           >
             Tutup
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+
+    <VDialog
+      v-model="showDeleteDialog"
+      max-width="480"
+    >
+      <VCard>
+        <VCardTitle class="text-h6">
+          Hapus Data?
+        </VCardTitle>
+        <VCardText>
+          <p class="mb-4">
+            Data pra yudisium dengan kode <strong>{{ deleteTarget?.kdprayudisium }}</strong> akan dihapus.
+            Tindakan ini tidak dapat dibatalkan.
+          </p>
+          <p class="text-medium-emphasis">
+            Pastikan data sudah benar sebelum melanjutkan.
+          </p>
+        </VCardText>
+        <VCardActions class="justify-end">
+          <VBtn
+            variant="text"
+            color="default"
+            @click="closeDeleteDialog"
+          >
+            Batal
+          </VBtn>
+          <VBtn
+            color="error"
+            :loading="!!deletingId"
+            :disabled="!!deletingId"
+            @click="deleteItem"
+          >
+            Hapus
           </VBtn>
         </VCardActions>
       </VCard>
