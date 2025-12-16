@@ -14,9 +14,40 @@ class AkValidasiIjazahController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        try {
+            $records = DB::table('ak_validasi_ijazah_mahasiswa as v')
+                ->leftJoin('mh_v_nama as m', 'm.kdmahasiswa', '=', 'v.kdmahasiswa')
+                ->select(
+                    'v.kdvalidasiijazahmahasiswa',
+                    'v.kdmahasiswa',
+                    'v.is_ijazah_validate',
+                    'v.is_transkrip_validate',
+                    'v.coment_transkrip',
+                    'v.coment_ijazah',
+                    'v.diambil_sendiri',
+                    'v.surat_kuasa',
+                    'v.tgl_diambil_ijazah',
+                    'm.nim',
+                    'm.namalengkap',
+                    'm.prodi',
+                    DB::raw('(select count(*) from ak_validasi_ijazah_mahasiswa_comment c where c.kdvalidasiijazahmahasiswa = v.kdvalidasiijazahmahasiswa) as comment_count'),
+                    DB::raw('(select max(c.create_at) from ak_validasi_ijazah_mahasiswa_comment c where c.kdvalidasiijazahmahasiswa = v.kdvalidasiijazahmahasiswa) as last_comment_at')
+                )
+                ->orderByDesc('v.kdvalidasiijazahmahasiswa')
+                ->get();
+
+            return response()->json($records);
+        } catch (\Throwable $e) {
+            Log::error('AkValidasiIjazah index error', ['error' => $e->getMessage()]);
+
+            return response()->json([
+                'success' => false,
+                'code' => 'INTERNAL_SERVER_ERROR',
+                'message' => 'Gagal memuat data validasi ijazah',
+            ], 500);
+        }
     }
 
     /**

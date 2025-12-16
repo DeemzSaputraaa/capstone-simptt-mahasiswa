@@ -28,7 +28,7 @@ class AkValidasiIjazahCommentController extends Controller
             }
 
             // Ambil komentar utama (tanpa parent)
-            $comments = AkValidasiIjazahMahasiswaComment::with('replies')
+            $comments = AkValidasiIjazahMahasiswaComment::with(['replies.validasiIjazah', 'validasiIjazah'])
                 ->where('kdvalidasiijazahmahasiswa', $resolvedValidasiId)
                 ->whereNull('parent_id')
                 ->orderBy('kdcomment', 'desc')
@@ -85,6 +85,8 @@ class AkValidasiIjazahCommentController extends Controller
             \Log::info('Data to store: ' . json_encode($dataToStore));
 
             $comment = AkValidasiIjazahMahasiswaComment::create($dataToStore);
+            // Pastikan relasi validasi ter-load untuk kebutuhan nama
+            $comment->load('validasiIjazah');
 
             \Log::info('Comment created successfully: ' . $comment->toJson());
 
@@ -177,6 +179,11 @@ class AkValidasiIjazahCommentController extends Controller
      */
     private function resolveCommenterName(AkValidasiIjazahMahasiswaComment $comment): string
     {
+        // Jika ini balasan (parent_id ada), anggap sebagai komentar admin
+        if (!is_null($comment->parent_id)) {
+            return 'Admin';
+        }
+
         // Jika relasi user tersedia, pakai itu dulu
         if ($comment->relationLoaded('user') && $comment->user) {
             return $comment->user->name ?? 'Mahasiswa';
@@ -188,9 +195,13 @@ class AkValidasiIjazahCommentController extends Controller
             return $this->commenterNameCache[$key];
         }
 
-        // Ambil kdmahasiswa dari validasi ijazah
-        $kdMahasiswa = AkValidasiIjazahMahasiswa::where('kdvalidasiijazahmahasiswa', $comment->kdvalidasiijazahmahasiswa)
-            ->value('kdmahasiswa');
+        // Ambil kdmahasiswa dari relasi yang sudah di-load atau query sekali
+        if ($comment->relationLoaded('validasiIjazah') && $comment->validasiIjazah) {
+            $kdMahasiswa = $comment->validasiIjazah->kdmahasiswa;
+        } else {
+            $kdMahasiswa = AkValidasiIjazahMahasiswa::where('kdvalidasiijazahmahasiswa', $comment->kdvalidasiijazahmahasiswa)
+                ->value('kdmahasiswa');
+        }
 
         if (!$kdMahasiswa) {
             return 'Mahasiswa';
