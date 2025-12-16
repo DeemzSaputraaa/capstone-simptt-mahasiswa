@@ -174,6 +174,7 @@ export default {
 
     // State untuk komentar (kosong saat awal)
     const comments = ref([])
+    const validasiId = ref('me')
 
     const newComment = ref('')
 
@@ -321,39 +322,48 @@ export default {
     // Komentar hanya tampil setelah Lapor
     const showComments = ref(false)
 
+    const normalizeComment = comment => {
+      return {
+        id: comment?.id ?? comment?.kdcomment ?? Date.now(),
+        user: comment?.user || user.value?.name || 'Mahasiswa',
+        text: comment?.text || comment?.comment || '',
+        date: comment?.date ? new Date(comment.date) : new Date(),
+        replies: Array.isArray(comment?.replies) ? comment.replies.map(normalizeComment) : [],
+      }
+    }
+
+    const getCommentsEndpointId = () => validasiId.value || 'me'
+
     // Fungsi untuk komentar
     const addComment = async () => {
       if (!newComment.value.trim()) return
 
-      const commentData = {
-        id: Date.now(),
-        user: user.value?.name || 'Mahasiswa',
-        text: newComment.value,
-        date: new Date(),
-        replies: [],
-      }
+      const commentText = newComment.value.trim()
 
       try {
         // Simpan ke database
-        await saveCommentToDatabase(commentData)
+        const savedComment = await saveCommentToDatabase(commentText)
+        const normalized = normalizeComment(savedComment)
         
         // Tambahkan ke state lokal
-        comments.value.unshift(commentData)
+        comments.value.unshift(normalized)
         newComment.value = ''
       } catch (error) {
         console.error('Error saving comment:', error)
 
         // Tetap tambahkan ke state lokal jika gagal simpan
-        comments.value.unshift(commentData)
+        comments.value.unshift(normalizeComment({
+          text: commentText,
+        }))
         newComment.value = ''
       }
     }
 
 
     // Fungsi untuk menyimpan komentar ke database
-    const saveCommentToDatabase = async commentData => {
+    const saveCommentToDatabase = async commentText => {
       try {
-        console.log('Saving comment to database:', commentData)
+        console.log('Saving comment to database')
 
         const response = await fetch('/api/comments', {
           method: 'POST',
@@ -363,10 +373,9 @@ export default {
             ...getAuthHeaders(),
           },
           body: JSON.stringify({
-            user_id: 1, // ID user, sesuaikan dengan data sebenarnya
-            content: commentData.text,
+            comment: commentText,
             parent_id: null, // Komentar utama
-            validasi_ijazah_id: 1, // ID validasi ijazah, sesuaikan dengan data sebenarnya
+            kdvalidasiijazahmahasiswa: typeof validasiId.value === 'number' ? validasiId.value : undefined,
           }),
         })
 
@@ -395,7 +404,8 @@ export default {
       try {
         console.log('Loading comments from database...')
 
-        const response = await fetch('/api/comments/1', { // ID validasi ijazah
+        const endpointId = getCommentsEndpointId()
+        const response = await fetch(`/api/comments/${endpointId}`, {
           headers: {
             ...getAuthHeaders(),
           },
@@ -407,7 +417,9 @@ export default {
           const data = await response.json()
 
           console.log('Comments loaded:', data)
-          comments.value = data
+          comments.value = Array.isArray(data)
+            ? data.map(normalizeComment)
+            : []
         } else {
           console.error('Failed to load comments:', response.status, response.statusText)
 

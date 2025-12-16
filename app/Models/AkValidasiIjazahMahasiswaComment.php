@@ -6,24 +6,37 @@ use Illuminate\Database\Eloquent\Model;
 
 class AkValidasiIjazahMahasiswaComment extends Model
 {
-    protected $table = 'comment';
+    protected $table = 'ak_validasi_ijazah_mahasiswa_comment';
 
-    protected $fillable = [
-        'id',
-        'user_id',
-        'content',
-        'created_at',
-        'updated_at',
-        'parent_id',
-        'validasi_ijazah_id',
-    ];
+    protected $primaryKey = 'kdcomment';
+
+    use \Illuminate\Database\Eloquent\SoftDeletes;
 
     public $timestamps = true;
+
+    const CREATED_AT = 'create_at';
+    const UPDATED_AT = 'update_at';
+    const DELETED_AT = 'delete_at';
+
+    protected $fillable = [
+        'kdvalidasiijazahmahasiswa',
+        'parent_id',
+        'comment',
+        'create_at',
+        'update_at',
+        'delete_at',
+    ];
+
+    protected $dates = [
+        'create_at',
+        'update_at',
+        'delete_at',
+    ];
 
     // Relasi dengan validasi ijazah
     public function validasiIjazah()
     {
-        return $this->belongsTo(AkValidasiIjazahMahasiswa::class, 'validasi_ijazah_id');
+        return $this->belongsTo(AkValidasiIjazahMahasiswa::class, 'kdvalidasiijazahmahasiswa');
     }
 
     // Relasi dengan parent comment (untuk reply)

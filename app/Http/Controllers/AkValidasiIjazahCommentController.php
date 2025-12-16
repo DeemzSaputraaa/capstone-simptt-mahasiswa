@@ -5,36 +5,39 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\AkValidasiIjazahMahasiswaComment;
 use App\Models\AkValidasiIjazahMahasiswa;
+use Illuminate\Support\Facades\DB;
 
 class AkValidasiIjazahCommentController extends Controller
 {
     /**
+     * Cache sederhana agar lookup nama mahasiswa tidak berulang.
+     */
+    private array $commenterNameCache = [];
+
+    /**
      * Menampilkan semua komentar untuk validasi ijazah tertentu
      */
-    public function index($validasiIjazahId)
+    public function index(Request $request, $validasiIjazahId)
     {
         try {
             \Log::info('Loading comments for validasi_ijazah_id: ' . $validasiIjazahId);
 
-            // Coba query sederhana dulu tanpa relasi
-            $comments = AkValidasiIjazahMahasiswaComment::where('validasi_ijazah_id', $validasiIjazahId)
+            $resolvedValidasiId = $this->resolveValidasiId($request, $validasiIjazahId);
+            if (!$resolvedValidasiId) {
+                return response()->json([]);
+            }
+
+            // Ambil komentar utama (tanpa parent)
+            $comments = AkValidasiIjazahMahasiswaComment::with('replies')
+                ->where('kdvalidasiijazahmahasiswa', $resolvedValidasiId)
                 ->whereNull('parent_id')
-                ->orderBy('id', 'desc')
+                ->orderBy('kdcomment', 'desc')
                 ->get();
 
             \Log::info('Found comments count: ' . $comments->count());
             \Log::info('Comments data: ' . $comments->toJson());
 
-            // Transform data sederhana untuk frontend
-            $transformedComments = $comments->map(function ($comment) {
-                return [
-                    'id' => $comment->id,
-                    'user' => 'User', // Default user name
-                    'text' => $comment->content ?? $comment->text ?? '',
-                    'date' => new \DateTime($comment->created_at ?? now()),
-                    'replies' => [],
-                ];
-            });
+            $transformedComments = $this->transformComments($comments);
 
             \Log::info('Transformed comments: ' . json_encode($transformedComments));
 
@@ -54,21 +57,38 @@ class AkValidasiIjazahCommentController extends Controller
         try {
             \Log::info('Storing comment with data: ' . json_encode($request->all()));
 
-            // Validasi yang lebih fleksibel
-            $data = [
-                'validasi_ijazah_id' => $request->input('validasi_ijazah_id', 1),
-                'parent_id' => $request->input('parent_id'),
-                'user_id' => $request->input('user_id', 1),
-                'content' => $request->input('content'),
+            $validated = $request->validate([
+                'comment' => 'required|string',
+                'parent_id' => 'nullable|integer',
+                'kdvalidasiijazahmahasiswa' => 'nullable|integer',
+                'validasi_ijazah_id' => 'nullable|integer', // fallback name
+            ]);
+
+            $resolvedValidasiId = $this->resolveValidasiId(
+                $request,
+                $validated['kdvalidasiijazahmahasiswa'] ?? $validated['validasi_ijazah_id'] ?? null,
+                true // create jika belum ada untuk user ini
+            );
+
+            if (!$resolvedValidasiId) {
+                return response()->json(['error' => 'Validasi ijazah tidak ditemukan untuk pengguna ini'], 404);
+            }
+
+            $dataToStore = [
+                'kdvalidasiijazahmahasiswa' => $resolvedValidasiId,
+                'parent_id' => $validated['parent_id'] ?? null,
+                'comment' => $validated['comment'],
+                'create_at' => now(),
+                'update_at' => now(),
             ];
 
-            \Log::info('Data to store: ' . json_encode($data));
+            \Log::info('Data to store: ' . json_encode($dataToStore));
 
-            $comment = AkValidasiIjazahMahasiswaComment::create($data);
+            $comment = AkValidasiIjazahMahasiswaComment::create($dataToStore);
 
             \Log::info('Comment created successfully: ' . $comment->toJson());
 
-            return response()->json($comment, 201);
+            return response()->json($this->normalizeComment($comment), 201);
         } catch (\Exception $e) {
             \Log::error('Error storing comment: ' . $e->getMessage());
             \Log::error('Stack trace: ' . $e->getTraceAsString());
@@ -118,13 +138,7 @@ class AkValidasiIjazahCommentController extends Controller
     private function transformComments($comments)
     {
         return $comments->map(function ($comment) {
-            return [
-                'id' => $comment->id,
-                'user' => $comment->user ? $comment->user->name : 'Unknown User',
-                'text' => $comment->content,
-                'date' => new \DateTime($comment->created_at),
-                'replies' => $this->transformReplies($comment->replies),
-            ];
+            return $this->normalizeComment($comment);
         });
     }
 
@@ -135,12 +149,111 @@ class AkValidasiIjazahCommentController extends Controller
     {
         return $replies->map(function ($reply) {
             return [
-                'id' => $reply->id,
-                'user' => $reply->user ? $reply->user->name : 'Unknown User',
-                'text' => $reply->content,
-                'date' => new \DateTime($reply->created_at),
+                'id' => $reply->getKey(),
+                'user' => $this->resolveCommenterName($reply),
+                'text' => $reply->comment,
+                'date' => optional($reply->create_at ?? $reply->created_at ?? now())->toDateTimeString(),
                 'replies' => $this->transformReplies($reply->replies ?? collect()),
             ];
         });
+    }
+
+    /**
+     * Normalisasi komentar ke bentuk yang dipakai frontend
+     */
+    private function normalizeComment(AkValidasiIjazahMahasiswaComment $comment): array
+    {
+        return [
+            'id' => $comment->getKey(),
+            'user' => $this->resolveCommenterName($comment),
+            'text' => $comment->comment ?? '',
+            'date' => optional($comment->create_at ?? $comment->created_at ?? now())->toDateTimeString(),
+            'replies' => $this->transformReplies($comment->replies ?? collect()),
+        ];
+    }
+
+    /**
+     * Ambil nama mahasiswa dari relasi user atau dari kdmahasiswa pada validasi ijazah.
+     */
+    private function resolveCommenterName(AkValidasiIjazahMahasiswaComment $comment): string
+    {
+        // Jika relasi user tersedia, pakai itu dulu
+        if ($comment->relationLoaded('user') && $comment->user) {
+            return $comment->user->name ?? 'Mahasiswa';
+        }
+
+        // Cek cache per kdvalidasi
+        $key = $comment->kdvalidasiijazahmahasiswa;
+        if ($key && isset($this->commenterNameCache[$key])) {
+            return $this->commenterNameCache[$key];
+        }
+
+        // Ambil kdmahasiswa dari validasi ijazah
+        $kdMahasiswa = AkValidasiIjazahMahasiswa::where('kdvalidasiijazahmahasiswa', $comment->kdvalidasiijazahmahasiswa)
+            ->value('kdmahasiswa');
+
+        if (!$kdMahasiswa) {
+            return 'Mahasiswa';
+        }
+
+        // Ambil nama dari view mh_v_nama
+        // Ambil nama lengkap (kolom umum di mh_v_nama)
+        $nama = DB::table('mh_v_nama')
+            ->where('kdmahasiswa', $kdMahasiswa)
+            ->value('namalengkap');
+
+        $nama = $nama ?: 'Mahasiswa';
+        if ($key) {
+            $this->commenterNameCache[$key] = $nama;
+        }
+
+        return $nama;
+    }
+
+    /**
+     * Cari kdvalidasiijazahmahasiswa berdasarkan request atau user login
+     */
+    private function resolveValidasiId(Request $request, $validasiIjazahId = null, bool $createIfMissing = false): ?int
+    {
+        // Jika diberikan ID numerik langsung, pakai itu
+        if ($validasiIjazahId && $validasiIjazahId !== 'me') {
+            return (int) $validasiIjazahId;
+        }
+
+        // Ambil nim dari payload JWT
+        $payload = $request->attributes->get('jwt_payload', []);
+        $nim = $payload['username'] ?? $payload['nim'] ?? null;
+
+        if (!$nim) {
+            return null;
+        }
+
+        // Ambil kdmahasiswa dari view nama
+        $kdmahasiswa = DB::table('mh_v_nama')
+            ->where('nim', $nim)
+            ->value('kdmahasiswa');
+
+        if (!$kdmahasiswa) {
+            return null;
+        }
+
+        $existing = AkValidasiIjazahMahasiswa::where('kdmahasiswa', $kdmahasiswa)
+            ->first();
+
+        if ($existing) {
+            return $existing->kdvalidasiijazahmahasiswa;
+        }
+
+        if (!$createIfMissing) {
+            return null;
+        }
+
+        $created = AkValidasiIjazahMahasiswa::create([
+            'kdmahasiswa' => $kdmahasiswa,
+            'is_ijazah_validate' => false,
+            'is_transkrip_validate' => false,
+        ]);
+
+        return $created->kdvalidasiijazahmahasiswa ?? null;
     }
 }

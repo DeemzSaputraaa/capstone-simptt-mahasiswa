@@ -10,11 +10,12 @@ export const routes = [
         component: () => import('@/pages/dashboard.vue'),
         meta: { title: 'Dashboard' },
       },
-      {
-        path: 'account-settings',
-        component: () => import('@/pages/account-settings.vue'),
-        meta: { title: 'Account Settings' },
-      },
+
+      // {
+      //   path: 'account-settings',
+      //   component: () => import('@/pages/account-settings.vue'),
+      //   meta: { title: 'Account Settings' },
+      // },
 
       // {
       //   path: 'typography',
