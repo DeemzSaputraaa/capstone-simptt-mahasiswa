@@ -86,6 +86,7 @@
                 :max-depth="10"
                 :current-user="user"
                 @add-reply="handleAddReply"
+                @submit-reply="handleSubmitReply"
               />
             </div>
           </VCardText>
@@ -460,6 +461,50 @@ export default {
         if (!found) {
           console.error('Failed to add nested reply: parent reply not found')
         }
+      }
+    }
+
+    // Kirim balasan ke server (mahasiswa balas admin atau komentar lain)
+    const handleSubmitReply = async payload => {
+      const { parentId, text } = payload || {}
+      if (!parentId || !text?.trim()) return
+
+      try {
+        const response = await fetch('/api/comments', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+            ...getAuthHeaders(),
+          },
+          body: JSON.stringify({
+            comment: text,
+            parent_id: parentId,
+            kdvalidasiijazahmahasiswa: typeof validasiId.value === 'number' ? validasiId.value : undefined,
+          }),
+        })
+
+        if (!response.ok) {
+          console.error('Failed to save reply', response.status)
+          return
+        }
+
+        const saved = await response.json()
+        const normalized = normalizeComment(saved)
+
+        // Sisipkan balasan ke posisi yang tepat
+        const parent = comments.value.find(c => c.id === parentId)
+        if (parent) {
+          if (!parent.replies) parent.replies = []
+          parent.replies.push(normalized)
+        } else {
+          const inserted = findReplyAndAddNested(comments.value, parentId, normalized)
+          if (!inserted) {
+            console.error('Failed to place reply: parent not found')
+          }
+        }
+      } catch (error) {
+        console.error('Error submitting reply:', error)
       }
     }
 

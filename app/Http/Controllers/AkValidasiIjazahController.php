@@ -33,7 +33,9 @@ class AkValidasiIjazahController extends Controller
                     'm.namalengkap',
                     'm.prodi',
                     DB::raw('(select count(*) from ak_validasi_ijazah_mahasiswa_comment c where c.kdvalidasiijazahmahasiswa = v.kdvalidasiijazahmahasiswa) as comment_count'),
-                    DB::raw('(select max(c.create_at) from ak_validasi_ijazah_mahasiswa_comment c where c.kdvalidasiijazahmahasiswa = v.kdvalidasiijazahmahasiswa) as last_comment_at')
+                    DB::raw('(select max(c.create_at) from ak_validasi_ijazah_mahasiswa_comment c where c.kdvalidasiijazahmahasiswa = v.kdvalidasiijazahmahasiswa) as last_comment_at'),
+                    DB::raw('(select max(c.create_at) from ak_validasi_ijazah_mahasiswa_comment c where c.kdvalidasiijazahmahasiswa = v.kdvalidasiijazahmahasiswa and c.parent_id is not null) as last_admin_comment_at'),
+                    DB::raw('(select c.comment from ak_validasi_ijazah_mahasiswa_comment c where c.kdvalidasiijazahmahasiswa = v.kdvalidasiijazahmahasiswa and c.parent_id is not null order by c.create_at desc limit 1) as last_admin_comment_text')
                 )
                 ->orderByDesc('v.kdvalidasiijazahmahasiswa')
                 ->get();

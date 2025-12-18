@@ -217,7 +217,32 @@ const loadNotifications = async () => {
         comment: item.comment,
       }))
 
-    notifications.value = studentNotifications
+    // Notifikasi untuk balasan admin di validasi ijazah & transkrip
+    let validasiNotifications = []
+    try {
+      const resValidasi = await fetch('/api/ak-validasi-ijazah', { headers })
+      if (resValidasi.ok) {
+        const validasiJson = await resValidasi.json()
+        const validasiData = Array.isArray(validasiJson) ? validasiJson : []
+        validasiNotifications = validasiData
+          .filter(item => item.nim === userNim.value || String(item.kdmahasiswa) === String(userNim.value))
+          .filter(item => !!item.last_admin_comment_text)
+          .map(item => ({
+            id: `validasi-${item.kdvalidasiijazahmahasiswa}`,
+            icon: 'ri-chat-3-line',
+            color: 'info',
+            title: item.last_admin_comment_text,
+            type: 'validasi-ijazah',
+            route: '/validasi-ijazah',
+            dataId: item.kdvalidasiijazahmahasiswa,
+            comment: item.last_admin_comment_text,
+          }))
+      }
+    } catch (err) {
+      console.error('Gagal memuat notifikasi validasi ijazah', err)
+    }
+
+    notifications.value = [...studentNotifications, ...validasiNotifications]
   } catch (err) {
     console.error(err)
   }

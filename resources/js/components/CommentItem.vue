@@ -118,7 +118,7 @@ export default {
       default: () => ({ name: 'Mahasiswa' }),
     },
   },
-  emits: ['add-reply'],
+  emits: ['add-reply', 'submit-reply'],
   setup(props, { emit }) {
     const showReply = ref(false)
     const newReplyText = ref('')
@@ -163,16 +163,11 @@ export default {
     const submitReply = () => {
       if (!newReplyText.value.trim()) return
 
-      const replyData = {
-        id: Date.now(),
-        user: props.currentUser?.name || 'Mahasiswa',
+      emit('submit-reply', {
+        parentId: props.comment.id,
         text: newReplyText.value,
-        date: new Date(),
-        replies: [],
-      }
+      })
 
-      emit('add-reply', props.comment.id, replyData)
-      
       newReplyText.value = ''
       showReply.value = false
     }

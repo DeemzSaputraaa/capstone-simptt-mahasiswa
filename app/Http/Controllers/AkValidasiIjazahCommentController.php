@@ -179,7 +179,7 @@ class AkValidasiIjazahCommentController extends Controller
      */
     private function resolveCommenterName(AkValidasiIjazahMahasiswaComment $comment): string
     {
-        // Jika ini balasan (parent_id ada), anggap sebagai komentar admin
+        // Jika ini balasan (parent_id ada) tanpa penanda, fallback Admin
         if (!is_null($comment->parent_id)) {
             return 'Admin';
         }
