@@ -217,6 +217,20 @@ const loadNotifications = async () => {
         comment: item.comment,
       }))
 
+    const approvedNotifications = data
+      .filter(item => item.nim === userNim.value || String(item.kdmahasiswa) === String(userNim.value))
+      .filter(item => !!item.is_validate)
+      .map(item => ({
+        id: `pra-approve-${item.kdprayudisium}`,
+        icon: 'ri-check-line',
+        color: 'success',
+        title: 'Pengajuan Pra Yudisium Anda disetujui.',
+        type: 'pra-yudisium',
+        route: '/pra-yudisium',
+        dataId: item.kdprayudisium,
+        comment: 'Pengajuan Pra Yudisium Anda disetujui.',
+      }))
+
     // Notifikasi untuk balasan admin di validasi ijazah & transkrip
     let validasiNotifications = []
     try {
@@ -242,7 +256,7 @@ const loadNotifications = async () => {
       console.error('Gagal memuat notifikasi validasi ijazah', err)
     }
 
-    notifications.value = [...studentNotifications, ...validasiNotifications]
+    notifications.value = [...studentNotifications, ...approvedNotifications, ...validasiNotifications]
   } catch (err) {
     console.error(err)
   }

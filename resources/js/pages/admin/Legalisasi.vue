@@ -9,6 +9,19 @@ const loading = ref(false)
 const errorMessage = ref('')
 const successMessage = ref('')
 
+const approvingId = ref(null)
+const deletingId = ref(null)
+
+const showApproveDialog = ref(false)
+const selectedItem = ref(null)
+const approveForm = ref({
+  noresi: '',
+  tgl_dikirim: '',
+})
+
+const showDeleteDialog = ref(false)
+const deleteCandidate = ref(null)
+
 const form = ref({
   kdmahasiswa: '',
   jumlah_legalisasi: 1,
@@ -62,6 +75,117 @@ const fetchData = async () => {
     errorMessage.value = e.message || 'Gagal memuat data'
   } finally {
     loading.value = false
+  }
+}
+
+const getRowId = row => row?.id ?? row?.kdlegalisasi
+const isApproved = row => Boolean(row?.tgl_dikirim)
+
+const openApprove = item => {
+  selectedItem.value = item
+  approveForm.value = {
+    noresi: item?.noresi ?? '',
+    tgl_dikirim: (item?.tgl_dikirim
+      ? String(item.tgl_dikirim).slice(0, 10)
+      : new Date().toISOString().slice(0, 10)),
+  }
+  showApproveDialog.value = true
+}
+
+const closeApprove = () => {
+  showApproveDialog.value = false
+  selectedItem.value = null
+}
+
+const saveApprove = async () => {
+  if (!selectedItem.value) return
+
+  errorMessage.value = ''
+  successMessage.value = ''
+  approvingId.value = getRowId(selectedItem.value)
+
+  try {
+    const headers = {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    }
+    const token = sessionStorage.getItem('jwt_token')
+    if (token)
+      headers.Authorization = `Bearer ${token}`
+
+    const id = getRowId(selectedItem.value)
+    const res = await fetch(`/api/form-legalisasi/${id}`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({
+        noresi: approveForm.value.noresi,
+        tgl_dikirim: approveForm.value.tgl_dikirim,
+      }),
+    })
+
+    const json = await res.json()
+    if (!res.ok || json.success === false)
+      throw new Error(json.message || 'Gagal approve legalisasi')
+
+    // update lokal
+    daftarLegalisasi.value = daftarLegalisasi.value.map(row => {
+      if (getRowId(row) !== id) return row
+      return { ...row, ...json.data }
+    })
+
+    successMessage.value = 'Legalisasi berhasil di-approve (resi & tanggal dikirim tersimpan)'
+    closeApprove()
+  } catch (e) {
+    errorMessage.value = e.message || 'Gagal approve legalisasi'
+  } finally {
+    approvingId.value = null
+  }
+}
+
+const openDeleteDialog = item => {
+  deleteCandidate.value = item
+  showDeleteDialog.value = true
+}
+
+const closeDeleteDialog = () => {
+  showDeleteDialog.value = false
+  deleteCandidate.value = null
+}
+
+const confirmDelete = async () => {
+  if (!deleteCandidate.value) return
+  await deleteItem(deleteCandidate.value)
+  closeDeleteDialog()
+}
+
+const deleteItem = async item => {
+  const id = getRowId(item)
+  if (!id) return
+
+  errorMessage.value = ''
+  successMessage.value = ''
+  deletingId.value = id
+
+  try {
+    const headers = { Accept: 'application/json' }
+    const token = sessionStorage.getItem('jwt_token')
+    if (token)
+      headers.Authorization = `Bearer ${token}`
+
+    const res = await fetch(`/api/form-legalisasi/${id}`, {
+      method: 'DELETE',
+      headers,
+    })
+    const json = await res.json().catch(() => ({}))
+    if (!res.ok)
+      throw new Error(json.message || `Gagal menghapus (${res.status})`)
+
+    daftarLegalisasi.value = daftarLegalisasi.value.filter(row => getRowId(row) !== id)
+    successMessage.value = 'Pengajuan legalisasi berhasil dihapus'
+  } catch (e) {
+    errorMessage.value = e.message || 'Gagal menghapus'
+  } finally {
+    deletingId.value = null
   }
 }
 
@@ -227,11 +351,13 @@ onMounted(fetchData)
         <thead>
           <tr>
             <th>No</th>
-            <th>KDMahasiswa</th>
+            <th>Nama Mahasiswa</th>
             <th>Jumlah</th>
             <th>Biaya</th>
+            <th>No. VA</th>
             <th>Penerima</th>
             <th>Tgl Dikirim</th>
+            <th class="text-center">Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -240,11 +366,44 @@ onMounted(fetchData)
             :key="m.kdlegalisasi || i"
           >
             <td data-label="No">{{ i + 1 }}</td>
-            <td data-label="KDMahasiswa">{{ m.kdmahasiswa }}</td>
+            <td data-label="Nama Mahasiswa">{{ m.nama_mahasiswa ?? '-' }}</td>
             <td data-label="Jumlah">{{ m.jumlah_legalisasi }}</td>
             <td data-label="Biaya">{{ m.biaya_legalisasi }}</td>
+            <td data-label="No. VA">{{ m.noresi ?? '-' }}</td>
             <td data-label="Penerima">{{ m.nama_penerima_legalisasi }}</td>
             <td data-label="Tgl Dikirim">{{ m.tgl_dikirim }}</td>
+            <td data-label="Aksi" class="text-center">
+              <div class="d-flex justify-center">
+                <VBtn
+                  icon
+                  variant="text"
+                  color="success"
+                  class="action-btn"
+                  :loading="approvingId === getRowId(m)"
+                  :disabled="deletingId !== null || isApproved(m)"
+                  @click="openApprove(m)"
+                >
+                  <VIcon
+                    icon="ri-check-line"
+                    size="20"
+                  />
+                </VBtn>
+                <VBtn
+                  icon
+                  variant="text"
+                  color="error"
+                  class="action-btn"
+                  :loading="deletingId === getRowId(m)"
+                  :disabled="approvingId !== null"
+                  @click="openDeleteDialog(m)"
+                >
+                  <VIcon
+                    icon="ri-delete-bin-line"
+                    size="20"
+                  />
+                </VBtn>
+              </div>
+            </td>
           </tr>
         </tbody>
       </VTable>
@@ -261,59 +420,119 @@ onMounted(fetchData)
     </div>
   </VCard>
   <VDialog
-    v-model="showHargaDialog"
+    v-model="showApproveDialog"
     max-width="800"
   >
     <VCard>
-      <VCardTitle>Formulir Pendaftaran Legalisasi</VCardTitle>
+      <VCardTitle>Approve Legalisasi</VCardTitle>
       <VCardText>
         <div class="text-subtitle-1 font-weight-bold mb-2">
-          Ringkasan Data Pendaftaran
+          Ringkasan Pengajuan
         </div>
         <div
           v-if="selectedItem"
           class="summary"
         >
           <div class="summary-row">
-            <span class="summary-label">Jenis Dokumen</span><span class="summary-value">{{ selectedItem.dokumen }}</span>
+            <span class="summary-label">KDMahasiswa</span><span class="summary-value">{{ selectedItem.kdmahasiswa }}</span>
           </div>
           <div class="summary-row">
-            <span class="summary-label">Jumlah</span><span class="summary-value">{{ selectedItem.jumlah }}</span>
+            <span class="summary-label">Nama Mahasiswa</span><span class="summary-value">{{ selectedItem.nama_mahasiswa ?? '-' }}</span>
           </div>
           <div class="summary-row">
-            <span class="summary-label">Nama Penerima</span><span class="summary-value">{{ selectedItem.nama }}</span>
+            <span class="summary-label">Jenis Dokumen</span><span class="summary-value">{{ selectedItem.comment ?? '-' }}</span>
           </div>
           <div class="summary-row">
-            <span class="summary-label">No Telp Penerima</span><span class="summary-value">{{ selectedItem.telp }}</span>
+            <span class="summary-label">Jumlah</span><span class="summary-value">{{ selectedItem.jumlah_legalisasi }}</span>
           </div>
           <div class="summary-row">
-            <span class="summary-label">Alamat</span><span class="summary-value">{{ selectedItem.alamat }}</span>
+            <span class="summary-label">Nama Penerima</span><span class="summary-value">{{ selectedItem.nama_penerima_legalisasi }}</span>
           </div>
           <div class="summary-row">
-            <span class="summary-label">Tagihan</span><span class="summary-value">{{ selectedItem.tagihan }}</span>
+            <span class="summary-label">No Telp Penerima</span><span class="summary-value">{{ selectedItem.telp_penerima ?? '-' }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Alamat</span><span class="summary-value">{{ selectedItem.alamat_kirim }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">No. VA</span><span class="summary-value">{{ selectedItem.noresi ?? '-' }}</span>
           </div>
         </div>
         <VTextField
-          v-model="nomorResi"
+          v-model="approveForm.noresi"
           label="Masukkan Nomor Resi"
           variant="outlined"
           class="mt-6"
+        />
+        <VTextField
+          v-model="approveForm.tgl_dikirim"
+          label="Tanggal Dikirim"
+          type="date"
+          variant="outlined"
+          class="mt-4"
         />
       </VCardText>
       <VCardActions class="justify-space-between">
         <VBtn
           variant="tonal"
           color="grey"
-          @click="closeHargaDialog"
+          @click="closeApprove"
         >
           Kembali
         </VBtn>
         <VBtn
           color="teal"
           variant="tonal"
-          @click="saveHarga"
+          :loading="approvingId !== null"
+          @click="saveApprove"
         >
           Simpan
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
+  <VDialog
+    v-model="showDeleteDialog"
+    max-width="420"
+  >
+    <VCard>
+      <VCardTitle>Hapus Pengajuan Legalisasi</VCardTitle>
+      <VCardText>
+        <div>Yakin ingin menghapus pengajuan ini?</div>
+        <div
+          v-if="deleteCandidate"
+          class="summary mt-4"
+        >
+          <div class="summary-row">
+            <span class="summary-label">KDMahasiswa</span><span class="summary-value">{{ deleteCandidate.kdmahasiswa }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Nama Mahasiswa</span><span class="summary-value">{{ deleteCandidate.nama_mahasiswa ?? '-' }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">No. VA</span><span class="summary-value">{{ deleteCandidate.noresi ?? '-' }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Jumlah</span><span class="summary-value">{{ deleteCandidate.jumlah_legalisasi }}</span>
+          </div>
+        </div>
+      </VCardText>
+      <VCardActions class="justify-end">
+        <VBtn
+          variant="tonal"
+          color="grey"
+          :disabled="deletingId !== null"
+          @click="closeDeleteDialog"
+        >
+          Batal
+        </VBtn>
+        <VBtn
+          color="error"
+          variant="tonal"
+          :loading="deletingId !== null"
+          @click="confirmDelete"
+        >
+          Hapus
         </VBtn>
       </VCardActions>
     </VCard>
@@ -424,6 +643,10 @@ onMounted(fetchData)
 
 .summary-label {
   font-weight: 600;
+}
+
+.action-btn {
+  margin-inline: 2px;
 }
 
 @media (max-width: 960px) {

@@ -22,10 +22,13 @@ class FormLegalisasiController extends Controller
             $kdmahasiswa = \DB::table('mh_v_nama')->where('nim', $nim)->value('kdmahasiswa');
         }
 
-        $query = FormLegalisasi::query()->orderByDesc('create_at');
+        $query = FormLegalisasi::query()
+            ->leftJoin('mh_v_nama as m', 'm.kdmahasiswa', '=', 'form_legalisasi.kdmahasiswa')
+            ->select('form_legalisasi.*', 'm.namalengkap as nama_mahasiswa')
+            ->orderByDesc('form_legalisasi.create_at');
 
         if ($kdmahasiswa) {
-            $query->where('kdmahasiswa', $kdmahasiswa);
+            $query->where('form_legalisasi.kdmahasiswa', $kdmahasiswa);
         }
 
         $formLegalisasi = $query->get();

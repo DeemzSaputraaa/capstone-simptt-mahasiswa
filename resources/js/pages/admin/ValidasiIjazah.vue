@@ -101,6 +101,11 @@ const startReply = comment => {
   commentDialog.value = true
 }
 
+const getInitial = name => {
+  const value = (name || '').trim()
+  return value ? value.charAt(0).toUpperCase() : 'A'
+}
+
 onMounted(() => {
   loadValidasi()
 })
@@ -221,29 +226,70 @@ onMounted(() => {
       </VCardSubtitle>
 
       <VCardText>
+        <div class="comment-input">
+          <div class="comment-avatar admin-avatar">{{ getInitial('Admin') }}</div>
+          <VTextarea
+            v-model="newComment"
+            class="comment-input-field"
+            placeholder="Tulis komentar..."
+            auto-grow
+            rows="1"
+            hide-details
+          />
+          <VBtn
+            class="comment-send-btn"
+            color="success"
+            :loading="savingComment"
+            @click="submitComment"
+          >
+            Kirim
+          </VBtn>
+        </div>
+
+        <div
+          v-if="replyTo"
+          class="reply-hint"
+        >
+          Balas komentar: <strong>{{ replyTo.user }}</strong> "{{ replyTo.text }}"
+          <VBtn
+            size="x-small"
+            variant="text"
+            color="secondary"
+            class="ms-2"
+            @click="replyTo = null"
+          >
+            batal
+          </VBtn>
+        </div>
+
         <div v-if="loadingComments">
           Memuat komentar...
         </div>
-          <div v-else>
-            <div v-if="comments.length === 0">
-              Belum ada komentar
-            </div>
-            <div v-else>
-              <div
-                v-for="c in comments"
-                :key="c.id"
-                class="comment-item"
-              >
-                <div class="comment-meta">
-                  <span class="comment-user">{{ c.user }}</span>
-                  <span class="comment-date">{{ formatDate(c.date) }}</span>
-                </div>
+        <div v-else>
+          <div
+            v-if="comments.length === 0"
+            class="comment-empty"
+          >
+            Belum ada komentar
+          </div>
+          <div
+            v-else
+            class="comment-list"
+          >
+            <div
+              v-for="c in comments"
+              :key="c.id"
+              class="comment-row"
+            >
+              <div class="comment-avatar">{{ getInitial(c.user) }}</div>
+              <div class="comment-body">
+                <div class="comment-user">{{ c.user }}</div>
                 <div class="comment-text">
                   {{ c.text }}
                 </div>
-                <div class="mt-2">
+                <div class="comment-actions">
                   <VBtn
-                    size="small"
+                    size="x-small"
                     variant="text"
                     color="secondary"
                     @click="startReply(c)"
@@ -259,69 +305,41 @@ onMounted(() => {
                   <div
                     v-for="r in c.replies"
                     :key="r.id"
-                    class="comment-item reply"
+                    class="comment-row reply"
                   >
-                    <div class="comment-meta">
-                      <span class="comment-user">{{ r.user }}</span>
-                      <span class="comment-date">{{ formatDate(r.date) }}</span>
-                    </div>
-                    <div class="comment-text">
-                      {{ r.text }}
-                    </div>
-                    <div class="mt-2">
-                      <VBtn
-                        size="small"
-                        variant="text"
-                        color="secondary"
-                        @click="startReply(r)"
-                      >
-                        Balas
-                      </VBtn>
+                    <div class="comment-avatar">{{ getInitial(r.user) }}</div>
+                    <div class="comment-body">
+                      <div class="comment-user">{{ r.user }}</div>
+                      <div class="comment-text">
+                        {{ r.text }}
+                      </div>
+                      <div class="comment-actions">
+                        <VBtn
+                          size="x-small"
+                          variant="text"
+                          color="secondary"
+                          @click="startReply(r)"
+                        >
+                          Balas
+                        </VBtn>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-
-        <VTextarea
-          v-model="newComment"
-          class="mt-4"
-          label="Kirim komentar"
-          auto-grow
-          rows="2"
-        />
-        <div
-          v-if="replyTo"
-          class="reply-hint"
-        >
-          Balas komentar: <strong>{{ replyTo.user }}</strong> — "{{ replyTo.text }}"
-          <VBtn
-            size="x-small"
-            variant="text"
-            color="secondary"
-            class="ms-2"
-            @click="replyTo = null"
-          >
-            batal
-          </VBtn>
         </div>
       </VCardText>
 
-      <VCardActions>
+      <VCardActions class="comment-actions-footer">
+        <VSpacer />
         <VBtn
           variant="text"
           color="secondary"
           @click="commentDialog = false"
         >
           Tutup
-        </VBtn>
-        <VBtn
-          color="primary"
-          :loading="savingComment"
-          @click="submitComment"
-        >
-          Kirim
         </VBtn>
       </VCardActions>
     </VCard>
@@ -484,31 +502,69 @@ onMounted(() => {
   }
 }
 
-.comment-item {
-  padding: 10px 12px;
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-  border-radius: 8px;
-  margin-block: 8px;
-  background: rgba(var(--v-theme-surface), 0.8);
-}
-
-.comment-item.reply {
-  margin-inline-start: 12px;
-  border-style: dashed;
-}
-
-.comment-meta {
+.comment-input {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  color: rgba(var(--v-theme-on-surface), 0.7);
-  margin-bottom: 4px;
+  gap: 12px;
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+.comment-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 36px;
+  block-size: 36px;
+  border-radius: 999px;
+  background: rgb(var(--v-theme-primary));
+  color: rgb(var(--v-theme-on-primary));
+  font-weight: 700;
+  flex: 0 0 36px;
+}
+
+.comment-input-field {
+  flex: 1 1 auto;
+}
+
+.comment-send-btn {
+  min-inline-size: 90px;
+  text-transform: none;
+}
+
+.comment-empty {
+  color: rgba(var(--v-theme-on-surface), 0.6);
+  margin-bottom: 12px;
+}
+
+.comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.comment-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.comment-row.reply {
+  margin-inline-start: 48px;
+}
+
+.comment-body {
+  flex: 1 1 auto;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  border-radius: 10px;
+  padding: 8px 12px;
+  background: rgba(var(--v-theme-surface), 0.9);
 }
 
 .comment-user {
   font-weight: 700;
   color: rgba(var(--v-theme-on-surface), 0.9);
+  margin-bottom: 4px;
 }
 
 .comment-text {
@@ -516,17 +572,28 @@ onMounted(() => {
   white-space: pre-line;
 }
 
+.comment-actions {
+  margin-top: 4px;
+}
+
 .comment-replies {
-  margin-top: 6px;
-  padding-left: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
 }
 
 .reply-hint {
   margin-top: 8px;
+  margin-bottom: 12px;
   padding: 8px 10px;
   border-radius: 6px;
   background: rgba(var(--v-theme-primary), 0.08);
   color: rgba(var(--v-theme-on-surface), 0.8);
   font-size: 0.9rem;
+}
+
+.comment-actions-footer {
+  padding-top: 0;
 }
 </style>

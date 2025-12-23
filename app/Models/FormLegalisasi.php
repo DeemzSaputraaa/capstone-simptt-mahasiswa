@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class FormLegalisasi extends Model
 {
     protected $table = 'form_legalisasi';
+    protected $primaryKey = 'kdlegalisasi';
+    protected $keyType = 'int';
+    public $incrementing = true;
 
     // Sesuaikan kolom dengan struktur tabel Anda
     protected $fillable = [

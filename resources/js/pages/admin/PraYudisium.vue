@@ -8,6 +8,9 @@ const mahasiswaList = ref([])
 const deletingId = ref(null)
 const showDeleteDialog = ref(false)
 const deleteTarget = ref(null)
+const approvingId = ref(null)
+const showApproveDialog = ref(false)
+const approveTarget = ref(null)
 
 const storageBase = `${window.location.origin}/storage/`
 const fileUrl = path => (path ? `${storageBase}${path}` : '')
@@ -54,6 +57,55 @@ const fetchData = async () => {
 
 const editItem = item => {
   console.log('Edit:', item)
+}
+
+const openApproveDialog = item => {
+  if (!item) return
+  approveTarget.value = item
+  showApproveDialog.value = true
+}
+
+const closeApproveDialog = () => {
+  showApproveDialog.value = false
+  approveTarget.value = null
+}
+
+const approveItem = async () => {
+  if (!approveTarget.value || approvingId.value) return
+
+  approvingId.value = approveTarget.value.kdprayudisium
+  errorMessage.value = ''
+
+  try {
+    const headers = {
+      Accept: 'application/json',
+    }
+
+    const token = sessionStorage.getItem('jwt_token')
+    if (token)
+      headers.Authorization = `Bearer ${token}`
+
+    const res = await fetch(`/api/pra-yudisium/${approveTarget.value.kdprayudisium}/approve`, {
+      method: 'PATCH',
+      headers,
+    })
+
+    const json = await res.json().catch(() => ({}))
+    if (!res.ok || json.success === false)
+      throw new Error(json.message || 'Gagal menyetujui data')
+
+    if (json.data) {
+      mahasiswaList.value = mahasiswaList.value.map(row => row.kdprayudisium === json.data.kdprayudisium
+        ? { ...row, ...json.data }
+        : row)
+    }
+
+    closeApproveDialog()
+  } catch (err) {
+    errorMessage.value = err.message || 'Gagal menyetujui data'
+  } finally {
+    approvingId.value = null
+  }
 }
 
 const openDeleteDialog = item => {
@@ -262,12 +314,14 @@ onMounted(fetchData)
               <VBtn
                 icon
                 variant="text"
-                color="primary"
+                color="success"
                 class="action-btn"
-                @click="editItem(m)"
+                :disabled="!!m.is_validate"
+                :loading="approvingId === m.kdprayudisium"
+                @click="openApproveDialog(m)"
               >
                 <VIcon
-                  icon="ri-pencil-line"
+                  icon="ri-check-line"
                   size="20"
                 />
               </VBtn>
@@ -427,6 +481,42 @@ onMounted(fetchData)
             @click="deleteItem"
           >
             Hapus
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+
+    <VDialog
+      v-model="showApproveDialog"
+      max-width="480"
+    >
+      <VCard>
+        <VCardTitle class="text-h6">
+          Setujui Pengajuan?
+        </VCardTitle>
+        <VCardText>
+          <p class="mb-4">
+            Pengajuan pra yudisium dengan kode <strong>{{ approveTarget?.kdprayudisium }}</strong> akan disetujui.
+          </p>
+          <p class="text-medium-emphasis">
+            Mahasiswa akan menerima notifikasi bahwa pengajuan sudah disetujui.
+          </p>
+        </VCardText>
+        <VCardActions class="justify-end">
+          <VBtn
+            variant="text"
+            color="default"
+            @click="closeApproveDialog"
+          >
+            Tidak
+          </VBtn>
+          <VBtn
+            color="success"
+            :loading="!!approvingId"
+            :disabled="!!approvingId"
+            @click="approveItem"
+          >
+            Ya, Setujui
           </VBtn>
         </VCardActions>
       </VCard>

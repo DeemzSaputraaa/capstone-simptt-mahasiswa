@@ -235,4 +235,44 @@ class PraYudisiumController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Approve pengajuan Pra Yudisium.
+     */
+    public function approve($id)
+    {
+        try {
+            $record = AkPraYudisium::where('kdprayudisium', $id)->first();
+
+            if (!$record) {
+                return response()->json([
+                    'success' => false,
+                    'code' => 'NOT_FOUND',
+                    'message' => 'Record not found',
+                ], 404);
+            }
+
+            $record->is_validate = true;
+            $record->tgl_validate = now();
+            $record->update_at = now();
+            $record->save();
+
+            return response()->json([
+                'success' => true,
+                'data' => $record,
+                'message' => 'Pra Yudisium approved',
+            ], 200);
+        } catch (\Throwable $e) {
+            Log::error('PraYudisium approve error', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'code' => 'INTERNAL_SERVER_ERROR',
+                'message' => 'Failed to approve Pra Yudisium',
+            ], 500);
+        }
+    }
 }
