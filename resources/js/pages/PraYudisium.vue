@@ -180,7 +180,7 @@
 
 <script>
 import axios from 'axios'
-import { computed, ref, onMounted } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 // Notifikasi menggunakan Vuetify
@@ -191,7 +191,7 @@ export default {
     const form = ref({
       photo3x4: null,
       photoSma: null,
-      photoCtp: null
+      photoCtp: null,
     })
 
     const fileStatus = ref({
@@ -207,6 +207,7 @@ export default {
     const validationMessage = ref('')
     const route = useRoute()
     const infoMessage = ref('')
+    const infoTimer = ref(null)
     const existingRecord = ref(null)
     const userNim = ref('')
 
@@ -261,6 +262,7 @@ export default {
         const stored = JSON.parse(sessionStorage.getItem('user_data') || '{}')
         if (stored?.nim || stored?.username) {
           userNim.value = stored.nim || stored.username
+          
           return
         }
       } catch (error) {
@@ -277,6 +279,7 @@ export default {
         if (!res.ok) return
         const json = await res.json()
         const data = json.data ?? json
+
         userNim.value = data.nim || data.username || ''
       } catch (error) {
         console.error('Error fetching user identity:', error)
@@ -306,6 +309,7 @@ export default {
           if (!route.query.comment) {
             const hasRevision = [existingRecord.value.status_foto, existingRecord.value.status_ijazah, existingRecord.value.status_ktp]
               .some(status => status === 'revision')
+
             if (hasRevision) {
               infoMessage.value = 'Ada dokumen pra yudisium yang perlu diperbaiki.'
             } else if (existingRecord.value.is_validate) {
@@ -369,6 +373,7 @@ export default {
       if (form.value.photo3x4) {
         if (!validImageTypes.includes(form.value.photo3x4.type)) {
           errorMessage.value = 'Foto 3x4 harus dalam format JPEG, JPG, atau PNG'
+          
           return
         }
         formData.append('berkas_foto_ijazah', form.value.photo3x4)
@@ -377,6 +382,7 @@ export default {
       if (form.value.photoSma) {
         if (!validImageTypes.includes(form.value.photoSma.type) && form.value.photoSma.type !== validPdfType) {
           errorMessage.value = 'Ijazah SMA harus dalam format JPEG, JPG, PNG, atau PDF'
+          
           return
         }
         formData.append('berkas_ijazah_terakhir', form.value.photoSma)
@@ -385,6 +391,7 @@ export default {
       if (form.value.photoCtp) {
         if (!validImageTypes.includes(form.value.photoCtp.type)) {
           errorMessage.value = 'Foto KTP harus dalam format JPEG, JPG, atau PNG'
+          
           return
         }
         formData.append('berkas_kk_ktp', form.value.photoCtp)
@@ -395,9 +402,11 @@ export default {
         errorMessage.value = ''
         
         const token = sessionStorage.getItem('jwt_token')
+
         const endpoint = existingRecord.value?.kdprayudisium
           ? `/api/pra-yudisium/${existingRecord.value.kdprayudisium}`
           : '/api/pra-yudisium'
+
         const isUpdate = !!existingRecord.value?.kdprayudisium
         const method = isUpdate ? 'post' : 'post'
 
@@ -425,7 +434,7 @@ export default {
           form.value = {
             photo3x4: null,
             photoSma: null,
-            photoCtp: null
+            photoCtp: null,
           }
           
           // Tampilkan notifikasi sukses
@@ -476,10 +485,21 @@ export default {
     }
 
     onMounted(() => {
-      if (route.query.comment)
+      if (route.query.comment) {
         infoMessage.value = route.query.comment
+        infoTimer.value = setTimeout(() => {
+          infoMessage.value = ''
+        }, 60000)
+      }
 
       loadUserIdentity().then(loadCurrentSubmission)
+    })
+
+    onBeforeUnmount(() => {
+      if (infoTimer.value) {
+        clearTimeout(infoTimer.value)
+        infoTimer.value = null
+      }
     })
 
     return {
