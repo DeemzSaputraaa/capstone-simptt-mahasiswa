@@ -231,17 +231,29 @@ const loadNotifications = async () => {
         const legalisasiJson = await resLegalisasi.json()
         const legalisasiData = Array.isArray(legalisasiJson.data) ? legalisasiJson.data : []
         legalisasiNotifications = legalisasiData
-          .filter(item => !!item.tgl_dikirim)
-          .map(item => ({
-            id: `legalisasi-${item.kdlegalisasi || item.id}`,
-            icon: 'ri-check-line',
-            color: 'success',
-            title: 'Pengajuan legalisasi Anda disetujui.',
-            type: 'legalisasi',
-            route: '/pendaftaran-legalisasi',
-            dataId: item.kdlegalisasi || item.id,
-            comment: 'Pengajuan legalisasi Anda disetujui.',
-          }))
+          .filter(item => !!item.tgl_dikirim || !!item.noresi || (item.biaya_legalisasi !== null && item.biaya_legalisasi !== undefined && item.biaya_legalisasi !== ''))
+          .map(item => {
+            const isApproved = !!item.tgl_dikirim
+            const hasResi = !!item.noresi
+            const hasBiaya = item.biaya_legalisasi !== null && item.biaya_legalisasi !== undefined && item.biaya_legalisasi !== ''
+
+            let title = 'Ada pembaruan pada pengajuan legalisasi Anda.'
+            if (isApproved) title = 'Pengajuan legalisasi Anda disetujui.'
+            else if (hasResi && hasBiaya) title = 'Resi dan biaya legalisasi Anda sudah diinput.'
+            else if (hasResi) title = 'Nomor resi legalisasi Anda sudah diinput.'
+            else if (hasBiaya) title = 'Biaya legalisasi Anda sudah diinput.'
+
+            return {
+              id: `legalisasi-${item.kdlegalisasi || item.id}`,
+              icon: isApproved ? 'ri-check-line' : 'ri-information-line',
+              color: isApproved ? 'success' : 'info',
+              title,
+              type: 'legalisasi',
+              route: '/pendaftaran-legalisasi',
+              dataId: item.kdlegalisasi || item.id,
+              comment: title,
+            }
+          })
       }
     } catch (err) {
       console.error('Gagal memuat notifikasi legalisasi', err)

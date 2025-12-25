@@ -344,7 +344,24 @@ onMounted(fetchData)
         </tr>
       </thead>
       <tbody>
+        <tr v-if="loading">
+          <td
+            colspan="7"
+            class="text-center py-6"
+          >
+            Memuat data...
+          </td>
+        </tr>
+        <tr v-else-if="!filteredList.length">
+          <td
+            colspan="7"
+            class="text-center py-6"
+          >
+            Tidak ada data pra yudisium.
+          </td>
+        </tr>
         <tr
+          v-else
           v-for="(m, i) in filteredList.slice(0, itemsPerPage)"
           :key="m.kdprayudisium"
         >

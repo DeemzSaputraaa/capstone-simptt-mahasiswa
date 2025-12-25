@@ -1,13 +1,21 @@
 
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 const itemsPerPage = ref(10)
 const daftarLegalisasi = ref([])
 const loading = ref(false)
 const errorMessage = ref('')
 const successMessage = ref('')
+const filterResi = ref('all')
+const filterBiaya = ref('all')
+const filterApprove = ref('all')
+const pendingFilterResi = ref('all')
+const pendingFilterBiaya = ref('all')
+const pendingFilterApprove = ref('all')
+let successTimer = null
+let errorTimer = null
 
 const approvingId = ref(null)
 const deletingId = ref(null)
@@ -91,6 +99,16 @@ const getRowId = row => row?.id ?? row?.kdlegalisasi
 const isApproved = row => Boolean(row?.tgl_dikirim)
 
 const openApprove = item => {
+  if (!item) return
+  if (!item.noresi) {
+    openResiDialog(item)
+    return
+  }
+  if (item.biaya_legalisasi === null || item.biaya_legalisasi === undefined || item.biaya_legalisasi === '') {
+    openBiayaDialog(item)
+    return
+  }
+
   selectedItem.value = item
   approveForm.value = {
     tgl_dikirim: (item?.tgl_dikirim
@@ -335,15 +353,107 @@ const submitForm = async () => {
   }
 }
 
+const filteredLegalisasi = computed(() => {
+  return daftarLegalisasi.value.filter(item => {
+    const hasResi = !!item?.noresi
+    const hasBiaya = item?.biaya_legalisasi !== null && item?.biaya_legalisasi !== undefined && item?.biaya_legalisasi !== ''
+    const isApprovedRow = !!item?.tgl_dikirim
+
+    if (filterResi.value === 'yes' && !hasResi) return false
+    if (filterResi.value === 'no' && hasResi) return false
+
+    if (filterBiaya.value === 'yes' && !hasBiaya) return false
+    if (filterBiaya.value === 'no' && hasBiaya) return false
+
+    if (filterApprove.value === 'yes' && !isApprovedRow) return false
+    if (filterApprove.value === 'no' && isApprovedRow) return false
+
+    return true
+  })
+})
+
+const applyFilters = () => {
+  filterResi.value = pendingFilterResi.value
+  filterBiaya.value = pendingFilterBiaya.value
+  filterApprove.value = pendingFilterApprove.value
+}
+
 onMounted(fetchData)
+
+watch(successMessage, value => {
+  if (!value) return
+  if (successTimer) clearTimeout(successTimer)
+  successTimer = setTimeout(() => {
+    successMessage.value = ''
+  }, 30000)
+})
+
+watch(errorMessage, value => {
+  if (!value) return
+  if (errorTimer) clearTimeout(errorTimer)
+  errorTimer = setTimeout(() => {
+    errorMessage.value = ''
+  }, 30000)
+})
+
+onBeforeUnmount(() => {
+  if (successTimer) clearTimeout(successTimer)
+  if (errorTimer) clearTimeout(errorTimer)
+})
 </script>
 
 <template>
   <VCard>
-    <VCardTitle class="admin-card-title">
+  <VCardTitle class="admin-card-title">
       Legalisasi
     </VCardTitle>
-    <VCardSubtitle>Daftar pengajuan legalisasi</VCardSubtitle>
+    <div class="legalisasi-filters">
+      <div class="filter-item">
+        <span>Status Resi</span>
+        <VSelect
+          v-model="pendingFilterResi"
+          :items="[
+            { title: 'Semua', value: 'all' },
+            { title: 'Sudah', value: 'yes' },
+            { title: 'Belum', value: 'no' },
+          ]"
+          density="compact"
+          style="max-inline-size: 140px;"
+        />
+      </div>
+      <div class="filter-item">
+        <span>Status Biaya</span>
+        <VSelect
+          v-model="pendingFilterBiaya"
+          :items="[
+            { title: 'Semua', value: 'all' },
+            { title: 'Sudah', value: 'yes' },
+            { title: 'Belum', value: 'no' },
+          ]"
+          density="compact"
+          style="max-inline-size: 140px;"
+        />
+      </div>
+      <div class="filter-item">
+        <span>Status Approve</span>
+        <VSelect
+          v-model="pendingFilterApprove"
+          :items="[
+            { title: 'Semua', value: 'all' },
+            { title: 'Approved', value: 'yes' },
+            { title: 'Belum', value: 'no' },
+          ]"
+          density="compact"
+          style="max-inline-size: 160px;"
+        />
+      </div>
+      <VBtn
+        class="filter-apply-btn"
+        @click="applyFilters"
+      >
+        Terapkan
+      </VBtn>
+    </div>
 
     <VAlert
       v-if="errorMessage"
@@ -466,7 +576,7 @@ onMounted(fetchData)
             <th>No</th>
             <th>Nama Mahasiswa</th>
             <th>Dokumen</th>
-            <th>No. VA</th>
+            <th>Jumlah</th>
             <th>No. Resi</th>
             <th>Biaya</th>
             <th>Tgl Dikirim</th>
@@ -474,8 +584,25 @@ onMounted(fetchData)
           </tr>
         </thead>
         <tbody>
+          <tr v-if="loading">
+            <td
+              colspan="8"
+              class="text-center py-6"
+            >
+              Memuat data...
+            </td>
+          </tr>
           <tr
-            v-for="(m, i) in daftarLegalisasi.slice(0, itemsPerPage)"
+            v-else-if="!filteredLegalisasi.length"
+            class="text-center"
+          >
+            <td colspan="8">
+              Tidak ada data pengajuan legalisasi.
+            </td>
+          </tr>
+          <tr
+            v-else
+            v-for="(m, i) in filteredLegalisasi.slice(0, itemsPerPage)"
             :key="m.kdlegalisasi || i"
           >
             <td data-label="No">{{ i + 1 }}</td>
@@ -483,11 +610,10 @@ onMounted(fetchData)
               {{ m.nama_mahasiswa ?? '-' }}
             </td>
             <td data-label="Dokumen">{{ m.dokumen ?? '-' }}</td>
-            <td data-label="No. VA">{{ m.idtagihan ?? '-' }}</td>
+            <td data-label="Jumlah">{{ m.jumlah_legalisasi ?? '-' }}</td>
     <td data-label="No. Resi">
       <VBtn
         size="small"
-        color="primary"
         class="resi-btn"
         :loading="approvingId === getRowId(m)"
         :disabled="!!m.noresi || approvingId !== null"
@@ -499,9 +625,9 @@ onMounted(fetchData)
     <td data-label="Biaya">
       <VBtn
         size="small"
-        color="primary"
         class="resi-btn"
         :loading="approvingId === getRowId(m)"
+        :disabled="m.biaya_legalisasi !== null && m.biaya_legalisasi !== undefined && m.biaya_legalisasi !== ''"
         @click="openBiayaDialog(m)"
       >
         Biaya
@@ -530,7 +656,7 @@ onMounted(fetchData)
                   color="error"
                   class="action-btn"
                   :loading="deletingId === getRowId(m)"
-                  :disabled="approvingId !== null"
+                  :disabled="approvingId !== null || isApproved(m)"
                   @click="openDeleteDialog(m)"
                 >
                   <VIcon
@@ -558,19 +684,20 @@ onMounted(fetchData)
   <VDialog
     v-model="showApproveDialog"
     max-width="800"
+    class="approve-dialog"
   >
-    <VCard>
-      <VCardTitle>Approve Legalisasi</VCardTitle>
+    <VCard class="approve-card">
+      <VCardTitle class="approve-title">Approve Legalisasi</VCardTitle>
       <VCardText>
-        <div class="text-subtitle-1 font-weight-bold mb-2">
+        <div class="approve-subtitle">
           Ringkasan Pengajuan
         </div>
         <div
           v-if="selectedItem"
-          class="summary"
+          class="summary approve-summary"
         >
           <div class="summary-row">
-            <span class="summary-label">KDMahasiswa</span><span class="summary-value">{{ selectedItem.kdmahasiswa }}</span>
+            <span class="summary-label">NIM Mahasiswa</span><span class="summary-value">{{ selectedItem.nim ?? '-' }}</span>
           </div>
           <div class="summary-row">
             <span class="summary-label">Nama Mahasiswa</span><span class="summary-value">{{ selectedItem.nama_mahasiswa ?? '-' }}</span>
@@ -590,22 +717,21 @@ onMounted(fetchData)
           <div class="summary-row">
             <span class="summary-label">Alamat</span><span class="summary-value">{{ selectedItem.alamat_kirim }}</span>
           </div>
-          <div class="summary-row">
-            <span class="summary-label">No. VA</span><span class="summary-value">{{ selectedItem.noresi ?? '-' }}</span>
-          </div>
         </div>
       <VTextField
         v-model="approveForm.tgl_dikirim"
         label="Tanggal Dikirim"
         type="date"
         variant="outlined"
-        class="mt-4"
+        density="compact"
+        class="mt-4 approve-date"
         />
       </VCardText>
-      <VCardActions class="justify-space-between">
+      <VCardActions class="approve-actions">
         <VBtn
           variant="tonal"
           color="grey"
+          class="approve-btn"
           @click="closeApprove"
         >
           Kembali
@@ -613,6 +739,7 @@ onMounted(fetchData)
         <VBtn
           color="teal"
           variant="tonal"
+          class="approve-btn approve-btn-primary"
           :loading="approvingId !== null"
           @click="saveApprove"
         >
@@ -623,34 +750,33 @@ onMounted(fetchData)
   </VDialog>
   <VDialog
     v-model="showDeleteDialog"
-    max-width="420"
+    max-width="500"
+    class="delete-dialog"
   >
-    <VCard>
-      <VCardTitle>Hapus Pengajuan Legalisasi</VCardTitle>
+    <VCard class="delete-card">
+      <VCardTitle class="delete-title">Hapus Pengajuan Legalisasi</VCardTitle>
       <VCardText>
-        <div>Yakin ingin menghapus pengajuan ini?</div>
+        <div class="delete-subtitle">Yakin ingin menghapus pengajuan ini?</div>
         <div
           v-if="deleteCandidate"
-          class="summary mt-4"
+          class="summary delete-summary"
         >
           <div class="summary-row">
-            <span class="summary-label">KDMahasiswa</span><span class="summary-value">{{ deleteCandidate.kdmahasiswa }}</span>
+            <span class="summary-label">NIM Mahasiswa</span><span class="summary-value">{{ deleteCandidate.nim ?? '-' }}</span>
           </div>
           <div class="summary-row">
             <span class="summary-label">Nama Mahasiswa</span><span class="summary-value">{{ deleteCandidate.nama_mahasiswa ?? '-' }}</span>
-          </div>
-          <div class="summary-row">
-            <span class="summary-label">No. VA</span><span class="summary-value">{{ deleteCandidate.noresi ?? '-' }}</span>
           </div>
           <div class="summary-row">
             <span class="summary-label">Jumlah</span><span class="summary-value">{{ deleteCandidate.jumlah_legalisasi }}</span>
           </div>
         </div>
       </VCardText>
-      <VCardActions class="justify-end">
+      <VCardActions class="delete-actions">
         <VBtn
           variant="tonal"
           color="grey"
+          class="delete-btn"
           :disabled="deletingId !== null"
           @click="closeDeleteDialog"
         >
@@ -659,6 +785,7 @@ onMounted(fetchData)
         <VBtn
           color="error"
           variant="tonal"
+          class="delete-btn delete-btn-primary"
           :loading="deletingId !== null"
           @click="confirmDelete"
         >
@@ -742,6 +869,10 @@ onMounted(fetchData)
 <style scoped>
 .table-wrapper {
   overflow-x: auto;
+}
+
+.table-wrapper .text-center {
+  text-align: center;
 }
 
 .admin-card-title {
@@ -830,6 +961,31 @@ onMounted(fetchData)
   border-block-start: 1px solid rgba(var(--v-theme-on-surface), 0.08);
 }
 
+.legalisasi-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-block: 12px 20px;
+  align-items: center;
+  padding-inline: 24px;
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-apply-btn {
+  margin-left: auto;
+  border-radius: 8px;
+  min-inline-size: 120px;
+  text-transform: none;
+  font-weight: 600;
+  background: #17a2a6 !important;
+  color: #fff !important;
+}
+
 .summary {
   display: grid;
   row-gap: 12px;
@@ -852,6 +1008,130 @@ onMounted(fetchData)
 .resi-btn {
   text-transform: none;
   min-inline-size: 72px;
+  background: #17a2a6 !important;
+  color: #fff !important;
+  font-weight: 600;
+}
+
+.resi-btn:disabled,
+.filter-apply-btn:disabled {
+  background: rgba(23, 162, 166, 0.35) !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.approve-card {
+  border-radius: 22px;
+  padding-block: 12px 8px;
+  padding-inline: 8px;
+}
+
+.approve-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-align: center;
+  color: #1bc47d;
+  padding-block: 12px 4px;
+}
+
+.approve-subtitle {
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(var(--v-theme-on-surface), 0.6);
+  margin-block-end: 16px;
+}
+
+.approve-summary {
+  max-inline-size: 520px;
+  margin-inline: auto;
+}
+
+.approve-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding-block-end: 16px;
+}
+
+.approve-btn {
+  border-radius: 8px;
+  min-inline-size: 140px;
+  text-transform: none;
+  font-weight: 600;
+}
+
+.approve-btn-primary {
+  background: #1bc47d !important;
+  color: #fff !important;
+}
+
+.approve-date {
+  max-inline-size: 520px;
+  margin-inline: auto;
+}
+
+.approve-date :deep(.v-field__append-inner) {
+  margin-inline-start: auto;
+}
+
+.approve-date :deep(.v-field__input) {
+  position: relative;
+}
+
+.approve-date :deep(input[type="date"]) {
+  padding-right: 40px;
+}
+
+.approve-date :deep(input[type="date"]::-webkit-calendar-picker-indicator) {
+  position: absolute;
+  right: 12px;
+  margin: 0;
+}
+
+.delete-card {
+  border-radius: 22px;
+  padding-block: 12px 8px;
+  padding-inline: 8px;
+}
+
+.delete-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  text-align: center;
+  color: #e63946;
+  padding-block: 12px 4px;
+}
+
+.delete-subtitle {
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(var(--v-theme-on-surface), 0.6);
+  margin-block-end: 16px;
+}
+
+.delete-summary {
+  max-inline-size: 520px;
+  margin-inline: auto;
+}
+
+.delete-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding-block-end: 16px;
+}
+
+.delete-btn {
+  border-radius: 8px;
+  min-inline-size: 140px;
+  text-transform: none;
+  font-weight: 600;
+}
+
+.delete-btn-primary {
+  background: #e63946 !important;
+  color: #fff !important;
 }
 
 @media (max-width: 960px) {

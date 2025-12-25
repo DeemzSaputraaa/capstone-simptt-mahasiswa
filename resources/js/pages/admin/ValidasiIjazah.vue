@@ -148,6 +148,14 @@ onMounted(() => {
               Memuat data...
             </td>
           </tr>
+          <tr v-else-if="!daftarValidasi.length">
+            <td
+              colspan="6"
+              class="text-center py-6"
+            >
+              Tidak ada data validasi.
+            </td>
+          </tr>
           <tr
             v-else
             v-for="(m, i) in daftarValidasi.slice(0, itemsPerPage)"

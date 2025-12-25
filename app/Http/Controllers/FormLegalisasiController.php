@@ -24,7 +24,7 @@ class FormLegalisasiController extends Controller
 
         $query = FormLegalisasi::query()
             ->leftJoin('mh_v_nama as m', 'm.kdmahasiswa', '=', 'form_legalisasi.kdmahasiswa')
-            ->select('form_legalisasi.*', 'm.namalengkap as nama_mahasiswa')
+            ->select('form_legalisasi.*', 'm.nim', 'm.namalengkap as nama_mahasiswa')
             ->orderByDesc('form_legalisasi.create_at');
 
         if ($kdmahasiswa) {

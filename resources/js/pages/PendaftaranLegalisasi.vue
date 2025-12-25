@@ -49,12 +49,28 @@
                   <th>No</th>
                   <th>Tanggal Pengajuan</th>
                   <th>Tagihan</th>
-                  <th>No. VA</th>
+                  <th>Jumlah</th>
                   <th>No. Resi</th>
                   <th>Status</th>
                 </tr>
               </thead>
               <tbody>
+                <tr v-if="loading">
+                  <td
+                    colspan="6"
+                    class="empty-row"
+                  >
+                    Memuat data...
+                  </td>
+                </tr>
+                <tr v-else-if="!paginatedData.length">
+                  <td
+                    colspan="6"
+                    class="empty-row"
+                  >
+                    Tidak ada data pengajuan legalisasi.
+                  </td>
+                </tr>
                 <tr
                   v-for="(item, index) in paginatedData"
                   :key="item.kdlegalisasi || item.id || index"
@@ -63,7 +79,7 @@
                   <td>{{ (currentPage - 1)* itemsPerPage + index + 1 }}</td>
                   <td>{{ formatDate(item.create_at || item.tgl_dikirim) }}</td>
                   <td>{{ item.biaya_legalisasi ?? '-' }}</td>
-                  <td>{{ item.idtagihan || '-' }}</td>
+                  <td>{{ item.jumlah_legalisasi ?? '-' }}</td>
                   <td v-if="item.noresi">
                     <a
                       :href="`https://www.posindonesia.co.id/en/tracking/${item.noresi}`"
@@ -994,6 +1010,12 @@ export default {
   text-align: center;
   vertical-align: middle;
   word-wrap: break-word;
+}
+
+.pengajuan-table .empty-row {
+  color: #666;
+  font-style: italic;
+  padding-block: 24px;
 }
 
 .pengajuan-table th {
