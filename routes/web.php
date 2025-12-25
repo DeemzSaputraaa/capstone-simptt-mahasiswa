@@ -22,6 +22,8 @@ Route::prefix('api')->group(function () {
 
         Route::get('/pra-yudisium', [PraYudisiumController::class, 'index']);
         Route::post('/pra-yudisium', [PraYudisiumController::class, 'store']);
+        Route::patch('/pra-yudisium/{id}', [PraYudisiumController::class, 'update']);
+        Route::patch('/pra-yudisium/{id}/document-status', [PraYudisiumController::class, 'updateDocumentStatus']);
         Route::patch('/pra-yudisium/{id}/comment', [PraYudisiumController::class, 'updateComment']);
         Route::patch('/pra-yudisium/{id}/approve', [PraYudisiumController::class, 'approve']);
         Route::delete('/pra-yudisium/{id}', [PraYudisiumController::class, 'destroy']);

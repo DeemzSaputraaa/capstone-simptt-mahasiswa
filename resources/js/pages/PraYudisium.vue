@@ -64,11 +64,15 @@
                 placeholder="Upload Foto 3x4 berlatar biru"
                 prepend-icon=""
                 class="file-upload-input"
+                :disabled="!canEditFoto || isLoading"
                 @change="handleFileChange('photo3x4', $event)"
               />
             </div>
             <div class="text-caption grey--text">
               {{ fileStatus.photo3x4 || 'No selected file' }}
+            </div>
+            <div class="text-caption grey--text">
+              Catatan: JPG/JPEG/PNG, maksimal 2 MB.
             </div>
             
             <!-- Section 4: Upload Foto Ijazah SMA -->
@@ -87,11 +91,15 @@
                 placeholder="Upload Ijazah Terakhir"
                 prepend-icon=""
                 class="file-upload-input"
+                :disabled="!canEditIjazah || isLoading"
                 @change="handleFileChange('photoSma', $event)"
               />
             </div>
             <div class="text-caption grey--text">
               {{ fileStatus.photoSma || 'No selected file' }}
+            </div>
+            <div class="text-caption grey--text">
+              Catatan: JPG/JPEG/PNG/PDF, maksimal 4 MB.
             </div>
             
             <!-- Section 5: Upload Foto KTP -->
@@ -110,11 +118,15 @@
                 placeholder="Upload Foto KTP"
                 prepend-icon=""
                 class="file-upload-input"
+                :disabled="!canEditKtp || isLoading"
                 @change="handleFileChange('photoCtp', $event)"
               />
             </div>
             <div class="text-caption grey--text">
               {{ fileStatus.photoCtp || 'No selected file' }}
+            </div>
+            <div class="text-caption grey--text">
+              Catatan: JPG/JPEG/PNG, maksimal 2 MB.
             </div>
           </VCardText>
 
@@ -126,7 +138,7 @@
               type="submit"
               color="primary"
               :loading="isLoading"
-              :disabled="isLoading"
+              :disabled="isLoading || !canSubmit"
               style="border-radius: 10px; font-size: 1.1rem; font-weight: 500; min-block-size: 48px;"
               @click.prevent="submitForm"
             >
@@ -168,8 +180,8 @@
 
 <script>
 import axios from 'axios'
-import { ref, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { computed, ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 
 // Notifikasi menggunakan Vuetify
 
@@ -193,9 +205,33 @@ export default {
     const isLoading = ref(false)
     const showValidationModal = ref(false)
     const validationMessage = ref('')
-    const router = useRouter()
     const route = useRoute()
     const infoMessage = ref('')
+    const existingRecord = ref(null)
+    const userNim = ref('')
+
+    const canSubmit = computed(() => {
+      if (!existingRecord.value) return true
+
+      const statuses = [
+        existingRecord.value.status_foto,
+        existingRecord.value.status_ijazah,
+        existingRecord.value.status_ktp,
+      ]
+
+      if (statuses.some(status => status === 'revision'))
+        return true
+
+      const allEmpty = statuses.every(status => !status)
+      if (allEmpty && existingRecord.value.comment)
+        return true
+
+      return false
+    })
+
+    const canEditFoto = computed(() => !existingRecord.value || existingRecord.value.status_foto === 'revision')
+    const canEditIjazah = computed(() => !existingRecord.value || existingRecord.value.status_ijazah === 'revision')
+    const canEditKtp = computed(() => !existingRecord.value || existingRecord.value.status_ktp === 'revision')
 
     // Handle file change
     const handleFileChange = (field, event) => {
@@ -220,25 +256,105 @@ export default {
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
     }
 
+    const loadUserIdentity = async () => {
+      try {
+        const stored = JSON.parse(sessionStorage.getItem('user_data') || '{}')
+        if (stored?.nim || stored?.username) {
+          userNim.value = stored.nim || stored.username
+          return
+        }
+      } catch (error) {
+        console.error('Error reading user data:', error)
+      }
+
+      try {
+        const headers = { Accept: 'application/json' }
+        const token = sessionStorage.getItem('jwt_token')
+        if (token)
+          headers.Authorization = `Bearer ${token}`
+
+        const res = await fetch('/api/me', { headers })
+        if (!res.ok) return
+        const json = await res.json()
+        const data = json.data ?? json
+        userNim.value = data.nim || data.username || ''
+      } catch (error) {
+        console.error('Error fetching user identity:', error)
+      }
+    }
+
+    const loadCurrentSubmission = async () => {
+      try {
+        const headers = { Accept: 'application/json' }
+        const token = sessionStorage.getItem('jwt_token')
+        if (token)
+          headers.Authorization = `Bearer ${token}`
+
+        const res = await fetch('/api/pra-yudisium', { headers })
+        if (!res.ok) return
+
+        const json = await res.json()
+        const data = Array.isArray(json.data) ? json.data : []
+        const match = data.find(item => item.nim === userNim.value || String(item.kdmahasiswa) === String(userNim.value))
+        if (match) {
+          existingRecord.value = {
+            ...match,
+            status_foto: match.status_foto || 'submitted',
+            status_ijazah: match.status_ijazah || 'submitted',
+            status_ktp: match.status_ktp || 'submitted',
+          }
+          if (!route.query.comment) {
+            const hasRevision = [existingRecord.value.status_foto, existingRecord.value.status_ijazah, existingRecord.value.status_ktp]
+              .some(status => status === 'revision')
+            if (hasRevision) {
+              infoMessage.value = 'Ada dokumen pra yudisium yang perlu diperbaiki.'
+            } else if (existingRecord.value.is_validate) {
+              infoMessage.value = 'Pengajuan pra yudisium Anda sudah disetujui.'
+            } else {
+              infoMessage.value = 'Pengajuan pra yudisium Anda sedang diproses.'
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching pra yudisium:', error)
+      }
+    }
+
     const submitForm = async () => {
       // Reset pesan error sebelumnya
       errorMessage.value = ''
+
+      if (!canSubmit.value) {
+        errorMessage.value = 'Pengajuan Anda sedang diproses dan belum bisa diubah'
+        showValidationModal.value = true
+        validationMessage.value = errorMessage.value
+        
+        return
+      }
       
+      const isResubmission = !!existingRecord.value?.kdprayudisium
+
       // Validasi form
-      if (!form.value.photo3x4) {
-        errorMessage.value = 'Mohon unggah foto 3x4'
-        
-        return
-      }
+      if (!isResubmission) {
+        if (!form.value.photo3x4) {
+          errorMessage.value = 'Mohon unggah foto 3x4'
+          
+          return
+        }
 
-      if (!form.value.photoSma) {
-        errorMessage.value = 'Mohon unggah ijazah terakhir'
-        
-        return
-      }
+        if (!form.value.photoSma) {
+          errorMessage.value = 'Mohon unggah ijazah terakhir'
+          
+          return
+        }
 
-      if (!form.value.photoCtp) {
-        errorMessage.value = 'Mohon unggah foto KTP'
+        if (!form.value.photoCtp) {
+          errorMessage.value = 'Mohon unggah foto KTP'
+          
+          return
+        }
+      } else if (!form.value.photo3x4 && !form.value.photoSma && !form.value.photoCtp) {
+        errorMessage.value = 'Mohon unggah minimal satu berkas untuk revisi'
         
         return
       }
@@ -279,9 +395,20 @@ export default {
         errorMessage.value = ''
         
         const token = sessionStorage.getItem('jwt_token')
+        const endpoint = existingRecord.value?.kdprayudisium
+          ? `/api/pra-yudisium/${existingRecord.value.kdprayudisium}`
+          : '/api/pra-yudisium'
+        const isUpdate = !!existingRecord.value?.kdprayudisium
+        const method = isUpdate ? 'post' : 'post'
+
+        if (isUpdate)
+          formData.append('_method', 'PATCH')
 
         // Menggunakan endpoint yang sesuai dengan route yang didefinisikan di Laravel
-        const response = await axios.post('/api/pra-yudisium', formData, {
+        const response = await axios({
+          url: endpoint,
+          method,
+          data: formData,
           headers: {
             'Content-Type': 'multipart/form-data',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
@@ -317,9 +444,9 @@ export default {
             fileStatus.value[key] = ''
           })
           
-          // Tampilkan pesan sukses
-          showValidationModal.value = true
-          validationMessage.value = 'Data berhasil disimpan!'
+          existingRecord.value = response.data.data ?? existingRecord.value
+          if (existingRecord.value)
+            existingRecord.value.status = existingRecord.value.status || 'submitted'
         }
       } catch (error) {
         console.error('Error:', error)
@@ -343,17 +470,16 @@ export default {
         errorMessage.value = errorMsg
         showValidationModal.value = true
         validationMessage.value = errorMsg
-        showValidationModal.value = true
-        validationMessage.value = errorMsg
       } finally {
         isLoading.value = false
       }
     }
 
     onMounted(() => {
-      if (route.query.comment) {
+      if (route.query.comment)
         infoMessage.value = route.query.comment
-      }
+
+      loadUserIdentity().then(loadCurrentSubmission)
     })
 
     return {
@@ -362,12 +488,17 @@ export default {
       updateFileStatus,
       handleFileChange,
       submitForm,
+      canSubmit,
+      canEditFoto,
+      canEditIjazah,
+      canEditKtp,
       showSuccess,
       errorMessage,
       isLoading,
       showValidationModal,
       validationMessage,
       infoMessage,
+      existingRecord,
     }
   },
 }

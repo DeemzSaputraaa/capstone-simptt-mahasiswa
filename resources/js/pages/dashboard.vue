@@ -205,12 +205,19 @@ const loadNotifications = async () => {
 
     const studentNotifications = data
       .filter(item => item.nim === userNim.value || String(item.kdmahasiswa) === String(userNim.value))
-      .filter(item => !!item.comment)
+      .filter(item => {
+        const hasRevision = [item.status_foto, item.status_ijazah, item.status_ktp]
+          .some(status => status === 'revision')
+        if (hasRevision)
+          return true
+
+        return !!item.comment
+      })
       .map(item => ({
         id: `pra-${item.kdprayudisium}`,
         icon: 'ri-chat-3-line',
         color: 'warning',
-        title: item.comment,
+        title: item.comment || 'Dokumen pra yudisium perlu diperbaiki.',
         type: 'pra-yudisium',
         route: '/pra-yudisium',
         dataId: item.kdprayudisium,
@@ -242,7 +249,13 @@ const loadNotifications = async () => {
 
     const approvedNotifications = data
       .filter(item => item.nim === userNim.value || String(item.kdmahasiswa) === String(userNim.value))
-      .filter(item => !!item.is_validate)
+      .filter(item => {
+        if (item.is_validate)
+          return true
+
+        const statuses = [item.status_foto, item.status_ijazah, item.status_ktp].filter(Boolean)
+        return statuses.length === 3 && statuses.every(status => status === 'approved')
+      })
       .map(item => ({
         id: `pra-approve-${item.kdprayudisium}`,
         icon: 'ri-check-line',

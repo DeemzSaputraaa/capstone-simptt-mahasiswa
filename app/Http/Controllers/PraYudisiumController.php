@@ -28,6 +28,9 @@ class PraYudisiumController extends Controller
                     'ak_pra_yudisium.is_validate',
                     'ak_pra_yudisium.tgl_validate',
                     'ak_pra_yudisium.comment',
+                    'ak_pra_yudisium.status_foto',
+                    'ak_pra_yudisium.status_ijazah',
+                    'ak_pra_yudisium.status_ktp',
                     'ak_pra_yudisium.create_at',
                     'm.nim',
                     'm.namalengkap'
@@ -111,6 +114,9 @@ class PraYudisiumController extends Controller
                 'is_validate' => false,
                 'tgl_validate' => null,
                 'comment' => $request->get('comment'),
+                'status_foto' => 'submitted',
+                'status_ijazah' => 'submitted',
+                'status_ktp' => 'submitted',
             ]);
 
             return response()->json([
@@ -178,6 +184,193 @@ class PraYudisiumController extends Controller
                 'success' => false,
                 'code' => 'INTERNAL_SERVER_ERROR',
                 'message' => 'Failed to update comment',
+            ], 500);
+        }
+    }
+
+    /**
+     * Update berkas Pra Yudisium (resubmission).
+     */
+    public function update(Request $request, $id)
+    {
+        try {
+            $payload = $request->attributes->get('jwt_payload', []);
+            $nim = $payload['username'] ?? null;
+
+            if (!$nim) {
+                return response()->json([
+                    'success' => false,
+                    'code' => 'UNAUTHORIZED',
+                    'message' => 'User not authenticated',
+                ], 401);
+            }
+
+            $record = AkPraYudisium::where('kdprayudisium', $id)->first();
+            if (!$record) {
+                return response()->json([
+                    'success' => false,
+                    'code' => 'NOT_FOUND',
+                    'message' => 'Record not found',
+                ], 404);
+            }
+
+            $kdmahasiswa = DB::table('mh_v_nama')
+                ->where('nim', $nim)
+                ->value('kdmahasiswa');
+
+            if (!$kdmahasiswa || (string) $record->kdmahasiswa !== (string) $kdmahasiswa) {
+                return response()->json([
+                    'success' => false,
+                    'code' => 'FORBIDDEN',
+                    'message' => 'Forbidden',
+                ], 403);
+            }
+
+            $validator = Validator::make($request->all(), [
+                'berkas_foto_ijazah' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+                'berkas_ijazah_terakhir' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:4096',
+                'berkas_kk_ktp' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'code' => 'BAD_REQUEST',
+                    'errors' => $validator->errors()->toArray(),
+                ], 400);
+            }
+
+            $hasNewFiles = $request->hasFile('berkas_foto_ijazah')
+                || $request->hasFile('berkas_ijazah_terakhir')
+                || $request->hasFile('berkas_kk_ktp');
+
+            if (!$hasNewFiles) {
+                return response()->json([
+                    'success' => false,
+                    'code' => 'BAD_REQUEST',
+                    'message' => 'No new files uploaded',
+                ], 400);
+            }
+
+            $folder = 'pra-yudisium';
+            $updates = [
+                'is_validate' => false,
+                'tgl_validate' => null,
+                'comment' => null,
+                'update_at' => now(),
+            ];
+
+            if ($request->hasFile('berkas_foto_ijazah')) {
+                if ($record->berkas_foto_ijazah) {
+                    Storage::disk('public')->delete($record->berkas_foto_ijazah);
+                }
+                $updates['berkas_foto_ijazah'] = $request->file('berkas_foto_ijazah')->store($folder, 'public');
+                $updates['status_foto'] = 'submitted';
+            }
+
+            if ($request->hasFile('berkas_ijazah_terakhir')) {
+                if ($record->berkas_ijazah_terakhir) {
+                    Storage::disk('public')->delete($record->berkas_ijazah_terakhir);
+                }
+                $updates['berkas_ijazah_terakhir'] = $request->file('berkas_ijazah_terakhir')->store($folder, 'public');
+                $updates['status_ijazah'] = 'submitted';
+            }
+
+            if ($request->hasFile('berkas_kk_ktp')) {
+                if ($record->berkas_kk_ktp) {
+                    Storage::disk('public')->delete($record->berkas_kk_ktp);
+                }
+                $updates['berkas_kk_ktp'] = $request->file('berkas_kk_ktp')->store($folder, 'public');
+                $updates['status_ktp'] = 'submitted';
+            }
+
+            $record->update($updates);
+
+            return response()->json([
+                'success' => true,
+                'data' => $record->fresh(),
+            ], 200);
+        } catch (\Throwable $e) {
+            Log::error('PraYudisium update error', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'code' => 'INTERNAL_SERVER_ERROR',
+                'message' => 'Failed to update Pra Yudisium data',
+            ], 500);
+        }
+    }
+
+    /**
+     * Update status dokumen Pra Yudisium.
+     */
+    public function updateDocumentStatus(Request $request, $id)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'status_foto' => 'nullable|in:submitted,revision,approved',
+                'status_ijazah' => 'nullable|in:submitted,revision,approved',
+                'status_ktp' => 'nullable|in:submitted,revision,approved',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'code' => 'BAD_REQUEST',
+                    'errors' => $validator->errors()->toArray(),
+                ], 400);
+            }
+
+            $record = AkPraYudisium::where('kdprayudisium', $id)->first();
+            if (!$record) {
+                return response()->json([
+                    'success' => false,
+                    'code' => 'NOT_FOUND',
+                    'message' => 'Record not found',
+                ], 404);
+            }
+
+            $updates = array_filter([
+                'status_foto' => $request->get('status_foto'),
+                'status_ijazah' => $request->get('status_ijazah'),
+                'status_ktp' => $request->get('status_ktp'),
+            ], fn ($value) => $value !== null);
+
+            if (!$updates) {
+                return response()->json([
+                    'success' => false,
+                    'code' => 'BAD_REQUEST',
+                    'message' => 'No status provided',
+                ], 400);
+            }
+
+            $updates['update_at'] = now();
+
+            $hasRevision = in_array('revision', $updates, true);
+            if ($hasRevision) {
+                $updates['is_validate'] = false;
+                $updates['tgl_validate'] = null;
+            }
+
+            $record->update($updates);
+
+            return response()->json([
+                'success' => true,
+                'data' => $record->fresh(),
+            ], 200);
+        } catch (\Throwable $e) {
+            Log::error('PraYudisium updateDocumentStatus error', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'code' => 'INTERNAL_SERVER_ERROR',
+                'message' => 'Failed to update document status',
             ], 500);
         }
     }
@@ -254,6 +447,9 @@ class PraYudisiumController extends Controller
 
             $record->is_validate = true;
             $record->tgl_validate = now();
+            $record->status_foto = 'approved';
+            $record->status_ijazah = 'approved';
+            $record->status_ktp = 'approved';
             $record->update_at = now();
             $record->save();
 

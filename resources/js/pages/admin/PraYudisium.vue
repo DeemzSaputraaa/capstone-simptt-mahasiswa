@@ -1,7 +1,8 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 const itemsPerPage = ref(5)
+const filterStatus = ref('all')
 const loading = ref(false)
 const errorMessage = ref('')
 const mahasiswaList = ref([])
@@ -18,13 +19,34 @@ const isImage = path => /\.(png|jpe?g|gif|bmp|webp)$/i.test(path || '')
 const showPreview = ref(false)
 const previewUrl = ref('')
 const previewTitle = ref('Pratinjau')
+const previewDocKey = ref('')
+const previewIsImage = ref(true)
+const previewItem = ref(null)
 const formatDate = date => date ? new Date(date).toLocaleDateString('id-ID') : '-'
+const updatingDocStatus = ref(false)
 
 const showCommentDialog = ref(false)
 const selectedItem = ref(null)
 const newComment = ref('')
 const commentText = ref('')
 const savingComment = ref(false)
+const filteredList = computed(() => {
+  const list = mahasiswaList.value
+  if (filterStatus.value === 'all') return list
+
+  return list.filter(item => {
+    const statuses = [item.status_foto, item.status_ijazah, item.status_ktp]
+    const allApproved = statuses.length && statuses.every(status => status === 'approved')
+    const hasRevision = statuses.some(status => status === 'revision')
+
+    if (filterStatus.value === 'approved')
+      return item.is_validate || allApproved
+    if (filterStatus.value === 'revision')
+      return hasRevision
+
+    return !item.is_validate && !allApproved && !hasRevision
+  })
+})
 
 const fetchData = async () => {
   loading.value = true
@@ -95,8 +117,14 @@ const approveItem = async () => {
       throw new Error(json.message || 'Gagal menyetujui data')
 
     if (json.data) {
+      const normalized = {
+        ...json.data,
+        status_foto: json.data.status_foto || 'approved',
+        status_ijazah: json.data.status_ijazah || 'approved',
+        status_ktp: json.data.status_ktp || 'approved',
+      }
       mahasiswaList.value = mahasiswaList.value.map(row => row.kdprayudisium === json.data.kdprayudisium
-        ? { ...row, ...json.data }
+        ? { ...row, ...normalized }
         : row)
     }
 
@@ -195,12 +223,91 @@ const saveComment = async () => {
   }
 }
 
-const openPreview = (path, title) => {
+const openPreview = (item, path, title, docKey) => {
   const url = fileUrl(path)
   if (!url) return
   previewUrl.value = url
   previewTitle.value = title || 'Pratinjau'
+  previewDocKey.value = docKey || ''
+  previewIsImage.value = isImage(path)
+  previewItem.value = item || null
   showPreview.value = true
+}
+
+const isFullyApproved = item => {
+  if (!item) return false
+  if (item.is_validate) return true
+
+  return item.status_foto === 'approved'
+    && item.status_ijazah === 'approved'
+    && item.status_ktp === 'approved'
+}
+
+const updateDocumentStatus = async (status) => {
+  if (!previewItem.value || !previewDocKey.value || updatingDocStatus.value) return
+
+  updatingDocStatus.value = true
+  errorMessage.value = ''
+
+  const statusPayload = {}
+  if (previewDocKey.value === 'foto')
+    statusPayload.status_foto = status
+  if (previewDocKey.value === 'ijazah')
+    statusPayload.status_ijazah = status
+  if (previewDocKey.value === 'ktp')
+    statusPayload.status_ktp = status
+
+  try {
+    const headers = {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    }
+
+    const token = sessionStorage.getItem('jwt_token')
+    if (token)
+      headers.Authorization = `Bearer ${token}`
+
+    const res = await fetch(`/api/pra-yudisium/${previewItem.value.kdprayudisium}/document-status`, {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify(statusPayload),
+    })
+
+    const json = await res.json().catch(() => ({}))
+    if (!res.ok || json.success === false)
+      throw new Error(json.message || 'Gagal memperbarui status dokumen')
+
+    if (json.data) {
+      mahasiswaList.value = mahasiswaList.value.map(row => row.kdprayudisium === json.data.kdprayudisium
+        ? { ...row, ...json.data }
+        : row)
+      previewItem.value = { ...previewItem.value, ...json.data }
+    }
+  } catch (err) {
+    errorMessage.value = err.message || 'Gagal memperbarui status dokumen'
+  } finally {
+    updatingDocStatus.value = false
+  }
+}
+
+const getPreviewStatus = () => {
+  if (!previewItem.value || !previewDocKey.value) return ''
+  if (previewDocKey.value === 'foto') return previewItem.value.status_foto || ''
+  if (previewDocKey.value === 'ijazah') return previewItem.value.status_ijazah || ''
+  if (previewDocKey.value === 'ktp') return previewItem.value.status_ktp || ''
+  return ''
+}
+
+const statusLabel = status => {
+  if (status === 'approved') return 'Approved'
+  if (status === 'revision') return 'Revision'
+  return 'Submitted'
+}
+
+const statusClass = status => {
+  if (status === 'approved') return 'status-chip status-approved'
+  if (status === 'revision') return 'status-chip status-revision'
+  return 'status-chip status-submitted'
 }
 
 onMounted(fetchData)
@@ -226,8 +333,7 @@ onMounted(fetchData)
       <thead>
         <tr>
           <th>No</th>
-          <th>Kode</th>
-          <th>NIK</th>
+          <th>Nama Mahasiswa</th>
           <th>Pas Foto</th>
           <th>Ijazah</th>
           <th>KTP</th>
@@ -239,74 +345,85 @@ onMounted(fetchData)
       </thead>
       <tbody>
         <tr
-          v-for="(m, i) in mahasiswaList.slice(0, itemsPerPage)"
+          v-for="(m, i) in filteredList.slice(0, itemsPerPage)"
           :key="m.kdprayudisium"
         >
           <td>{{ i + 1 }}</td>
-          <td>{{ m.kdprayudisium }}</td>
-          <td>{{ m.nim || m.kdmahasiswa }}</td>
+          <td>{{ m.namalengkap || '-' }}</td>
           <td>
-            <template v-if="isImage(m.berkas_foto_ijazah)">
-              <img
-                :src="fileUrl(m.berkas_foto_ijazah)"
-                alt="Pas Foto"
-                class="foto-preview"
-                role="button"
-                @click="openPreview(m.berkas_foto_ijazah, 'Pas Foto')"
-              >
-            </template>
-            <template v-else>
-              <VBtn
-                variant="text"
-                size="small"
-                :href="fileUrl(m.berkas_foto_ijazah)"
-                target="_blank"
-              >
-                Lihat
-              </VBtn>
-            </template>
+            <div class="doc-cell">
+              <template v-if="isImage(m.berkas_foto_ijazah)">
+                <img
+                  :src="fileUrl(m.berkas_foto_ijazah)"
+                  alt="Pas Foto"
+                  class="foto-preview"
+                  role="button"
+                  @click="openPreview(m, m.berkas_foto_ijazah, 'Pas Foto', 'foto')"
+                >
+              </template>
+              <template v-else>
+                <VBtn
+                  variant="text"
+                  size="small"
+                  @click="openPreview(m, m.berkas_foto_ijazah, 'Pas Foto', 'foto')"
+                >
+                  Lihat
+                </VBtn>
+              </template>
+              <div :class="statusClass(m.status_foto)">
+                {{ statusLabel(m.status_foto) }}
+              </div>
+            </div>
           </td>
           <td>
-            <template v-if="isImage(m.berkas_ijazah_terakhir)">
-              <img
-                :src="fileUrl(m.berkas_ijazah_terakhir)"
-                alt="Ijazah"
-                class="dokumen-preview"
-                role="button"
-                @click="openPreview(m.berkas_ijazah_terakhir, 'Ijazah')"
-              >
-            </template>
-            <template v-else>
-              <VBtn
-                variant="text"
-                size="small"
-                :href="fileUrl(m.berkas_ijazah_terakhir)"
-                target="_blank"
-              >
-                Lihat
-              </VBtn>
-            </template>
+            <div class="doc-cell">
+              <template v-if="isImage(m.berkas_ijazah_terakhir)">
+                <img
+                  :src="fileUrl(m.berkas_ijazah_terakhir)"
+                  alt="Ijazah"
+                  class="dokumen-preview"
+                  role="button"
+                  @click="openPreview(m, m.berkas_ijazah_terakhir, 'Ijazah', 'ijazah')"
+                >
+              </template>
+              <template v-else>
+                <VBtn
+                  variant="text"
+                  size="small"
+                  @click="openPreview(m, m.berkas_ijazah_terakhir, 'Ijazah', 'ijazah')"
+                >
+                  Lihat
+                </VBtn>
+              </template>
+              <div :class="statusClass(m.status_ijazah)">
+                {{ statusLabel(m.status_ijazah) }}
+              </div>
+            </div>
           </td>
           <td>
-            <template v-if="isImage(m.berkas_kk_ktp)">
-              <img
-                :src="fileUrl(m.berkas_kk_ktp)"
-                alt="KTP"
-                class="dokumen-preview"
-                role="button"
-                @click="openPreview(m.berkas_kk_ktp, 'KTP')"
-              >
-            </template>
-            <template v-else>
-              <VBtn
-                variant="text"
-                size="small"
-                :href="fileUrl(m.berkas_kk_ktp)"
-                target="_blank"
-              >
-                Lihat
-              </VBtn>
-            </template>
+            <div class="doc-cell">
+              <template v-if="isImage(m.berkas_kk_ktp)">
+                <img
+                  :src="fileUrl(m.berkas_kk_ktp)"
+                  alt="KTP"
+                  class="dokumen-preview"
+                  role="button"
+                  @click="openPreview(m, m.berkas_kk_ktp, 'KTP', 'ktp')"
+                >
+              </template>
+              <template v-else>
+                <VBtn
+                  variant="text"
+                  size="small"
+                  @click="openPreview(m, m.berkas_kk_ktp, 'KTP', 'ktp')"
+                >
+                  Lihat
+                </VBtn>
+              </template>
+              <div :class="statusClass(m.status_ktp)">
+                {{ statusLabel(m.status_ktp) }}
+              </div>
+            </div>
           </td>
           <td>{{ formatDate(m.create_at) }}</td>
           <td class="text-center">
@@ -315,8 +432,8 @@ onMounted(fetchData)
                 icon
                 variant="text"
                 color="success"
-                class="action-btn"
-                :disabled="!!m.is_validate"
+                :class="['action-btn', { 'action-btn-disabled': isFullyApproved(m) }]"
+                :disabled="isFullyApproved(m)"
                 :loading="approvingId === m.kdprayudisium"
                 @click="openApproveDialog(m)"
               >
@@ -341,9 +458,9 @@ onMounted(fetchData)
                 icon
                 variant="text"
                 color="error"
-                class="action-btn"
+                :class="['action-btn', { 'action-btn-disabled': isFullyApproved(m) }]"
                 :loading="deletingId === m.kdprayudisium"
-                :disabled="deletingId !== null"
+                :disabled="deletingId !== null || isFullyApproved(m)"
                 @click="openDeleteDialog(m)"
               >
                 <VIcon
@@ -357,13 +474,29 @@ onMounted(fetchData)
       </tbody>
     </VTable>
     <div class="table-footer">
-      <span>Showing per Page</span>
-      <VSelect
-        v-model="itemsPerPage"
-        :items="[5, 10, 20]"
-        density="compact"
-        style="max-inline-size: 80px;"
-      />
+      <div class="table-footer-left">
+        <span>Status</span>
+        <VSelect
+          v-model="filterStatus"
+          :items="[
+            { title: 'Semua', value: 'all' },
+            { title: 'Approved', value: 'approved' },
+            { title: 'Revisi', value: 'revision' },
+            { title: 'Submitted', value: 'submitted' },
+          ]"
+          density="compact"
+          style="max-inline-size: 160px;"
+        />
+      </div>
+      <div class="table-footer-right">
+        <span>Showing per Page</span>
+        <VSelect
+          v-model="itemsPerPage"
+          :items="[5, 10, 20]"
+          density="compact"
+          style="max-inline-size: 80px;"
+        />
+      </div>
     </div>
 
     <VDialog
@@ -373,21 +506,53 @@ onMounted(fetchData)
       <VCard>
         <VCardTitle>{{ previewTitle }}</VCardTitle>
         <VCardText class="d-flex justify-center">
-          <VImg
-            :src="previewUrl"
-            max-width="540"
-            cover
-          />
+          <template v-if="previewIsImage">
+            <VImg
+              :src="previewUrl"
+              max-width="540"
+              cover
+            />
+          </template>
+          <template v-else>
+            <iframe
+              :src="previewUrl"
+              title="Dokumen"
+              class="preview-frame"
+            />
+          </template>
         </VCardText>
-        <VCardActions>
-          <VSpacer />
-          <VBtn
-            variant="text"
-            color="primary"
-            @click="showPreview = false"
-          >
-            Tutup
-          </VBtn>
+        <VCardActions class="preview-actions">
+          <div class="preview-actions-center">
+            <VBtn
+              icon
+              variant="text"
+              color="error"
+              :loading="updatingDocStatus"
+              :disabled="updatingDocStatus || getPreviewStatus() === 'approved'"
+              @click="updateDocumentStatus('revision')"
+            >
+              <VIcon icon="ri-close-line" />
+            </VBtn>
+            <VBtn
+              icon
+              variant="text"
+              color="success"
+              :loading="updatingDocStatus"
+              :disabled="updatingDocStatus || getPreviewStatus() === 'approved'"
+              @click="updateDocumentStatus('approved')"
+            >
+              <VIcon icon="ri-check-line" />
+            </VBtn>
+          </div>
+          <div class="preview-actions-right">
+            <VBtn
+              variant="text"
+              color="primary"
+              @click="showPreview = false"
+            >
+              Tutup
+            </VBtn>
+          </div>
         </VCardActions>
       </VCard>
     </VDialog>
@@ -633,6 +798,11 @@ onMounted(fetchData)
   transform: translateY(-2px);
 }
 
+.action-btn-disabled {
+  color: rgba(var(--v-theme-on-surface), 0.35) !important;
+  pointer-events: none;
+}
+
 /* Table Footer & Pagination */
 .table-footer {
   display: flex;
@@ -642,6 +812,13 @@ onMounted(fetchData)
   border-radius: 0 0 4px 4px;
   background-color: rgba(var(--v-theme-surface), 0.9);
   border-block-start: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+}
+
+.table-footer-left,
+.table-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 /* Empty State */
@@ -748,5 +925,70 @@ onMounted(fetchData)
 .comment-text {
   margin-top: 6px;
   line-height: 1.5;
+}
+
+.preview-frame {
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  border-radius: 6px;
+  block-size: 520px;
+  inline-size: 100%;
+}
+
+.doc-status {
+  color: rgba(var(--v-theme-on-surface), 0.7);
+  font-size: 0.85rem;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding-block: 2px;
+  padding-inline: 8px;
+  text-transform: uppercase;
+}
+
+.status-approved {
+  background: rgba(27, 196, 125, 0.15);
+  color: #1bc47d;
+}
+
+.status-revision {
+  background: rgba(230, 57, 70, 0.15);
+  color: #e63946;
+}
+
+.status-submitted {
+  background: rgba(var(--v-theme-on-surface), 0.08);
+  color: rgba(var(--v-theme-on-surface), 0.7);
+}
+
+.doc-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.preview-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 48px;
+}
+
+.preview-actions-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+}
+
+.preview-actions-right {
+  margin-left: auto;
 }
 </style>

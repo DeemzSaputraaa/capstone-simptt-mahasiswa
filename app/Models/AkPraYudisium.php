@@ -27,6 +27,9 @@ class AkPraYudisium extends Model
         'is_validate',
         'tgl_validate',
         'comment',
+        'status_foto',
+        'status_ijazah',
+        'status_ktp',
     ];
 
     protected $dates = [
