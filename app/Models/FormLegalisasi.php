@@ -24,6 +24,7 @@ class FormLegalisasi extends Model
         'kdlegalisasi_sebelum',
         'telp_penerima',
         'comment',
+        'dokumen',
     ];
 
     public $timestamps = true;

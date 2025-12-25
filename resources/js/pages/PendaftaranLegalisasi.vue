@@ -276,177 +276,371 @@
       </VContainer>
     </VMain>
     <VDialog
-    v-model="showValidationModal"
-    max-width="400"
-  >
-    <VCard>
-      <VCardTitle class="text-h5">
-        {{ modalType === 'success' ? 'Sukses' : modalType === 'error' ? 'Gagal' : 'Peringatan' }}
-      </VCardTitle>
-      <VCardText>
-        {{ validationMessage }}
-      </VCardText>
-      <VCardActions>
-        <VSpacer />
-        <VBtn
-          color="primary"
-          type="button"
-          @click.stop.prevent="closeValidationModal"
+      v-model="showValidationModal"
+      max-width="400"
+    >
+      <VCard>
+        <VCardTitle class="text-h5">
+          {{ modalType === 'success' ? 'Sukses' : modalType === 'error' ? 'Gagal' : 'Peringatan' }}
+        </VCardTitle>
+        <VCardText>
+          {{ validationMessage }}
+        </VCardText>
+        <VCardActions>
+          <VSpacer />
+          <VBtn
+            color="primary"
+            type="button"
+            @click.stop.prevent="closeValidationModal"
+          >
+            OK
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
+    <VDialog
+      v-model="showCaraBayarDialog"
+      max-width="1400"
+      class="payment-dialog"
+    >
+      <VCard class="payment-card-wrapper">
+        <VCardTitle
+          class="text-h4 text-center pa-6"
+          style="background: #f5f5f5;"
         >
-          OK
-        </VBtn>
-      </VCardActions>
-    </VCard>
-  </VDialog>
-  <VDialog
-    v-model="showCaraBayarDialog"
-    max-width="1400"
-    class="payment-dialog"
-  >
-    <VCard class="payment-card-wrapper">
-      <VCardTitle
-        class="text-h4 text-center pa-6"
-        style="background: #f5f5f5;"
-      >
-        Cara Melakukan Pembayaran
-      </VCardTitle>
-      <VCardText class="pa-8">
-        <div class="payment-cards-container">
-          <!-- Card 1: ATM BPD DIY -->
-          <div class="payment-card">
-            <div class="payment-card-header">
-              <h3 class="payment-card-title">
-                ATM BPD DIY
-              </h3>
+          Cara Melakukan Pembayaran
+        </VCardTitle>
+        <VCardText class="pa-8">
+          <div class="payment-shell">
+            <div class="payment-title">
+              Metode Pembayaran
             </div>
-            <div class="payment-card-body">
-              <div class="payment-amount">
-                Rp 400.000
-              </div>
-              <div class="payment-description">
-                Pembayaran melalui ATM BPD DIY
-              </div>
-              <div class="payment-id">
-                ID: 2211501033
-              </div>
-              <ul class="payment-steps">
-                <li>✓ Siapkan Kartu ATM Bank BPD DIY</li>
-                <li>✓ Masukkan PIN dan pilih bahasa</li>
-                <li>✓ Pilih menu Pembayaran</li>
-                <li>✓ Pilih layanan Pendidikan</li>
-                <li>✓ Pilih Universitas</li>
-                <li>✓ Masukan ID Peserta</li>
-                <li>✓ Masukkan nominal</li>
-                <li>✓ Lakukan pembayaran</li>
-              </ul>
-            </div>
-          </div>
 
-          <!-- Card 2: Internet Banking BSI -->
-          <div class="payment-card">
-            <div class="payment-card-header">
-              <h3 class="payment-card-title">
-                Internet Banking BSI
-              </h3>
-            </div>
-            <div class="payment-card-body">
-              <div class="payment-amount">
-                Rp 400.000
+            <div class="payment-section">
+              <div class="payment-section-header">
+                <span class="payment-section-title">Transfer Bank</span>
+                <div class="payment-badges">
+                  <span class="payment-badge">BSI</span>
+                  <span class="payment-badge">BPD Syariah</span>
+                  <span class="payment-badge">Bukopin Syariah</span>
+                </div>
               </div>
-              <div class="payment-description">
-                Nominal otomatis muncul di Ibanking
-              </div>
-              <div class="payment-id">
-                ID: 2211501033
-              </div>
-              <ul class="payment-steps">
-                <li>✓ Pilih menu Pembayaran</li>
-                <li>✓ Jenis Pembayaran: Institusi</li>
-                <li>✓ Nama Lembaga: UNISA Yogya</li>
-                <li>✓ Nomor Pembayaran: 2211501033</li>
-                <li>✓ Konfirmasi pembayaran</li>
-                <li>✓ Selesai</li>
-              </ul>
-            </div>
-          </div>
 
-          <!-- Card 3: Mobile Banking BSI -->
-          <div class="payment-card">
-            <div class="payment-card-header">
-              <h3 class="payment-card-title">
-                Mobile Banking BSI
-              </h3>
-            </div>
-            <div class="payment-card-body">
-              <div class="payment-amount">
-                Rp 400.000
-              </div>
-              <div class="payment-description">
-                Nominal otomatis muncul di Mbanking
-              </div>
-              <div class="payment-id">
-                ID: 2211501033
-              </div>
-              <ul class="payment-steps">
-                <li>✓ Pilih menu Pembayaran</li>
-                <li>✓ Jenis Pembayaran: Akademik</li>
-                <li>✓ Nama Akademik: 9032 - UNISA Yogya</li>
-                <li>✓ Kode Bayar: 2211501033</li>
-                <li>✓ Konfirmasi pembayaran</li>
-                <li>✓ Selesai</li>
-              </ul>
-            </div>
-          </div>
+              <div class="payment-accordion">
+                <div
+                  class="payment-acc-item"
+                  :class="{ open: activeBank === 'bsi' }"
+                >
+                  <div
+                    class="payment-acc-header"
+                    role="button"
+                    tabindex="0"
+                    @click="toggleBank('bsi')"
+                    @keydown.enter.prevent="toggleBank('bsi')"
+                    @keydown.space.prevent="toggleBank('bsi')"
+                  >
+                    <span>Bank BSI</span>
+                    <span class="payment-chevron" />
+                  </div>
+                  <div
+                    v-show="activeBank === 'bsi'"
+                    class="payment-acc-body"
+                  >
+                    <div class="payment-cards-container">
+                      <div class="payment-card">
+                        <div class="payment-card-header">
+                          <h3 class="payment-card-title">
+                            Internet Banking
+                          </h3>
+                        </div>
+                        <div class="payment-card-body">
+                          <div class="payment-amount">
+                            Rp 400.000
+                          </div>
+                          <div class="payment-description">
+                            Pembayaran melalui iBank
+                          </div>
+                          <div class="payment-id">
+                            ID: {{ userNim || '-' }}
+                          </div>
+                          <ol class="payment-steps">
+                            <li>Pilih menu Pembayaran</li>
+                            <li>Pada menu pembayaran pilih:</li>
+                          </ol>
+                          <ul class="payment-substeps">
+                            <li>Jenis Pembayaran: Institusi</li>
+                            <li>Nama Lembaga: UNISA Yogya</li>
+                            <li>Nomor Pembayaran: <strong>{{ userNim || '-' }}</strong></li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div class="payment-card">
+                        <div class="payment-card-header">
+                          <h3 class="payment-card-title">
+                            Mobile Banking
+                          </h3>
+                        </div>
+                        <div class="payment-card-body">
+                          <div class="payment-amount">
+                            Rp 400.000
+                          </div>
+                          <div class="payment-description">
+                            Nominal otomatis muncul di Ibanking
+                          </div>
+                          <div class="payment-id">
+                            ID: {{ userNim || '-' }}
+                          </div>
+                          <ol class="payment-steps">
+                            <li>Pilih menu Pembayaran</li>
+                            <li>Pada menu pembayaran pilih:</li>
+                          </ol>
+                          <ul class="payment-substeps">
+                            <li>Jenis Pembayaran: Akademik</li>
+                            <li>Nama Akademik: 9032 - UNISA Yogya</li>
+                            <li>Kode Bayar: <strong>{{ userNim || '-' }}</strong></li>
+                          </ul>
+                        </div>
+                      </div>
+                      <div class="payment-card">
+                        <div class="payment-card-header">
+                          <h3 class="payment-card-title">
+                            Automated Teller Machine (ATM)
+                          </h3>
+                        </div>
+                        <div class="payment-card-body">
+                          <div class="payment-amount">
+                            Rp 400.000
+                          </div>
+                          <div class="payment-description">
+                            Nominal otomatis muncul di Mbanking
+                          </div>
+                          <div class="payment-id">
+                            ID: {{ userNim || '-' }}
+                          </div>
+                          <ol class="payment-steps">
+                            <li>Pilih menu Pembayaran/Pembelian</li>
+                            <li>Pilih menu Akademik</li>
+                            <li>Masukkan kode 9032-<strong>{{ userNim || '-' }}</strong></li>
+                          </ol>
+                        </div>
+                      </div>
+                      <div class="payment-card">
+                        <div class="payment-card-header">
+                          <h3 class="payment-card-title">
+                            Other
+                          </h3>
+                        </div>
+                        <div class="payment-card-body">
+                          <div class="payment-amount">
+                            Rp 400.000
+                          </div>
+                          <div class="payment-description">
+                            Nominal otomatis muncul di Mbanking
+                          </div>
+                          <div class="payment-id">
+                            ID: {{ userNim || '-' }}
+                          </div>
+                          Transfer (metode transfer pilih online) ke Nomor Rekening
+                          451-900-9032-<strong>{{ userNim || '-' }}</strong> sebesar
+                          <strong>Rp400.000</strong>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-          <!-- Card 4: ATM Bank BSI -->
-          <div class="payment-card">
-            <div class="payment-card-header">
-              <h3 class="payment-card-title">
-                ATM Bank BSI
-              </h3>
+                <div
+                  class="payment-acc-item"
+                  :class="{ open: activeBank === 'bpd' }"
+                >
+                  <div
+                    class="payment-acc-header"
+                    role="button"
+                    tabindex="0"
+                    @click="toggleBank('bpd')"
+                    @keydown.enter.prevent="toggleBank('bpd')"
+                    @keydown.space.prevent="toggleBank('bpd')"
+                  >
+                    <span>Bank BPD Syariah</span>
+                    <span class="payment-chevron" />
+                  </div>
+                  <div
+                    v-show="activeBank === 'bpd'"
+                    class="payment-acc-body"
+                  >
+                    <div class="payment-cards-container">
+                      <div class="payment-card">
+                        <div class="payment-card-header">
+                          <h3 class="payment-card-title">
+                            Internet Banking
+                          </h3>
+                        </div>
+                        <div class="payment-card-body">
+                          <div class="payment-amount">
+                            Rp 400.000
+                          </div>
+                          <div class="payment-description">
+                            Pembayaran melalui iBank
+                          </div>
+                          <div class="payment-id">
+                            ID: {{ userNim || '-' }}
+                          </div>
+                          <ul class="payment-steps">
+                            <li>? Siapkan Kartu ATM Bank BPD DIY</li>
+                            <li>? Masukkan PIN dan pilih bahasa</li>
+                            <li>? Pilih menu Pembayaran</li>
+                            <li>? Pilih layanan Pendidikan</li>
+                            <li>? Pilih Universitas</li>
+                            <li>? Masukan ID Peserta</li>
+                            <li>? Masukkan nominal</li>
+                            <li>? Lakukan pembayaran</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="payment-acc-item"
+                  :class="{ open: activeBank === 'bukopin' }"
+                >
+                  <div
+                    class="payment-acc-header"
+                    role="button"
+                    tabindex="0"
+                    @click="toggleBank('bukopin')"
+                    @keydown.enter.prevent="toggleBank('bukopin')"
+                    @keydown.space.prevent="toggleBank('bukopin')"
+                  >
+                    <span>Bank Bukopin Syariah</span>
+                    <span class="payment-chevron" />
+                  </div>
+                  <div
+                    v-show="activeBank === 'bukopin'"
+                    class="payment-acc-body"
+                  >
+                    <div class="payment-cards-container">
+                      <div class="payment-card">
+                        <div class="payment-card-header">
+                          <h3 class="payment-card-title">
+                            ATM Bank Bukopin Syariah
+                          </h3>
+                        </div>
+                        <div class="payment-card-body">
+                          <div class="payment-amount">
+                            Rp 400.000
+                          </div>
+                          <div class="payment-description">
+                            Pembayaran melalui ATM Bukopin Syariah
+                          </div>
+                          <div class="payment-id">
+                            ID: {{ userNim || '-' }}
+                          </div>
+                          <ul class="payment-steps">
+                            <li>? Siapkan Kartu ATM Bank Bukopin Syariah</li>
+                            <li>? Masukkan PIN dan pilih bahasa</li>
+                            <li>? Pilih menu Pembayaran</li>
+                            <li>? Pilih layanan Pendidikan</li>
+                            <li>? Pilih Universitas</li>
+                            <li>? Masukan ID Peserta</li>
+                            <li>? Masukkan nominal</li>
+                            <li>? Lakukan pembayaran</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="payment-card-body">
-              <div class="payment-amount">
-                Rp 400.000
+
+            <div class="payment-section">
+              <div class="payment-section-header">
+                <span class="payment-section-title">E-Wallet</span>
+                <div class="payment-badges">
+                  <span class="payment-badge">Gopay</span>
+                  <span class="payment-badge">OVO</span>
+                  <span class="payment-badge">ShopeePay</span>
+                  <span class="payment-badge">Dana</span>
+                  <span class="payment-badge">LinkAja</span>
+                </div>
               </div>
-              <div class="payment-description">
-                Nominal otomatis muncul di ATM
+
+              <div class="payment-accordion">
+                <div
+                  class="payment-acc-item"
+                  :class="{ open: walletOpen }"
+                >
+                  <div
+                    class="payment-acc-header"
+                    role="button"
+                    tabindex="0"
+                    @click="toggleWallet"
+                    @keydown.enter.prevent="toggleWallet"
+                    @keydown.space.prevent="toggleWallet"
+                  >
+                    <span>Digital Payment / E-Wallet</span>
+                    <span class="payment-chevron" />
+                  </div>
+                  <div
+                    v-show="walletOpen"
+                    class="payment-acc-body"
+                  >
+                    <div class="payment-cards-container">
+                      <div class="payment-card">
+                        <div class="payment-card-header">
+                          <h3 class="payment-card-title">
+                            Digital Payment / E-Wallet
+                          </h3>
+                        </div>
+                        <div class="payment-card-body">
+                          <div class="payment-amount">
+                            Rp 400.000
+                          </div>
+                          <div class="payment-description">
+                            Pembayaran melalui e-wallet
+                          </div>
+                          <div class="payment-id">
+                            ID: {{ userNim || '-' }}
+                          </div>
+                          <ul class="payment-steps">
+                            <li>? Pilih menu Pembayaran</li>
+                            <li>? Pilih kategori Pendidikan/Institusi</li>
+                            <li>? Nama Lembaga: UNISA Yogya</li>
+                            <li>? Masukkan Nomor Pembayaran: {{ userNim || '-' }}</li>
+                            <li>? Konfirmasi pembayaran</li>
+                            <li>? Selesai</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="payment-id">
-                ID: 2211501033
-              </div>
-              <ul class="payment-steps">
-                <li>✓ Pilih menu Pembayaran/Pembelian</li>
-                <li>✓ Pilih menu Akademik</li>
-                <li>✓ Masukkan kode 9032-2211501033</li>
-                <li>✓ Konfirmasi pembayaran</li>
-                <li>✓ Ambil struk pembayaran</li>
-                <li>✓ Selesai</li>
-              </ul>
             </div>
           </div>
-        </div>
-      </VCardText>
-      <VCardActions
-        class="pa-6"
-        style="background: #f5f5f5;"
-      >
-        <VSpacer />
-        <VBtn
-          color="#17a2a6"
-          style="border-radius: 10px; background: #17a2a6; color: #fff; font-size: 1rem; font-weight: 500; min-block-size: 48px; min-inline-size: 150px;"
-          @click="showCaraBayarDialog = false"
+        </VCardText>
+        <VCardActions
+          class="pa-6"
+          style="background: #f5f5f5;"
         >
-          Tutup
-        </VBtn>
-      </VCardActions>
-    </VCard>
-  </VDialog>
+          <VSpacer />
+          <VBtn
+            color="#17a2a6"
+            style="border-radius: 10px; background: #17a2a6; color: #fff; font-size: 1rem; font-weight: 500; min-block-size: 48px; min-inline-size: 150px;"
+            @click="showCaraBayarDialog = false"
+          >
+            Tutup
+          </VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
   </VApp>
 </template>
 
 <script>
-import { computed, ref, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 export default {
@@ -487,6 +681,7 @@ export default {
 
     const statusText = item => {
       if (item?.tgl_dikirim) return 'Dikirim'
+      
       return 'Pending'
     }
 
@@ -519,8 +714,11 @@ export default {
 
     const showNotifAlert = ref(false)
     const notifMessage = ref('')
+    const userNim = ref('')
 
     const showCaraBayarDialog = ref(false)
+    const activeBank = ref('bsi')
+    const walletOpen = ref(false)
 
     // Wizard navigation
     const nextStep = () => {
@@ -567,6 +765,7 @@ export default {
           throw new Error(json.message || `Gagal memuat data (${res.status})`)
 
         const data = json.data ?? json
+
         pengajuanList.value = Array.isArray(data) ? data : []
       } catch (e) {
         errorMessage.value = e.message || 'Gagal memuat data'
@@ -575,13 +774,34 @@ export default {
       }
     }
 
+    const fetchUserNim = async () => {
+      try {
+        const headers = { Accept: 'application/json' }
+        const token = sessionStorage.getItem('jwt_token')
+        if (token)
+          headers.Authorization = `Bearer ${token}`
+
+        const res = await fetch('/api/me', { headers })
+        if (!res.ok) return
+
+        const json = await res.json()
+        const data = json.data ?? json
+
+        userNim.value = data.nim || data.username || ''
+      } catch (e) {
+        userNim.value = ''
+      }
+    }
+
     const handleSubmit = async () => {
       if (currentStep.value === 1) {
         if (!form.value.jml || !form.value.alamat || !form.value.namaPenerima || !form.value.noTelpPenerima) {
           openModal('warning', 'Mohon lengkapi semua data pendaftaran legalisasi')
+          
           return
         }
         currentStep.value = 2
+        
         return
       }
 
@@ -596,6 +816,7 @@ export default {
         alamat_kirim: form.value.alamat,
         nama_penerima_legalisasi: form.value.namaPenerima,
         telp_penerima: form.value.noTelpPenerima,
+        dokumen: Array.isArray(form.value.jenisDokumen) ? form.value.jenisDokumen.join(',') : '',
         comment: form.value.comment || (Array.isArray(form.value.jenisDokumen) ? form.value.jenisDokumen.join(', ') : ''),
       }
 
@@ -604,6 +825,7 @@ export default {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         }
+
         const token = sessionStorage.getItem('jwt_token')
         if (token)
           headers.Authorization = `Bearer ${token}`
@@ -613,6 +835,7 @@ export default {
           headers,
           body: JSON.stringify(payload),
         })
+
         const json = await res.json()
         if (!res.ok || json.success === false)
           throw new Error(json.message || 'Gagal mengirim pengajuan')
@@ -634,6 +857,14 @@ export default {
     // Fungsi untuk membuka cara pembayaran dalam dialog/modal
     const openCaraPembayaran = item => {
       showCaraBayarDialog.value = true
+    }
+
+    const toggleBank = bank => {
+      activeBank.value = activeBank.value === bank ? null : bank
+    }
+
+    const toggleWallet = () => {
+      walletOpen.value = !walletOpen.value
     }
 
     // Warna status step
@@ -660,6 +891,7 @@ export default {
     // Fungsi untuk tracking
     const trackingResi = item => {
       const resi = item.noresi || item.noResi || defaultResi
+
       window.open(`https://www.posindonesia.co.id/en/tracking/${resi}`, '_blank')
     }
 
@@ -677,7 +909,10 @@ export default {
       }
     }
 
-    onMounted(fetchList)
+    onMounted(() => {
+      fetchList()
+      fetchUserNim()
+    })
 
     return {
       showWizard,
@@ -701,7 +936,12 @@ export default {
       statusColor,
       showNotifAlert,
       notifMessage,
+      userNim,
       showCaraBayarDialog,
+      activeBank,
+      walletOpen,
+      toggleBank,
+      toggleWallet,
       trackingResi,
       fetchList,
       loading,
@@ -1262,4 +1502,193 @@ export default {
     grid-template-columns: 1fr;
   }
 }
-</style> 
+
+.payment-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.payment-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-block-end: 4px;
+}
+
+.payment-section {
+  padding: 16px;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  border-radius: 12px;
+  background: rgba(var(--v-theme-surface), 0.95);
+}
+
+.payment-section-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-block-end: 14px;
+}
+
+.payment-section-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.payment-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.payment-badge {
+  border-radius: 999px;
+  background: rgba(var(--v-theme-primary), 0.1);
+  color: rgb(var(--v-theme-primary));
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding-block: 4px;
+  padding-inline: 10px;
+}
+
+.payment-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.payment-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.payment-acc-item {
+  overflow: hidden;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  border-radius: 10px;
+  background: rgba(var(--v-theme-surface), 0.9);
+}
+
+.payment-acc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: none;
+  background: rgba(var(--v-theme-primary), 0.08);
+  cursor: pointer;
+  font-weight: 600;
+  inline-size: 100%;
+  padding-block: 12px;
+  padding-inline: 16px;
+}
+
+.payment-acc-item.open .payment-acc-header {
+  background: rgba(var(--v-theme-primary), 0.16);
+}
+
+.payment-chevron {
+  display: inline-block;
+  block-size: 10px;
+  border-block-end: 2px solid rgba(var(--v-theme-on-surface), 0.7);
+  border-inline-end: 2px solid rgba(var(--v-theme-on-surface), 0.7);
+  inline-size: 10px;
+  transform: rotate(45deg);
+  transition: transform 0.2s ease;
+}
+
+.payment-acc-item.open .payment-chevron {
+  transform: rotate(-135deg);
+}
+
+.payment-acc-body {
+  padding-block: 14px 16px;
+  padding-inline: 16px;
+}
+
+.payment-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-block-end: 12px;
+}
+
+.payment-tab {
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.2);
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding-block: 6px;
+  padding-inline: 12px;
+}
+
+.payment-tab.active {
+  border-color: rgba(var(--v-theme-primary), 0.5);
+  background: rgba(var(--v-theme-primary), 0.15);
+  color: rgb(var(--v-theme-primary));
+}
+
+.payment-tab-body {
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.6);
+  border-radius: 8px;
+  background: rgb(var(--v-theme-surface));
+  padding-block: 12px;
+  padding-inline: 14px;
+}
+
+.payment-amount {
+  color: #17a2a6;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-block-end: 6px;
+}
+
+.payment-id {
+  display: inline-block;
+  border: 1px solid rgba(23, 162, 166, 30%);
+  border-radius: 6px;
+  background: rgba(23, 162, 166, 15%);
+  color: #17a2a6;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-block: 0 12px;
+  margin-inline: auto;
+  padding-block: 6px;
+  padding-inline: 10px;
+  text-align: center;
+}
+
+.payment-steps {
+  margin: 0;
+  padding-inline-start: 18px;
+}
+
+.payment-steps li {
+  color: rgb(var(--v-theme-on-surface));
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-block-end: 6px;
+}
+
+.payment-substeps {
+  list-style: circle;
+  margin-block: 6px 0;
+  margin-inline: 0;
+  padding-inline-start: 22px;
+}
+
+.payment-substeps li {
+  color: rgb(var(--v-theme-on-surface));
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-block-end: 6px;
+}
+
+@media (max-width: 768px) {
+  .payment-section-header {
+    align-items: flex-start;
+  }
+}
+</style>

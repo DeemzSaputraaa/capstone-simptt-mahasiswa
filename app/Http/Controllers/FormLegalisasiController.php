@@ -65,6 +65,7 @@ class FormLegalisasiController extends Controller
             'kdlegalisasi_sebelum' => 'nullable|integer',
             'telp_penerima' => 'nullable|string|max:50',
             'comment' => 'nullable|string',
+            'dokumen' => 'nullable|string|max:50',
         ]);
 
         // Jika kdmahasiswa tidak dikirim, ambil dari payload JWT (nim -> kdmahasiswa)
@@ -125,6 +126,7 @@ class FormLegalisasiController extends Controller
             'kdlegalisasi_sebelum' => 'nullable|integer',
             'telp_penerima' => 'nullable|string|max:50',
             'comment' => 'nullable|string',
+            'dokumen' => 'nullable|string|max:50',
         ]);
 
         $formLegalisasi = FormLegalisasi::findOrFail($id);

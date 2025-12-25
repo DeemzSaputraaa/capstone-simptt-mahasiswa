@@ -217,6 +217,29 @@ const loadNotifications = async () => {
         comment: item.comment,
       }))
 
+    let legalisasiNotifications = []
+    try {
+      const resLegalisasi = await fetch('/api/form-legalisasi', { headers })
+      if (resLegalisasi.ok) {
+        const legalisasiJson = await resLegalisasi.json()
+        const legalisasiData = Array.isArray(legalisasiJson.data) ? legalisasiJson.data : []
+        legalisasiNotifications = legalisasiData
+          .filter(item => !!item.tgl_dikirim)
+          .map(item => ({
+            id: `legalisasi-${item.kdlegalisasi || item.id}`,
+            icon: 'ri-check-line',
+            color: 'success',
+            title: 'Pengajuan legalisasi Anda disetujui.',
+            type: 'legalisasi',
+            route: '/pendaftaran-legalisasi',
+            dataId: item.kdlegalisasi || item.id,
+            comment: 'Pengajuan legalisasi Anda disetujui.',
+          }))
+      }
+    } catch (err) {
+      console.error('Gagal memuat notifikasi legalisasi', err)
+    }
+
     const approvedNotifications = data
       .filter(item => item.nim === userNim.value || String(item.kdmahasiswa) === String(userNim.value))
       .filter(item => !!item.is_validate)
@@ -256,7 +279,7 @@ const loadNotifications = async () => {
       console.error('Gagal memuat notifikasi validasi ijazah', err)
     }
 
-    notifications.value = [...studentNotifications, ...approvedNotifications, ...validasiNotifications]
+    notifications.value = [...studentNotifications, ...approvedNotifications, ...legalisasiNotifications, ...validasiNotifications]
   } catch (err) {
     console.error(err)
   }

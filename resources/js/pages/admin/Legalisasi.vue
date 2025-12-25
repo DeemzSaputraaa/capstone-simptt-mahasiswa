@@ -17,7 +17,16 @@ const selectedItem = ref(null)
 const approveForm = ref({
   noresi: '',
   tgl_dikirim: '',
+  biaya_legalisasi: '',
 })
+
+const showResiDialog = ref(false)
+const resiTarget = ref(null)
+const resiValue = ref('')
+
+const showBiayaDialog = ref(false)
+const biayaTarget = ref(null)
+const biayaValue = ref('')
 
 const showDeleteDialog = ref(false)
 const deleteCandidate = ref(null)
@@ -84,7 +93,6 @@ const isApproved = row => Boolean(row?.tgl_dikirim)
 const openApprove = item => {
   selectedItem.value = item
   approveForm.value = {
-    noresi: item?.noresi ?? '',
     tgl_dikirim: (item?.tgl_dikirim
       ? String(item.tgl_dikirim).slice(0, 10)
       : new Date().toISOString().slice(0, 10)),
@@ -95,6 +103,112 @@ const openApprove = item => {
 const closeApprove = () => {
   showApproveDialog.value = false
   selectedItem.value = null
+}
+
+const openResiDialog = item => {
+  resiTarget.value = item
+  resiValue.value = item?.noresi ?? ''
+  showResiDialog.value = true
+}
+
+const closeResiDialog = () => {
+  showResiDialog.value = false
+  resiTarget.value = null
+  resiValue.value = ''
+}
+
+const saveResi = async () => {
+  if (!resiTarget.value) return
+
+  errorMessage.value = ''
+  successMessage.value = ''
+  approvingId.value = getRowId(resiTarget.value)
+
+  try {
+    const headers = {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    }
+    const token = sessionStorage.getItem('jwt_token')
+    if (token)
+      headers.Authorization = `Bearer ${token}`
+
+    const id = getRowId(resiTarget.value)
+    const res = await fetch(`/api/form-legalisasi/${id}`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({ noresi: resiValue.value }),
+    })
+
+    const json = await res.json()
+    if (!res.ok || json.success === false)
+      throw new Error(json.message || 'Gagal menyimpan nomor resi')
+
+    daftarLegalisasi.value = daftarLegalisasi.value.map(row => {
+      if (getRowId(row) !== id) return row
+      return { ...row, ...json.data }
+    })
+
+    successMessage.value = 'Nomor resi tersimpan'
+    closeResiDialog()
+  } catch (e) {
+    errorMessage.value = e.message || 'Gagal menyimpan nomor resi'
+  } finally {
+    approvingId.value = null
+  }
+}
+
+const openBiayaDialog = item => {
+  biayaTarget.value = item
+  biayaValue.value = item?.biaya_legalisasi ?? ''
+  showBiayaDialog.value = true
+}
+
+const closeBiayaDialog = () => {
+  showBiayaDialog.value = false
+  biayaTarget.value = null
+  biayaValue.value = ''
+}
+
+const saveBiaya = async () => {
+  if (!biayaTarget.value) return
+
+  errorMessage.value = ''
+  successMessage.value = ''
+  approvingId.value = getRowId(biayaTarget.value)
+
+  try {
+    const headers = {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    }
+    const token = sessionStorage.getItem('jwt_token')
+    if (token)
+      headers.Authorization = `Bearer ${token}`
+
+    const id = getRowId(biayaTarget.value)
+    const res = await fetch(`/api/form-legalisasi/${id}`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({ biaya_legalisasi: biayaValue.value }),
+    })
+
+    const json = await res.json()
+    if (!res.ok || json.success === false)
+      throw new Error(json.message || 'Gagal menyimpan biaya')
+
+    daftarLegalisasi.value = daftarLegalisasi.value.map(row => {
+      if (getRowId(row) !== id) return row
+      return { ...row, ...json.data }
+    })
+
+    successMessage.value = 'Biaya tersimpan'
+    closeBiayaDialog()
+  } catch (e) {
+    errorMessage.value = e.message || 'Gagal menyimpan biaya'
+  } finally {
+    approvingId.value = null
+  }
 }
 
 const saveApprove = async () => {
@@ -118,7 +232,6 @@ const saveApprove = async () => {
       method: 'PUT',
       headers,
       body: JSON.stringify({
-        noresi: approveForm.value.noresi,
         tgl_dikirim: approveForm.value.tgl_dikirim,
       }),
     })
@@ -352,10 +465,10 @@ onMounted(fetchData)
           <tr>
             <th>No</th>
             <th>Nama Mahasiswa</th>
-            <th>Jumlah</th>
-            <th>Biaya</th>
+            <th>Dokumen</th>
             <th>No. VA</th>
-            <th>Penerima</th>
+            <th>No. Resi</th>
+            <th>Biaya</th>
             <th>Tgl Dikirim</th>
             <th class="text-center">Aksi</th>
           </tr>
@@ -366,12 +479,35 @@ onMounted(fetchData)
             :key="m.kdlegalisasi || i"
           >
             <td data-label="No">{{ i + 1 }}</td>
-            <td data-label="Nama Mahasiswa">{{ m.nama_mahasiswa ?? '-' }}</td>
-            <td data-label="Jumlah">{{ m.jumlah_legalisasi }}</td>
-            <td data-label="Biaya">{{ m.biaya_legalisasi }}</td>
-            <td data-label="No. VA">{{ m.noresi ?? '-' }}</td>
-            <td data-label="Penerima">{{ m.nama_penerima_legalisasi }}</td>
-            <td data-label="Tgl Dikirim">{{ m.tgl_dikirim }}</td>
+            <td data-label="Nama Mahasiswa">
+              {{ m.nama_mahasiswa ?? '-' }}
+            </td>
+            <td data-label="Dokumen">{{ m.dokumen ?? '-' }}</td>
+            <td data-label="No. VA">{{ m.idtagihan ?? '-' }}</td>
+    <td data-label="No. Resi">
+      <VBtn
+        size="small"
+        color="primary"
+        class="resi-btn"
+        :loading="approvingId === getRowId(m)"
+        :disabled="!!m.noresi || approvingId !== null"
+        @click="openResiDialog(m)"
+      >
+        Resi
+      </VBtn>
+    </td>
+    <td data-label="Biaya">
+      <VBtn
+        size="small"
+        color="primary"
+        class="resi-btn"
+        :loading="approvingId === getRowId(m)"
+        @click="openBiayaDialog(m)"
+      >
+        Biaya
+      </VBtn>
+    </td>
+            <td data-label="Tgl Dikirim">{{ m.tgl_dikirim ?? '-' }}</td>
             <td data-label="Aksi" class="text-center">
               <div class="d-flex justify-center">
                 <VBtn
@@ -458,18 +594,12 @@ onMounted(fetchData)
             <span class="summary-label">No. VA</span><span class="summary-value">{{ selectedItem.noresi ?? '-' }}</span>
           </div>
         </div>
-        <VTextField
-          v-model="approveForm.noresi"
-          label="Masukkan Nomor Resi"
-          variant="outlined"
-          class="mt-6"
-        />
-        <VTextField
-          v-model="approveForm.tgl_dikirim"
-          label="Tanggal Dikirim"
-          type="date"
-          variant="outlined"
-          class="mt-4"
+      <VTextField
+        v-model="approveForm.tgl_dikirim"
+        label="Tanggal Dikirim"
+        type="date"
+        variant="outlined"
+        class="mt-4"
         />
       </VCardText>
       <VCardActions class="justify-space-between">
@@ -533,6 +663,76 @@ onMounted(fetchData)
           @click="confirmDelete"
         >
           Hapus
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
+
+  <VDialog
+    v-model="showResiDialog"
+    max-width="420"
+  >
+    <VCard>
+      <VCardTitle>Input Nomor Resi</VCardTitle>
+      <VCardText>
+        <VTextField
+          v-model="resiValue"
+          label="Nomor Resi"
+          variant="outlined"
+          autofocus
+        />
+      </VCardText>
+      <VCardActions class="justify-end">
+        <VBtn
+          variant="tonal"
+          color="grey"
+          @click="closeResiDialog"
+        >
+          Batal
+        </VBtn>
+        <VBtn
+          color="primary"
+          :disabled="!resiValue"
+          :loading="approvingId !== null"
+          @click="saveResi"
+        >
+          Simpan
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
+
+  <VDialog
+    v-model="showBiayaDialog"
+    max-width="420"
+  >
+    <VCard>
+      <VCardTitle>Input Biaya</VCardTitle>
+      <VCardText>
+        <VTextField
+          v-model="biayaValue"
+          label="Biaya (Rp)"
+          type="number"
+          min="0"
+          variant="outlined"
+          autofocus
+        />
+      </VCardText>
+      <VCardActions class="justify-end">
+        <VBtn
+          variant="tonal"
+          color="grey"
+          @click="closeBiayaDialog"
+        >
+          Batal
+        </VBtn>
+        <VBtn
+          color="primary"
+          :disabled="!biayaValue"
+          :loading="approvingId !== null"
+          @click="saveBiaya"
+        >
+          Simpan
         </VBtn>
       </VCardActions>
     </VCard>
@@ -647,6 +847,11 @@ onMounted(fetchData)
 
 .action-btn {
   margin-inline: 2px;
+}
+
+.resi-btn {
+  text-transform: none;
+  min-inline-size: 72px;
 }
 
 @media (max-width: 960px) {
