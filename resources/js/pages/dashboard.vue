@@ -430,7 +430,7 @@ const loadNotifications = async () => {
           <div class="notification-scroll">
             <VList class="notification-list">
               <VListItem
-                v-for="notification in notifications.slice(0, 3)"
+                v-for="notification in notifications"
                 :key="notification.id"
                 class="notification-item mb-2"
                 rounded
@@ -620,8 +620,14 @@ const loadNotifications = async () => {
   transition: color 0.3s;
 }
 
+.notification-card {
+  display: flex;
+  flex-direction: column;
+}
+
 .notification-scroll {
-  max-block-size: 250px;
+  flex: 1;
+  min-block-size: 0;
   overflow-y: auto;
 }
 
@@ -636,6 +642,12 @@ const loadNotifications = async () => {
   &:hover {
     background-color: rgba(var(--v-theme-on-surface), 0.05);
   }
+}
+
+.notification-item :deep(.v-list-item-title) {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .v-dialog {
