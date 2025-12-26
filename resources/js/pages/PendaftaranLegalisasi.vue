@@ -78,7 +78,7 @@
                 >
                   <td>{{ (currentPage - 1)* itemsPerPage + index + 1 }}</td>
                   <td>{{ formatDate(item.create_at || item.tgl_dikirim) }}</td>
-                  <td>{{ item.biaya_legalisasi ?? '-' }}</td>
+                  <td>{{ item.biaya_legalisasi ? formatRupiah(item.biaya_legalisasi) : '-' }}</td>
                   <td>{{ item.jumlah_legalisasi ?? '-' }}</td>
                   <td v-if="item.noresi">
                     <a
@@ -694,6 +694,16 @@ export default {
     }
 
     const formatDate = date => date ? new Date(date).toLocaleDateString('id-ID') : '-'
+    const formatRupiah = value => {
+      const number = Number(value)
+      if (Number.isNaN(number)) return '-'
+
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 2,
+      }).format(number)
+    }
 
     const statusText = item => {
       if (item?.tgl_dikirim) return 'Dikirim'
@@ -965,6 +975,7 @@ export default {
       errorMessage,
       successMessage,
       formatDate,
+      formatRupiah,
       statusText,
       paginatedData,
       currentPage,

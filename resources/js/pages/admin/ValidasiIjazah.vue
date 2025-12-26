@@ -216,7 +216,7 @@ onMounted(() => {
         v-model="itemsPerPage"
         :items="[5, 10, 20]"
         density="compact"
-        style="max-inline-size: 80px;"
+        style="max-inline-size: 100px;"
       />
     </div>
   </VCard>

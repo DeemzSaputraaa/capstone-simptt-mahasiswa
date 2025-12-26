@@ -319,6 +319,21 @@ onMounted(fetchData)
       Pra Yudisium
     </VCardTitle>
 
+    <div class="pra-filter-bar">
+      <span>Status</span>
+      <VSelect
+        v-model="filterStatus"
+        :items="[
+          { title: 'Semua', value: 'all' },
+          { title: 'Approved', value: 'approved' },
+          { title: 'Revisi', value: 'revision' },
+          { title: 'Submitted', value: 'submitted' },
+        ]"
+        density="compact"
+        style="max-inline-size: 180px;"
+      />
+    </div>
+
 
     <VAlert
       v-if="errorMessage"
@@ -491,29 +506,13 @@ onMounted(fetchData)
       </tbody>
     </VTable>
     <div class="table-footer">
-      <div class="table-footer-left">
-        <span>Status</span>
-        <VSelect
-          v-model="filterStatus"
-          :items="[
-            { title: 'Semua', value: 'all' },
-            { title: 'Approved', value: 'approved' },
-            { title: 'Revisi', value: 'revision' },
-            { title: 'Submitted', value: 'submitted' },
-          ]"
-          density="compact"
-          style="max-inline-size: 160px;"
-        />
-      </div>
-      <div class="table-footer-right">
-        <span>Showing per Page</span>
-        <VSelect
-          v-model="itemsPerPage"
-          :items="[5, 10, 20]"
-          density="compact"
-          style="max-inline-size: 80px;"
-        />
-      </div>
+      <span>Showing per Page</span>
+      <VSelect
+        v-model="itemsPerPage"
+        :items="[5, 10, 20]"
+        density="compact"
+        style="max-inline-size: 100px;"
+      />
     </div>
 
     <VDialog
@@ -836,6 +835,14 @@ onMounted(fetchData)
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.pra-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-block: 12px 16px;
+  padding-inline: 20px;
 }
 
 /* Empty State */
