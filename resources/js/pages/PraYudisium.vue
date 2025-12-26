@@ -77,7 +77,7 @@
             
             <!-- Section 4: Upload Foto Ijazah SMA -->
             <div class="text-subtitle-1 font-weight-bold mt-6">
-              Upload Foto Ijazah SMA
+              Upload Ijazah SMA
             </div>
             <div class="file-upload">
               <VIcon class="file-upload-icon">
@@ -489,7 +489,7 @@ export default {
         infoMessage.value = route.query.comment
         infoTimer.value = setTimeout(() => {
           infoMessage.value = ''
-        }, 60000)
+        }, 30000)
       }
 
       loadUserIdentity().then(loadCurrentSubmission)

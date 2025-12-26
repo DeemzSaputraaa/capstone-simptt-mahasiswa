@@ -151,7 +151,7 @@
 </template>
 
 <script>
-import { onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import CommentItem from '../components/CommentItem.vue'
 import DraftIjazah from './components/DraftIjazah.vue'
@@ -263,9 +263,13 @@ export default {
     const notifId = route.query.notif
     const showNotifAlert = ref(false)
     const notifMessage = ref('')
+    const notifTimer = ref(null)
     if (notifId) {
       showNotifAlert.value = true
       notifMessage.value = 'Ada komentar baru dari admin di Validasi Ijazah Anda. Silakan cek detail di bawah ini.'
+      notifTimer.value = setTimeout(() => {
+        showNotifAlert.value = false
+      }, 30000)
     }
 
     const getAuthHeaders = () => {
@@ -675,6 +679,13 @@ export default {
       if (notifId) {
         showComments.value = true
         await loadCommentsFromDatabase()
+      }
+    })
+
+    onBeforeUnmount(() => {
+      if (notifTimer.value) {
+        clearTimeout(notifTimer.value)
+        notifTimer.value = null
       }
     })
 

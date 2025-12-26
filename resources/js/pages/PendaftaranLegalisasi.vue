@@ -6,7 +6,7 @@
         class="pa-0"
       >
         <div v-if="!showWizard">
-          <div class="d-flex flex-wrap justify-space-between align-center mb-6">
+          <div class="d-flex flex-wrap justify-space-between align-center">
             <VBtn
               color="#17a2a6"
               style="border-radius: 10px; background: rgb(var(--v-theme-primary)); color: #fff; font-size: 1.1rem; font-weight: 500; margin-block-end: 32px; min-block-size: 48px;"
@@ -33,6 +33,21 @@
           >
             <span>{{ notifMessage }}</span>
           </VAlert>
+
+          <div class="filter-bar">
+            <span>Status</span>
+            <VSelect
+              v-model="statusFilter"
+              :items="[
+                { title: 'Semua', value: 'all' },
+                { title: 'Pending', value: 'pending' },
+                { title: 'Dikirim', value: 'dikirim' },
+              ]"
+              density="compact"
+              hide-details
+              style="max-inline-size: 180px;"
+            />
+          </div>
 
           <div class="table-wrapper">
             <table class="pengajuan-table">
@@ -653,7 +668,7 @@
 </template>
 
 <script>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 export default {
@@ -668,17 +683,28 @@ export default {
     const submitLoading = ref(false)
     const errorMessage = ref('')
     const successMessage = ref('')
+    const statusFilter = ref('all')
 
     const currentPage = ref(1)
     const itemsPerPage = ref(5)
     
-    const totalPages = computed(() => Math.ceil(pengajuanList.value.length / itemsPerPage.value))
+    const filteredData = computed(() => {
+      if (statusFilter.value === 'all') return pengajuanList.value
+
+      return pengajuanList.value.filter(item => {
+        const status = statusText(item).toLowerCase()
+        
+        return status === statusFilter.value
+      })
+    })
+
+    const totalPages = computed(() => Math.ceil(filteredData.value.length / itemsPerPage.value))
 
     const paginatedData = computed(() => {
       const start = (currentPage.value - 1) * itemsPerPage.value
       const end = start + itemsPerPage.value
       
-      return pengajuanList.value.slice(start, end)
+      return filteredData.value.slice(start, end)
     })
     
     const statusClass = status => {
@@ -691,6 +717,7 @@ export default {
     }
 
     const formatDate = date => date ? new Date(date).toLocaleDateString('id-ID') : '-'
+
     const formatRupiah = value => {
       const number = Number(value)
       if (Number.isNaN(number)) return '-'
@@ -738,6 +765,7 @@ export default {
     const showNotifAlert = ref(false)
     const notifMessage = ref('')
     const userNim = ref('')
+    const notifTimer = ref(null)
 
     const showCaraBayarDialog = ref(false)
     const activeBank = ref('bsi')
@@ -906,6 +934,9 @@ export default {
     if (notifId) {
       showNotifAlert.value = true
       notifMessage.value = 'Ada update status legalisasi atau pengiriman legalisasi Anda. Silakan cek detail di bawah ini.'
+      notifTimer.value = setTimeout(() => {
+        showNotifAlert.value = false
+      }, 30000)
     }
 
     // Nomor resi dummy, bisa diganti sesuai data pengajuan
@@ -937,10 +968,18 @@ export default {
       fetchUserNim()
     })
 
+    onBeforeUnmount(() => {
+      if (notifTimer.value) {
+        clearTimeout(notifTimer.value)
+        notifTimer.value = null
+      }
+    })
+
     return {
       showWizard,
       currentStep,
       pengajuanList,
+      statusFilter,
       statusClass,
       selectedPengajuan,
       selectPengajuan,
@@ -994,14 +1033,22 @@ export default {
   padding-inline: 20px;
 }
 
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-block: 0 10px;
+  padding-inline: 4px;
+}
+
 .table-wrapper .pengajuan-table {
+  overflow: hidden;
+  border-radius: 12px; /* 🟢 Kolom proporsional, nggak goyah */
   background: var(--v-theme-surface);
   border-collapse: separate;
   border-spacing: 0; /* 🟢 Biar garis antar sel nyatu */
   inline-size: 100%;
   table-layout: fixed;
-  overflow: hidden;
-  border-radius: 12px; /* 🟢 Kolom proporsional, nggak goyah */
 }
 
 .pengajuan-table col.col-no { inline-size: 6%; }
@@ -1036,7 +1083,6 @@ export default {
   font-weight: 700;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  font-weight: 700;
   white-space: normal;
 }
 
