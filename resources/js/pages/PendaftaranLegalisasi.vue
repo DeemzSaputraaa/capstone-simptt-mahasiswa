@@ -99,17 +99,14 @@
                 </tr>
               </tbody>
             </table>
-            <div
-              class="d-flex justify-start align-center mb-2"
-              style="gap: 0.3rem;  padding-block-start: 14px;"
-            >
-              <span style="font-size: 1rem; font-weight: 400;">Page:</span>
+            <div class="table-footer">
+              <span>Showing per Page</span>
               <VSelect
                 v-model="itemsPerPage"
                 :items="[5, 10, 20, 50]"
                 density="compact"
                 hide-details
-                style="max-inline-size: 85px;"
+                style="max-inline-size: 100px;"
               />
             </div>
           </div>
@@ -988,9 +985,9 @@ export default {
 
 <style scoped>
 .table-wrapper {
-  border-radius: 8px;
+  border-radius: 12px;
   background: var(--v-theme-surface);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 10%);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 8%);
   inline-size: 100%;
   overflow-x: auto;
   padding-block: 16px;
@@ -999,9 +996,12 @@ export default {
 
 .table-wrapper .pengajuan-table {
   background: var(--v-theme-surface);
-  border-collapse: collapse; /* 🟢 Biar garis antar sel nyatu */
+  border-collapse: separate;
+  border-spacing: 0; /* 🟢 Biar garis antar sel nyatu */
   inline-size: 100%;
-  table-layout: fixed; /* 🟢 Kolom proporsional, nggak goyah */
+  table-layout: fixed;
+  overflow: hidden;
+  border-radius: 12px; /* 🟢 Kolom proporsional, nggak goyah */
 }
 
 .pengajuan-table col.col-no { inline-size: 6%; }
@@ -1014,10 +1014,10 @@ export default {
 .pengajuan-table th,
 .pengajuan-table td {
   box-sizing: border-box;
-  border: 1px solid #ccc;
+  border-block-end: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   line-height: 1.2;
-  padding-block: 12px;
-  padding-inline: 14px;
+  padding-block: 14px;
+  padding-inline: 16px;
   text-align: center;
   vertical-align: middle;
   word-wrap: break-word;
@@ -1030,9 +1030,24 @@ export default {
 }
 
 .pengajuan-table th {
-  background-color: var(--v-theme-surface);
-  font-weight: 600;
+  background: rgba(var(--v-theme-on-surface), 0.04);
+  border-block-end: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-weight: 700;
   white-space: normal;
+}
+
+.pengajuan-table tbody td {
+  background-color: rgba(var(--v-theme-surface), 0.95);
+  color: rgba(var(--v-theme-on-surface), 0.8);
+  font-size: 0.9rem;
+}
+
+.pengajuan-table tbody tr:hover td {
+  background-color: rgba(var(--v-theme-on-surface), 0.04);
 }
 
 .styled-summary-table td {
@@ -1053,8 +1068,15 @@ export default {
   border-block-end: 1px solid #f0f0f0;
 }
 
-.pengajuan-table tr:nth-child(even) {
-  background-color: var(--v-theme-surface);
+.pengajuan-table tr:nth-child(even) td {
+  background-color: rgba(var(--v-theme-surface), 0.98);
+}
+
+.table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block-start: 14px;
 }
 
 .form-card {
@@ -1162,7 +1184,7 @@ export default {
 
 .wizard-step.active .wizard-label {
   color: #17a2a6;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .wizard-step.done .wizard-label {
@@ -1200,7 +1222,7 @@ export default {
   background: #fafbfc;
   border-inline-end: 1px solid #f0f0f0;
   color: #444;
-  font-weight: 600;
+  font-weight: 700;
   inline-size: 200px;
 }
 
@@ -1234,7 +1256,7 @@ export default {
   color: #fff;
   cursor: pointer;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   inline-size: 100%;
   padding-block: 6px;
   padding-inline: 0;
@@ -1308,7 +1330,7 @@ export default {
   color: #fff;
   cursor: pointer;
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 700;
   margin-block-start: 6px;
   padding-block: 4px;
   padding-inline: 12px;
@@ -1382,7 +1404,7 @@ export default {
   margin: 0;
   color: #fff;
   font-size: 1.2rem;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.3;
 }
 
@@ -1419,7 +1441,7 @@ export default {
   background: rgba(23, 162, 166, 15%);
   color: #17a2a6;
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 700;
   margin-block-end: 16px;
   text-align: center;
 }
@@ -1580,7 +1602,7 @@ export default {
   background: rgba(var(--v-theme-primary), 0.1);
   color: rgb(var(--v-theme-primary));
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 700;
   padding-block: 4px;
   padding-inline: 10px;
 }
@@ -1611,9 +1633,9 @@ export default {
   border: none;
   background: rgba(var(--v-theme-primary), 0.08);
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
   inline-size: 100%;
-  padding-block: 12px;
+  padding-block: 14px;
   padding-inline: 16px;
 }
 
@@ -1667,8 +1689,8 @@ export default {
   border: 1px solid rgba(var(--v-theme-on-surface), 0.6);
   border-radius: 8px;
   background: rgb(var(--v-theme-surface));
-  padding-block: 12px;
-  padding-inline: 14px;
+  padding-block: 14px;
+  padding-inline: 16px;
 }
 
 .payment-amount {
@@ -1685,7 +1707,7 @@ export default {
   background: rgba(23, 162, 166, 15%);
   color: #17a2a6;
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 700;
   margin-block: 0 12px;
   margin-inline: auto;
   padding-block: 6px;
