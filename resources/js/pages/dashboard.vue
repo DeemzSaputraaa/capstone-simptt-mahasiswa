@@ -1,6 +1,27 @@
 <script setup>
-import { onMounted, onUnmounted, ref } from 'vue'
+import {
+  CategoryScale,
+  Chart,
+  Filler,
+  LineController,
+  LineElement,
+  LinearScale,
+  PointElement,
+  Tooltip,
+} from 'chart.js'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useTheme } from 'vuetify'
+
+Chart.register(
+  CategoryScale,
+  Filler,
+  LineController,
+  LineElement,
+  LinearScale,
+  PointElement,
+  Tooltip,
+)
 
 const userName = ref('')
 const userNim = ref('')
@@ -26,63 +47,16 @@ onMounted(() => {
   updateToday()
   timer = setInterval(updateToday, 1000)
   loadNotifications()
+  loadNilaiKrs()
 })
 
-const totalProfit = {
-  title: 'Total Profit',
-  color: 'secondary',
-  icon: 'ri-pie-chart-2-line',
-  stats: '$25.6k',
-  change: 42,
-  subtitle: 'Weekly Project',
-}
-
-const newProject = {
-  title: 'New Project',
-  color: 'primary',
-  icon: 'ri-file-word-2-line',
-  stats: '862',
-  change: -18,
-  subtitle: 'Yearly Project',
-}
-
-const stats = ref([
-  {
-    title: 'Potential Monthly Profit',
-    value: '$24,042,000',
-    icon: 'ri-wallet-3-line',
-    color: 'error',
-    bg: 'bg-error',
-  },
-  {
-    title: 'Workers Wage This Month',
-    value: '$8,402,000',
-    icon: 'ri-article-line',
-    color: 'info',
-    bg: 'bg-info',
-  },
-  {
-    title: 'Average Project Length',
-    value: '2 weeks',
-    icon: 'ri-calendar-line',
-    color: 'warning',
-    bg: 'bg-warning',
-  },
-  {
-    title: 'Average Income per Project',
-    value: '$12,000',
-    icon: 'ri-line-chart-line',
-    color: 'success',
-    bg: 'bg-success',
-  },
-])
 
 // Tanggal realtime
 const today = ref('')
 let timer = null
 
 // Daftar nama hari dalam Bahasa Indonesia
-const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabat']
+const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
 
 // Daftar nama bulan dalam Bahasa Indonesia
 const months = [
@@ -115,62 +89,280 @@ onMounted(() => {
 })
 onUnmounted(() => {
   clearInterval(timer)
+  if (chartInstance.value) {
+    chartInstance.value.destroy()
+    chartInstance.value = null
+  }
 })
 
-// Data dummy pembayaran
-const payments = [
-  { date: '2024-06-10', amount: '$1,200', status: 'Success' },
-  { date: '2024-06-09', amount: '$800', status: 'Pending' },
-  { date: '2024-06-08', amount: '$2,000', status: 'Failed' },
-]
+const defaultSummary = {
+  statusLabel: 'Belum mengajukan',
+  subtitle: 'Belum ada data pengajuan.',
+}
 
+const praSummary = ref({ ...defaultSummary })
+const validasiSummary = ref({ ...defaultSummary })
+const legalisasiSummary = ref({ ...defaultSummary })
 
-// Data dummy pengiriman
-const shipments = [
-  { date: '2024-06-10', item: 'Document A', status: 'Delivered', trackingNumber: 'TRK123456789', history: [
-    { timestamp: '2024-06-10 10:00', location: 'Warehouse A', status: 'Delivered' },
-    { timestamp: '2024-06-09 18:00', location: 'Delivery Hub', status: 'Out for Delivery' },
-    { timestamp: '2024-06-09 09:00', location: 'Sorting Center B', status: 'In Transit' },
-    { timestamp: '2024-06-08 15:00', location: 'Origin Facility', status: 'Shipped' },
-  ] },
-  { date: '2024-06-09', item: 'Document B', status: 'In Transit', trackingNumber: 'TRK987654321', history: [
-    { timestamp: '2024-06-09 14:30', location: 'Sorting Center A', status: 'In Transit' },
-    { timestamp: '2024-06-09 10:00', location: 'Origin Facility', status: 'Shipped' },
-  ] },
-  { date: '2024-06-08', item: 'Document C', status: 'Pending', trackingNumber: 'TRK112233445', history: [
-    { timestamp: '2024-06-08 11:00', location: 'Waiting for pickup', status: 'Pending' },
-  ] },
-]
+const formatShortDate = value => {
+  if (!value) return null
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return null
+  
+  return date.toLocaleDateString('id-ID')
+}
 
-const trackingNumber = ref('')
-const showTrackingModal = ref(false)
-const trackingResults = ref(null)
-const searchError = ref(false)
+const getLatestItem = items => {
+  if (!items.length) return null
+  
+  return [...items].sort((a, b) => {
+    const da = new Date(a?.update_at || a?.create_at || a?.tgl_dikirim || 0).getTime()
+    const db = new Date(b?.update_at || b?.create_at || b?.tgl_dikirim || 0).getTime()
+    
+    return db - da
+  })[0]
+}
 
-function trackShipment() {
-  searchError.value = false
-
-  // Jika tracking number format Pos Indonesia (misal: P2303300137522)
-  if (/^P\d+$/i.test(trackingNumber.value)) {
-    window.open(`https://www.posindonesia.co.id/en/tracking/${trackingNumber.value}`, '_blank')
+const setPraSummary = records => {
+  if (!records.length) {
+    praSummary.value = { ...defaultSummary }
     
     return
   }
+  const latest = getLatestItem(records)
+  const statuses = [latest?.status_foto, latest?.status_ijazah, latest?.status_ktp].filter(Boolean)
+  const hasRevision = statuses.some(status => status === 'revision')
+  const allApproved = statuses.length === 3 && statuses.every(status => status === 'approved')
+  const lastDate = formatShortDate(latest?.update_at || latest?.create_at)
 
-  const result = shipments.find(s => s.trackingNumber === trackingNumber.value)
-  if (result) {
-    trackingResults.value = result
-    showTrackingModal.value = true
+  if (hasRevision) {
+    praSummary.value = {
+      statusLabel: 'Perlu Revisi',
+      subtitle: 'Ada dokumen yang perlu diperbaiki.',
+    }
+  } else if (latest?.is_validate || allApproved) {
+    praSummary.value = {
+      statusLabel: 'Disetujui',
+      subtitle: 'Pengajuan Anda sudah disetujui.',
+    }
   } else {
-    searchError.value = true
-    trackingResults.value = null
+    praSummary.value = {
+      statusLabel: 'Diproses',
+      subtitle: lastDate ? `Update terakhir ${lastDate}.` : 'Menunggu verifikasi.',
+    }
+  }
+}
+
+const setValidasiSummary = records => {
+  if (!records.length) {
+    validasiSummary.value = { ...defaultSummary }
+    
+    return
+  }
+  const latest = getLatestItem(records)
+  const isApproved = !!latest?.is_ijazah_validate && !!latest?.is_transkrip_validate
+  const hasComment = !!latest?.last_admin_comment_text
+  const lastDate = formatShortDate(latest?.last_comment_at || latest?.create_at)
+
+  if (isApproved) {
+    validasiSummary.value = {
+      statusLabel: 'Disetujui',
+      subtitle: 'Ijazah & transkrip sudah divalidasi.',
+    }
+  } else if (hasComment) {
+    validasiSummary.value = {
+      statusLabel: 'Ada Catatan',
+      subtitle: 'Ada komentar admin terbaru.',
+    }
+  } else {
+    validasiSummary.value = {
+      statusLabel: 'Diproses',
+      subtitle: lastDate ? `Update terakhir ${lastDate}.` : 'Menunggu verifikasi.',
+    }
+  }
+}
+
+const setLegalisasiSummary = records => {
+  if (!records.length) {
+    legalisasiSummary.value = { ...defaultSummary }
+    
+    return
+  }
+  const latest = getLatestItem(records)
+  const hasResi = !!latest?.noresi
+  const hasBiaya = latest?.biaya_legalisasi !== null && latest?.biaya_legalisasi !== undefined && latest?.biaya_legalisasi !== ''
+  const isSent = !!latest?.tgl_dikirim
+  const lastDate = formatShortDate(latest?.tgl_dikirim || latest?.create_at)
+
+  if (isSent) {
+    legalisasiSummary.value = {
+      statusLabel: 'Dikirim',
+      subtitle: lastDate ? `Dikirim ${lastDate}.` : 'Dokumen sudah dikirim.',
+    }
+  } else if (hasResi || hasBiaya) {
+    legalisasiSummary.value = {
+      statusLabel: 'Diproses',
+      subtitle: 'Admin sedang memproses pengiriman.',
+    }
+  } else {
+    legalisasiSummary.value = {
+      statusLabel: 'Menunggu',
+      subtitle: 'Menunggu verifikasi admin.',
+    }
   }
 }
 
 const notifications = ref([])
+const nilaiKrs = ref([])
+const nilaiLoading = ref(false)
+const nilaiError = ref('')
+
+const roundToQuarter = value => Math.round(value * 4) / 4
+
+const chartItems = computed(() => {
+  const buckets = new Map()
+
+  nilaiKrs.value.forEach(item => {
+    const rawValue = Number(item.nilaiangka)
+    if (Number.isNaN(rawValue)) return
+
+    const rounded = roundToQuarter(rawValue)
+    const key = rounded.toFixed(2)
+
+    buckets.set(key, (buckets.get(key) || 0) + 1)
+  })
+
+  return Array.from(buckets.entries())
+    .map(([label, count]) => ({
+      label,
+      count,
+      value: Number(label),
+    }))
+    .sort((a, b) => b.value - a.value)
+})
+
+const chartCanvas = ref(null)
+const chartInstance = ref(null)
 
 const showNotificationsModal = ref(false)
 const router = useRouter()
+const theme = useTheme()
+const isDark = computed(() => theme.global.current.value.dark)
+
+const goTo = path => {
+  if (!path) return
+  router.push(path)
+}
+
+const statusPillClass = status => {
+  if (status === 'Disetujui' || status === 'Dikirim') return 'status-pill status-success'
+  if (status === 'Perlu Revisi' || status === 'Ada Catatan') return 'status-pill status-warning'
+  if (status === 'Diproses' || status === 'Menunggu') return 'status-pill status-info'
+  
+  return 'status-pill status-muted'
+}
+
+const loadNilaiKrs = async () => {
+  nilaiLoading.value = true
+  nilaiError.value = ''
+  try {
+    const headers = { Accept: 'application/json' }
+    const token = sessionStorage.getItem('jwt_token')
+    if (token)
+      headers.Authorization = `Bearer ${token}`
+
+    const res = await fetch('/api/nilai-krs', { headers })
+    const json = await res.json()
+    if (!res.ok || json.success === false)
+      throw new Error(json.message || 'Gagal memuat data nilai')
+
+    nilaiKrs.value = Array.isArray(json.data) ? json.data : []
+  } catch (err) {
+    nilaiError.value = err.message || 'Gagal memuat data nilai'
+  } finally {
+    nilaiLoading.value = false
+  }
+}
+
+watch(chartItems, async () => {
+  if (nilaiLoading.value) return
+  await nextTick()
+  buildNilaiChart()
+})
+
+watch(isDark, () => {
+  if (!chartInstance.value) return
+
+  const tickColor = isDark.value ? '#fff' : 'rgba(0, 0, 0, 0.6)'
+  const gridColor = isDark.value ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)'
+
+  chartInstance.value.options.scales.x.ticks.color = tickColor
+  chartInstance.value.options.scales.y.ticks.color = tickColor
+  chartInstance.value.options.scales.y.grid.color = gridColor
+  chartInstance.value.update()
+})
+
+const buildNilaiChart = () => {
+  if (!chartCanvas.value) return
+
+  const items = [...chartItems.value].sort((a, b) => a.value - b.value)
+  const labels = items.map(item => item.label)
+  const data = items.map(item => item.count)
+
+  if (chartInstance.value) {
+    chartInstance.value.data.labels = labels
+    chartInstance.value.data.datasets[0].data = data
+    chartInstance.value.update()
+    
+    return
+  }
+
+  chartInstance.value = new Chart(chartCanvas.value, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          data,
+          borderColor: '#17a2a6',
+          backgroundColor: 'rgba(23, 162, 166, 0.25)',
+          fill: true,
+          tension: 0.35,
+          borderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          pointBackgroundColor: '#17a2a6',
+          pointBorderWidth: 0,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: context => `Nilai ${context[0].label}`,
+            label: context => `${context.raw} mata kuliah`,
+          },
+        },
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { color: isDark.value ? '#fff' : 'rgba(0, 0, 0, 0.6)' },
+        },
+        y: {
+          beginAtZero: true,
+          ticks: { precision: 0, color: isDark.value ? '#fff' : 'rgba(0, 0, 0, 0.6)' },
+          grid: { color: isDark.value ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)' },
+        },
+      },
+    },
+  })
+}
+
 function goToNotification(notification) {
   const targetPath = notification.type === 'pra-yudisium'
     ? '/pra-yudisium'
@@ -208,6 +400,7 @@ const loadNotifications = async () => {
       .filter(item => {
         const hasRevision = [item.status_foto, item.status_ijazah, item.status_ktp]
           .some(status => status === 'revision')
+
         if (hasRevision)
           return true
 
@@ -224,12 +417,19 @@ const loadNotifications = async () => {
         comment: item.comment,
       }))
 
+    const praRecords = data.filter(item => item.nim === userNim.value || String(item.kdmahasiswa) === String(userNim.value))
+
+    setPraSummary(praRecords)
+
     let legalisasiNotifications = []
     try {
       const resLegalisasi = await fetch('/api/form-legalisasi', { headers })
       if (resLegalisasi.ok) {
         const legalisasiJson = await resLegalisasi.json()
         const legalisasiData = Array.isArray(legalisasiJson.data) ? legalisasiJson.data : []
+        const legalisasiRecords = legalisasiData.filter(item => item.nim === userNim.value || String(item.kdmahasiswa) === String(userNim.value))
+
+        setLegalisasiSummary(legalisasiRecords)
         legalisasiNotifications = legalisasiData
           .filter(item => !!item.tgl_dikirim || !!item.noresi || (item.biaya_legalisasi !== null && item.biaya_legalisasi !== undefined && item.biaya_legalisasi !== ''))
           .map(item => {
@@ -266,6 +466,7 @@ const loadNotifications = async () => {
           return true
 
         const statuses = [item.status_foto, item.status_ijazah, item.status_ktp].filter(Boolean)
+        
         return statuses.length === 3 && statuses.every(status => status === 'approved')
       })
       .map(item => ({
@@ -286,6 +487,9 @@ const loadNotifications = async () => {
       if (resValidasi.ok) {
         const validasiJson = await resValidasi.json()
         const validasiData = Array.isArray(validasiJson) ? validasiJson : []
+        const validasiRecords = validasiData.filter(item => item.nim === userNim.value || String(item.kdmahasiswa) === String(userNim.value))
+
+        setValidasiSummary(validasiRecords)
         validasiNotifications = validasiData
           .filter(item => item.nim === userNim.value || String(item.kdmahasiswa) === String(userNim.value))
           .filter(item => !!item.last_admin_comment_text)
@@ -316,16 +520,16 @@ const loadNotifications = async () => {
     fluid
     class="pa-4 dashboard-bg"
   >
-    <VRow>
-      <!-- Welcome Card, Search, Riwayat Pembayaran -->
+    <VRow class="mb-0 row-tight">
+      <!-- Welcome Card, Status Summary -->
       <VCol
         cols="12"
         md="8"
       >
         <VCard
-          class="pa-6 welcome-card mb-4"
+          class="pa-6 welcome-card mb-6"
           elevation="2"
-          style="min-block-size: 230px;"
+          style="min-block-size: 160px;"
         >
           <VRow align="center">
             <VCol
@@ -363,44 +567,69 @@ const loadNotifications = async () => {
             -->
           </VRow>
         </VCard>
-        <VCard
-          class="pa-4 mb-4 mx-auto"
-          :class="$vuetify.display.smAndDown ? 'w-100' : 'w-100'"
-          style="margin-block: 18px 16px;"
-        >
-          <VTextField
-            v-model="trackingNumber"
-            label="Search"
-            placeholder="Input Tracking Number"
-            append-inner-icon="ri-search-line"
-            density="comfortable"
-            hide-details
-            @click:append-inner="trackShipment"
-            @keyup.enter="trackShipment"
-          />
-        </VCard>
-        <VCard
-          class="pa-4 mb-4"
-          style="margin-block-start: 0;"
-        >
+        <VCard class="pa-4 mb-3 status-card">
           <div class="text-h6 font-weight-bold mb-3">
-            Riwayat Pembayaran
+            Status Pengajuan
           </div>
-          <VList>
-            <VListItem
-              v-for="(pay, i) in payments"
-              :key="i"
-              class="mb-2"
-              rounded
-            >
-              <VListItemTitle>
-                <span class="font-weight-bold">{{ pay.amount }}</span> - {{ pay.date }}
-              </VListItemTitle>
-              <VListItemSubtitle>
-                <span :class="pay.status === 'Success' ? 'text-success' : pay.status === 'Pending' ? 'text-warning' : 'text-error'">{{ pay.status }}</span>
-              </VListItemSubtitle>
-            </VListItem>
-          </VList>
+          <div class="status-grid">
+            <div class="status-item">
+              <div class="status-title">
+                Pra Yudisium
+              </div>
+              <div :class="statusPillClass(praSummary.statusLabel)">
+                {{ praSummary.statusLabel }}
+              </div>
+              <div class="status-subtitle">
+                {{ praSummary.subtitle }}
+              </div>
+              <VBtn
+                size="small"
+                variant="flat"
+                class="status-action"
+                @click="goTo('/pra-yudisium')"
+              >
+                Lihat Detail
+              </VBtn>
+            </div>
+            <div class="status-item">
+              <div class="status-title">
+                Validasi Ijazah
+              </div>
+              <div :class="statusPillClass(validasiSummary.statusLabel)">
+                {{ validasiSummary.statusLabel }}
+              </div>
+              <div class="status-subtitle">
+                {{ validasiSummary.subtitle }}
+              </div>
+              <VBtn
+                size="small"
+                variant="flat"
+                class="status-action"
+                @click="goTo('/validasi-ijazah')"
+              >
+                Lihat Detail
+              </VBtn>
+            </div>
+            <div class="status-item">
+              <div class="status-title">
+                Legalisasi
+              </div>
+              <div :class="statusPillClass(legalisasiSummary.statusLabel)">
+                {{ legalisasiSummary.statusLabel }}
+              </div>
+              <div class="status-subtitle">
+                {{ legalisasiSummary.subtitle }}
+              </div>
+              <VBtn
+                size="small"
+                variant="flat"
+                class="status-action"
+                @click="goTo('/pendaftaran-legalisasi')"
+              >
+                Lihat Detail
+              </VBtn>
+            </div>
+          </div>
         </VCard>
       </VCol>
       <!-- Notifications -->
@@ -411,9 +640,9 @@ const loadNotifications = async () => {
         <VCard
           class="pa-4 notification-card"
           elevation="2"
-          style="block-size: 625px;"
+          style="block-size: 455px;"
         >
-          <div class="d-flex align-center justify-space-between mb-2">
+          <div class="d-flex align-center justify-space-between mb-1">
             <div class="text-h6 font-weight-bold">
               Notifications
             </div>
@@ -453,6 +682,41 @@ const loadNotifications = async () => {
                 </VListItemTitle>
               </VListItem>
             </VList>
+          </div>
+        </VCard>
+      </VCol>
+    </VRow>
+    <VRow class="mb-0 row-tight">
+      <VCol cols="12">
+        <VCard class="pa-4 mb-3 nilai-card">
+          <div class="text-h6 font-weight-bold mb-3">
+            Distribusi Nilai
+          </div>
+          <div
+            v-if="nilaiLoading"
+            class="nilai-empty"
+          >
+            Memuat data nilai...
+          </div>
+          <div
+            v-else-if="nilaiError"
+            class="nilai-empty"
+          >
+            {{ nilaiError }}
+          </div>
+          <div
+            v-else-if="!chartItems.length"
+            class="nilai-empty"
+          >
+            Belum ada data nilai.
+          </div>
+          <div
+            v-else
+            class="nilai-chart"
+          >
+            <div class="nilai-canvas-wrap">
+              <canvas ref="chartCanvas" />
+            </div>
           </div>
         </VCard>
       </VCol>
@@ -499,50 +763,6 @@ const loadNotifications = async () => {
               </VListItemTitle>
             </VListItem>
           </VList>
-        </VCardText>
-      </VCard>
-    </VDialog>
-    <!-- Tracking Modal -->
-    <VDialog
-      v-model="showTrackingModal"
-      max-width="600"
-    >
-      <VCard class="pa-6 rounded-lg">
-        <VCardTitle class="d-flex align-center justify-space-between pe-4">
-          Tracking Details: {{ trackingResults ? trackingResults.trackingNumber : '' }}
-          <VBtn
-            icon="ri-close-line"
-            variant="text"
-            size="small"
-            @click="showTrackingModal = false"
-          />
-        </VCardTitle>
-        <VDivider />
-        <VCardText v-if="trackingResults">
-          <VTimeline
-            density="compact"
-            align="start"
-            line-inset="8"
-          >
-            <VTimelineItem
-              v-for="(event, i) in trackingResults.history"
-              :key="i"
-              :dot-color="event.status === 'Delivered' ? 'success' : event.status === 'In Transit' ? 'warning' : 'info'"
-              size="small"
-            >
-              <div class="d-flex justify-space-between flex-wrap text-no-wrap mb-2">
-                <div class="text-body-2 font-weight-bold">
-                  {{ event.status }}
-                </div>
-                <small class="text-caption text-no-wrap text-grey">
-                  {{ event.timestamp }}
-                </small>
-              </div>
-              <p class="text-caption mb-0">
-                {{ event.location }}
-              </p>
-            </VTimelineItem>
-          </VTimeline>
         </VCardText>
       </VCard>
     </VDialog>
@@ -645,9 +865,123 @@ const loadNotifications = async () => {
 }
 
 .notification-item :deep(.v-list-item-title) {
-  white-space: normal;
   overflow: visible;
   text-overflow: clip;
+  white-space: normal;
+}
+
+.status-card {
+  border-radius: 12px;
+}
+
+.nilai-card {
+  border-radius: 12px;
+}
+
+.nilai-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nilai-canvas-wrap {
+  position: relative;
+  block-size: 170px;
+  inline-size: 100%;
+}
+
+.nilai-empty {
+  color: rgba(var(--v-theme-on-surface), 0.6);
+  font-style: italic;
+}
+
+.status-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.row-tight {
+  margin-block-start: 0 !important;
+}
+
+.row-tight > .v-col {
+  padding-block-start: 0 !important;
+}
+
+.status-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  border-radius: 10px;
+  background: rgba(var(--v-theme-surface), 0.9);
+  gap: 10px;
+  min-block-size: 160px;
+  padding-block: 16px;
+  padding-inline: 16px;
+  text-align: center;
+}
+
+.status-title {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.status-subtitle {
+  color: rgba(var(--v-theme-on-surface), 0.7);
+  font-size: 0.9rem;
+  min-block-size: 40px;
+}
+
+.status-action {
+  align-self: center;
+  border-radius: 10px;
+  background: #17a2a6 !important;
+  box-shadow: 0 6px 12px rgba(23, 162, 166, 35%);
+  color: #fff !important;
+  font-weight: 600;
+  padding-inline: 18px;
+  text-transform: none;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding-block: 4px;
+  padding-inline: 10px;
+  text-transform: uppercase;
+}
+
+.status-success {
+  background: rgba(27, 196, 125, 15%);
+  color: #1bc47d;
+}
+
+.status-warning {
+  background: rgba(255, 193, 7, 18%);
+  color: #c58b00;
+}
+
+.status-info {
+  background: rgba(33, 150, 243, 12%);
+  color: #1a73c9;
+}
+
+.status-muted {
+  background: rgba(var(--v-theme-on-surface), 0.08);
+  color: rgba(var(--v-theme-on-surface), 0.6);
+}
+
+@media (max-width: 960px) {
+  .status-grid {
+    grid-template-columns: minmax(0, 1fr);
+    inline-size: 100%;
+  }
 }
 
 .v-dialog {

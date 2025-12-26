@@ -8,6 +8,7 @@ use App\Http\Controllers\MhSyaratController;
 use App\Http\Controllers\AkValidasiIjazahController;
 use App\Http\Controllers\AkValidasiIjazahCommentController;
 use App\Http\Controllers\PraYudisiumController;
+use App\Http\Controllers\NilaiKrsController;
 
 // API Routes untuk mengakses data dari database
 Route::prefix('api')->group(function () {
@@ -43,6 +44,9 @@ Route::prefix('api')->group(function () {
         // Route khusus untuk testing
         Route::get('comments/{id}', [AkValidasiIjazahCommentController::class, 'index']);
         Route::post('comments', [AkValidasiIjazahCommentController::class, 'store']);
+
+        // Nilai KRS (untuk grafik nilai mahasiswa)
+        Route::get('nilai-krs', [NilaiKrsController::class, 'index']);
 
         // Test endpoint sederhana
         Route::get('test-comments', function () {
