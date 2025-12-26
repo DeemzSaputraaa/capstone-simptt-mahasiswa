@@ -1,12 +1,14 @@
 
 <script setup>
 import axios from 'axios'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 const itemsPerPage = ref(5)
 const daftarValidasi = ref([])
 const loading = ref(false)
 const errorMessage = ref(null)
+const filterApprove = ref('all')
+const filterComment = ref('all')
 
 const commentDialog = ref(false)
 const selectedItem = ref(null)
@@ -15,6 +17,8 @@ const loadingComments = ref(false)
 const newComment = ref('')
 const savingComment = ref(false)
 const replyTo = ref(null)
+const replyText = ref('')
+const expandedReplies = ref({})
 
 const authHeaders = () => {
   const token = sessionStorage.getItem('jwt_token')
@@ -44,6 +48,29 @@ const formatDate = date => {
   const parsed = new Date(date)
   return Number.isNaN(parsed.getTime()) ? '-' : parsed.toLocaleDateString('id-ID')
 }
+
+const getSortDate = item => {
+  const raw = item?.last_comment_at || item?.create_at || item?.tgl_diambil_ijazah
+  const parsed = raw ? new Date(raw) : null
+  return parsed && !Number.isNaN(parsed.getTime()) ? parsed.getTime() : 0
+}
+
+const filteredValidasi = computed(() => {
+  const sorted = [...daftarValidasi.value].sort((a, b) => getSortDate(b) - getSortDate(a))
+
+  return sorted.filter(item => {
+    const isApproved = !!item?.is_validate
+    const hasComment = (item?.comment_count || 0) > 0
+
+    if (filterApprove.value === 'approved' && !isApproved) return false
+    if (filterApprove.value === 'pending' && isApproved) return false
+
+    if (filterComment.value === 'new' && !hasComment) return false
+    if (filterComment.value === 'none' && hasComment) return false
+
+    return true
+  })
+})
 
 const openChat = async item => {
   selectedItem.value = item
@@ -78,7 +105,7 @@ const submitComment = async () => {
     await axios.post('/api/comments', {
       comment: newComment.value,
       kdvalidasiijazahmahasiswa: selectedItem.value.kdvalidasiijazahmahasiswa,
-      parent_id: replyTo.value?.id ?? null,
+      parent_id: null,
     }, {
       headers: {
         Accept: 'application/json',
@@ -88,6 +115,7 @@ const submitComment = async () => {
     })
     newComment.value = ''
     replyTo.value = null
+    replyText.value = ''
     await fetchComments(selectedItem.value)
   } catch (err) {
     errorMessage.value = 'Gagal mengirim komentar'
@@ -98,7 +126,52 @@ const submitComment = async () => {
 
 const startReply = comment => {
   replyTo.value = comment
+  replyText.value = ''
   commentDialog.value = true
+}
+
+const submitReply = async () => {
+  if (!replyTo.value || !replyText.value || !selectedItem.value) return
+  savingComment.value = true
+  errorMessage.value = null
+  try {
+    await axios.post('/api/comments', {
+      comment: replyText.value,
+      kdvalidasiijazahmahasiswa: selectedItem.value.kdvalidasiijazahmahasiswa,
+      parent_id: replyTo.value.id,
+    }, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        ...authHeaders(),
+      },
+    })
+    replyText.value = ''
+    replyTo.value = null
+    await fetchComments(selectedItem.value)
+  } catch (err) {
+    errorMessage.value = 'Gagal mengirim balasan'
+  } finally {
+    savingComment.value = false
+  }
+}
+
+const isReplyTarget = comment => replyTo.value?.id === comment?.id
+
+const toggleReplies = comment => {
+  if (!comment?.id) return
+  expandedReplies.value = {
+    ...expandedReplies.value,
+    [comment.id]: !expandedReplies.value[comment.id],
+  }
+}
+
+const isRepliesExpanded = comment => {
+  if (!comment?.id) return false
+  if (expandedReplies.value[comment.id] !== undefined)
+    return expandedReplies.value[comment.id]
+
+  return false
 }
 
 const getInitial = name => {
@@ -116,7 +189,34 @@ onMounted(() => {
     <VCardTitle class="admin-card-title">
       Validasi Ijazah & Transkrip
     </VCardTitle>
-    <VCardSubtitle>Daftar pengajuan validasi</VCardSubtitle>
+    <div class="validasi-filters">
+      <div class="filter-item">
+        <span>Status Approve</span>
+        <VSelect
+          v-model="filterApprove"
+          :items="[
+            { title: 'Semua', value: 'all' },
+            { title: 'Approved', value: 'approved' },
+            { title: 'Belum', value: 'pending' },
+          ]"
+          density="compact"
+          style="max-inline-size: 160px;"
+        />
+      </div>
+      <div class="filter-item">
+        <span>Komentar Baru</span>
+        <VSelect
+          v-model="filterComment"
+          :items="[
+            { title: 'Semua', value: 'all' },
+            { title: 'Ada', value: 'new' },
+            { title: 'Tidak Ada', value: 'none' },
+          ]"
+          density="compact"
+          style="max-inline-size: 160px;"
+        />
+      </div>
+    </div>
 
     <div
       v-if="errorMessage"
@@ -148,7 +248,7 @@ onMounted(() => {
               Memuat data...
             </td>
           </tr>
-          <tr v-else-if="!daftarValidasi.length">
+          <tr v-else-if="!filteredValidasi.length">
             <td
               colspan="6"
               class="text-center py-6"
@@ -158,7 +258,7 @@ onMounted(() => {
           </tr>
           <tr
             v-else
-            v-for="(m, i) in daftarValidasi.slice(0, itemsPerPage)"
+            v-for="(m, i) in filteredValidasi.slice(0, itemsPerPage)"
             :key="m.kdvalidasiijazahmahasiswa ?? m.nim ?? i"
           >
             <td data-label="No">{{ i + 1 }}</td>
@@ -223,7 +323,7 @@ onMounted(() => {
 
   <VDialog
     v-model="commentDialog"
-    max-width="640"
+    max-width="980"
   >
     <VCard>
       <VCardTitle class="comment-title">
@@ -251,22 +351,6 @@ onMounted(() => {
             @click="submitComment"
           >
             Kirim
-          </VBtn>
-        </div>
-
-        <div
-          v-if="replyTo"
-          class="reply-hint"
-        >
-          Balas komentar: <strong>{{ replyTo.user }}</strong> "{{ replyTo.text }}"
-          <VBtn
-            size="x-small"
-            variant="text"
-            color="secondary"
-            class="ms-2"
-            @click="replyTo = null"
-          >
-            batal
           </VBtn>
         </div>
 
@@ -304,6 +388,46 @@ onMounted(() => {
                   >
                     Balas
                   </VBtn>
+                  <VBtn
+                    v-if="(c.replies || []).length > 1"
+                    size="x-small"
+                    variant="text"
+                    color="secondary"
+                    @click="toggleReplies(c)"
+                  >
+                    {{ isRepliesExpanded(c) ? 'Sembunyikan' : 'Tampilkan semua' }}
+                  </VBtn>
+                </div>
+                <div
+                  v-if="isReplyTarget(c)"
+                  class="reply-input"
+                >
+                  <VTextarea
+                    v-model="replyText"
+                    auto-grow
+                    rows="1"
+                    hide-details
+                    placeholder="Tulis balasan..."
+                    class="reply-input-field"
+                  />
+                  <div class="reply-actions">
+                    <VBtn
+                      size="x-small"
+                      variant="text"
+                      color="secondary"
+                      @click="replyTo = null"
+                    >
+                      Batal
+                    </VBtn>
+                    <VBtn
+                      size="x-small"
+                      color="success"
+                      :loading="savingComment"
+                      @click="submitReply"
+                    >
+                      Kirim
+                    </VBtn>
+                  </div>
                 </div>
 
                 <div
@@ -311,7 +435,9 @@ onMounted(() => {
                   class="comment-replies"
                 >
                   <div
-                    v-for="r in c.replies"
+                    v-for="r in ((c.replies || []).length > 1
+                      ? (isRepliesExpanded(c) ? c.replies : [])
+                      : c.replies)"
                     :key="r.id"
                     class="comment-row reply"
                   >
@@ -330,6 +456,37 @@ onMounted(() => {
                         >
                           Balas
                         </VBtn>
+                      </div>
+                      <div
+                        v-if="isReplyTarget(r)"
+                        class="reply-input"
+                      >
+                        <VTextarea
+                          v-model="replyText"
+                          auto-grow
+                          rows="1"
+                          hide-details
+                          placeholder="Tulis balasan..."
+                          class="reply-input-field"
+                        />
+                        <div class="reply-actions">
+                          <VBtn
+                            size="x-small"
+                            variant="text"
+                            color="secondary"
+                            @click="replyTo = null"
+                          >
+                            Batal
+                          </VBtn>
+                          <VBtn
+                            size="x-small"
+                            color="success"
+                            :loading="savingComment"
+                            @click="submitReply"
+                          >
+                            Kirim
+                          </VBtn>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -375,6 +532,21 @@ onMounted(() => {
   color: rgba(var(--v-theme-on-surface), 0.7) !important;
   padding-block: 0.5rem !important;
   padding-inline: 1.5rem !important;
+}
+
+.validasi-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  padding-block: 12px 16px;
+  padding-inline: 20px;
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .error-box {
@@ -584,21 +756,28 @@ onMounted(() => {
   margin-top: 4px;
 }
 
+.reply-input {
+  margin-top: 8px;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(var(--v-theme-on-surface), 0.04);
+}
+
+.reply-input-field {
+  margin-bottom: 8px;
+}
+
+.reply-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
 .comment-replies {
   display: flex;
   flex-direction: column;
   gap: 8px;
   margin-top: 8px;
-}
-
-.reply-hint {
-  margin-top: 8px;
-  margin-bottom: 12px;
-  padding: 8px 10px;
-  border-radius: 6px;
-  background: rgba(var(--v-theme-primary), 0.08);
-  color: rgba(var(--v-theme-on-surface), 0.8);
-  font-size: 0.9rem;
 }
 
 .comment-actions-footer {
