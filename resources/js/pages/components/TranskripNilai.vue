@@ -1,20 +1,21 @@
 <template>
   <div class="position-relative mb-6">
     <div class="transcript-wrapper">
-      <div class="transcript-preview pa-6">
+      <div class="transcript-preview pa-6 position-relative">
+        <!-- Tombol PDF dipindahkan ke luar border -->
+        <VBtn
+          color="primary"
+          icon
+          class="view-pdf-btn"
+          @click="openPdfViewer"
+        >
+          <VIcon>mdi-file-pdf-box</VIcon>
+        </VBtn>
         <div class="transkrip-pdf">
-          <!-- Tombol PDF dipindah ke sini -->
-          <VBtn
-            color="primary"
-            icon
-            class="view-pdf-btn"
-            @click="openPdfViewer"
-          >
-            <VIcon>mdi-file-pdf-box</VIcon>
-          </VBtn>
         
         
           <div class="transkrip-header">
+            <div></div>
             <div class="transkrip-info-center">
               <div class="info-row">
                 <span class="info-label-center">NIM/NAMA LENGKAP</span>
@@ -98,6 +99,13 @@
                   style="font-size: 6pt;"
                 >Accredited "Very Good" by LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 on March 19, 2024.</span>
               </div>
+            </div>
+            <div class="transkrip-nomor" aria-hidden="false">
+              <div class="nomor-row">
+                <div class="nomor-label">Nomor Ijazah Nasional :</div>
+                <div class="nomor-value-box">05102259012021/500002</div>
+              </div>
+              <div class="nomor-sublabel italic-text">National Certificate Number</div>
             </div>
           </div>
 
@@ -503,13 +511,6 @@ const openPdfViewer = async () => {
     transform: scale(0.8);
     transform-origin: top center;
   }
-}
-
-@media screen and (max-width: 768px) {
-  .transkrip-pdf {
-    transform: scale(0.7);
-    transform-origin: top center;
-  }
 
   .transkrip-info-center {
     justify-self: center;
@@ -544,7 +545,7 @@ const openPdfViewer = async () => {
 
 /* Memastikan container utama tidak melebihi viewport */
 .transcript-preview {
-  overflow: hidden;
+  overflow: visible;
   max-inline-size: 100vw;
 }
 
@@ -562,28 +563,28 @@ const openPdfViewer = async () => {
   display: flex;
   overflow: auto hidden;
   justify-content: center;
-  background: #f5f5f5;
+  background: #fff;
   margin-inline: calc(-1 * var(--v-container-padding-x, 24px));
   -webkit-overflow-scrolling: touch;
-  padding-block: 20px;
+  padding-block: 8px;
   scrollbar-width: thin;
 }
 
 /* Preview container dengan background putih landscape */
 .transcript-preview {
   display: inline-block;
+  overflow: visible; /* allow absolutely positioned buttons to extend outside */
   background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 10%);
+  box-shadow: none;
   max-inline-size: 100%;
   min-inline-size: fit-content;
-  overflow-x: auto;
-  padding-block: 24px;
-  padding-inline: 24px;
+  padding-block: 8px;
+  padding-inline: 20px;
 }
 
 .transkrip-pdf {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   box-sizing: border-box;
   border: 1px solid #000;
   background: #fff;
@@ -614,7 +615,7 @@ const openPdfViewer = async () => {
   font-size: 6.5pt;
   grid-column: 2;
   line-height: 1.2;
-  margin-inline-start: 0;
+  margin-inline-start: 60px;
   text-align: start;
 }
 
@@ -653,47 +654,49 @@ const openPdfViewer = async () => {
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   font-size: 7pt;
+  inline-size: 240px;
   line-height: 1.2;
   margin-inline-start: 70px;
-  min-inline-size: 190px;
+  min-inline-size: 240px;
+}
+
+.nomor-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: 8px;
+  inline-size: 100%;
 }
 
 .nomor-label {
-  flex: 1;
   font-size: 7pt;
   font-weight: bold;
   text-align: start;
-}
-
-.nomor-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  inline-size: 100%;
-  margin-block-end: 2px;
-}
-
-.nomor-sublabel {
-  display: block;
-  font-size: 6.5 pt;
-  inline-size: 100%;
-  margin-block-start: 1px;
+  white-space: nowrap;
 }
 
 .nomor-value-box {
   display: inline-block;
   font-size: 8pt;
   font-weight: normal;
-  padding-block: 3px;
-  padding-inline: 6px;
-  text-align: center;
+  padding-block: 0;
+  padding-inline: 0;
+  text-align: start;
+}
+
+.nomor-sublabel {
+  font-size: 6pt;
+  font-style: italic;
+  inline-size: 100%;
+  margin-block-start: 4px;
+  text-align: start;
 }
 
 .transkrip-tables {
   display: grid;
-  align-items: stretch;
+  align-items: flex-start;
   gap: 4px;
   grid-template-columns: repeat(3, minmax(260px, 1fr));
   inline-size: 100%;
@@ -903,21 +906,21 @@ const openPdfViewer = async () => {
 .judul-ta {
   font-size: 6.5pt;
   line-height: 1.15;
-  margin-block-end: 6px;
+  margin-block-end: 10px;
   text-align: center;
 }
 
 .ta-ttd-cell {
-  min-block-size: 360px;
+  min-block-size: 120px;
   padding-block: 12px;
-  padding-inline: 14px;
+  padding-inline: 140px;
 }
 
 .ta-ttd-content {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 12px;
+  gap: -20px;
   inline-size: 100%;
   min-block-size: 100%;
 }
@@ -928,7 +931,7 @@ const openPdfViewer = async () => {
   align-items: center;
   gap: 8px;
   margin-block-start: auto;
-  padding-block-start: 40px;
+  padding-block-start: 195px;
 }
 
 .ta-section {
@@ -955,7 +958,7 @@ const openPdfViewer = async () => {
   font-size: 6.5pt;
   font-weight: bold;
   line-height: 1.2;
-  margin-block-start: 28px;
+  margin-block-start: -8px;
   text-align: center;
 }
 
@@ -963,12 +966,12 @@ const openPdfViewer = async () => {
   font-size: 6.5pt;
   font-weight: bold;
   line-height: 1.25;
-  margin-block-start: 22px;
+  margin-block-start: 9px;
   text-align: center;
 }
 
 .nama {
-  font-size: 6.5pt;
+  font-size: pt;
   font-weight: bold;
   line-height: 1.25;
   margin-block-start: 50px;
@@ -1027,9 +1030,9 @@ const openPdfViewer = async () => {
 
 .view-pdf-btn {
   position: absolute;
-  z-index: 1;
-  inset-block-start: 20px;
-  inset-inline-end: 20px;
+  z-index: 999;
+  inset-block-start: -50px; /* lift above the paper border */
+  inset-inline-end: 40px;
 }
 
 /* Tambahkan style untuk tooltip */

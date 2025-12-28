@@ -1,21 +1,29 @@
 <template>
   <div class="position-relative mb-6">
     <div class="draft-wrapper">
-      <div class="draft-ijazah-preview">
-        Draft Ijazah
-        <!-- Pindahkan tombol ke dalam draft-ijazah-pdf -->
+      <div class="draft-ijazah-preview position-relative">
+        <!-- Tombol PDF dipindahkan ke luar border -->
+        <VBtn
+          color="primary"
+          icon
+          class="view-pdf-btn"
+          @click="openPdfViewer"
+        >
+          <VIcon>mdi-square-edit-outline</VIcon>
+        </VBtn>
         <div class="draft-ijazah-pdf">
-          <!-- Tombol PDF dipindah ke sini -->
-          <VBtn
-            color="primary"
-            icon
-            class="view-pdf-btn"
-            @click="openPdfViewer"
-          >
-            <VIcon>mdi-square-edit-outline</VIcon>  <!-- ← EDIT BOX ICON -->
-          </VBtn>
-        
           <!-- Existing draft ijazah content -->
+
+          <!-- Nomor Ijazah Nasional (aligned label + value, with English sublabel) -->
+          <div class="ijazah-nomor-top" aria-hidden="false">
+            <div class="nomor-container">
+              <div class="nomor-row">
+                <div class="nomor-labels">Nomor Ijazah Nasional :</div>
+                <div class="nomor-value">05102259012021/500002</div>
+              </div>
+              <div class="nomor-sublabel italic-text">National Certificate Number</div>
+            </div>
+          </div>
 
           <div class="ijazah-header">
             <div class="ijazah-title">
@@ -339,7 +347,7 @@ const columns = computed(() => {
 
 .draft-ijazah-pdf {
   position: relative;
-  overflow: hidden;
+  overflow: visible; /* allow button to extend outside the paper border */
   box-sizing: border-box;
   border: 2px solid #000;
   background: #fff;
@@ -359,15 +367,25 @@ const columns = computed(() => {
 }
 
 .ijazah-nomor-top {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   margin-block-end: 15px;
   margin-inline-start: 480px;
 }
 
 .ijazah-nomor-top .nomor-container {
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
+}
+
+.ijazah-nomor-top .nomor-row {
+  display: flex;
+  align-items: baseline;
   justify-content: flex-start;
-  gap: 30px;
+  gap: 18px;
+  inline-size: 100%;
 }
 
 .ijazah-nomor-top .nomor-labels {
@@ -392,6 +410,17 @@ const columns = computed(() => {
   font-weight: normal;
   min-inline-size: 180px;
   padding-block-start: 0;
+  text-align: start;
+}
+
+.ijazah-nomor-top .nomor-sublabel {
+  display: block;
+  font-size: 7pt;
+  font-style: italic;
+  margin-block-start: 4px;
+
+  /* Geser sedikit ke kanan agar sejajar dengan value di atasnya */
+  margin-inline-start: 90px;
   text-align: start;
 }
 
@@ -549,9 +578,9 @@ const columns = computed(() => {
 
 .view-pdf-btn {
   position: absolute;
-  z-index: 1;
-  inset-block-start: 20px;
-  inset-inline-end: 20px;
+  z-index: 999;
+  inset-block-start: -50px; /* lift above border */
+  inset-inline-end: 30px;
 }
 
 .empty-row td {
