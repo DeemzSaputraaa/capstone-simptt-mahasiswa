@@ -42,6 +42,17 @@
         </VIcon>
         Balas
       </VBtn>
+
+      <VBtn
+        v-if="shouldCollapseReplies"
+        text
+        :size="buttonSize"
+        color="secondary"
+        class="reply-btn-mr"
+        @click="toggleReplies"
+      >
+        {{ isRepliesVisible ? 'Sembunyikan' : 'Tampilkan semua' }}
+      </VBtn>
     </VCardText>
 
     <!-- Reply Form -->
@@ -79,7 +90,7 @@
 
     <!-- Nested Replies -->
     <div
-      v-if="comment.replies && comment.replies.length > 0"
+      v-if="comment.replies && comment.replies.length > 0 && isRepliesVisible"
       class="nested-reply-container"
     >
       <CommentItem
@@ -90,6 +101,7 @@
         :max-depth="maxDepth"
         :current-user="currentUser"
         @add-reply="handleAddReply"
+        @submit-reply="handleSubmitReply"
       />
     </div>
   </VCard>
@@ -122,6 +134,7 @@ export default {
   setup(props, { emit }) {
     const showReply = ref(false)
     const newReplyText = ref('')
+    const showAllReplies = ref(false)
 
     // Hitung ukuran komponen berdasarkan depth
     const avatarSize = computed(() => {
@@ -140,6 +153,18 @@ export default {
     })
 
     const isNested = computed(() => props.depth > 0)
+
+    const countReplies = replies => {
+      if (!Array.isArray(replies) || !replies.length) return 0
+      return replies.reduce((total, reply) => {
+        const childReplies = countReplies(reply.replies)
+        return total + 1 + childReplies
+      }, 0)
+    }
+
+    const totalReplies = computed(() => countReplies(props.comment?.replies))
+    const shouldCollapseReplies = computed(() => props.depth === 0 && totalReplies.value > 1)
+    const isRepliesVisible = computed(() => !shouldCollapseReplies.value || showAllReplies.value)
 
     const formatDate = date => {
       return new Intl.DateTimeFormat('id-ID', {
@@ -160,6 +185,10 @@ export default {
       newReplyText.value = ''
     }
 
+    const toggleReplies = () => {
+      showAllReplies.value = !showAllReplies.value
+    }
+
     const submitReply = () => {
       if (!newReplyText.value.trim()) return
 
@@ -176,18 +205,28 @@ export default {
       emit('add-reply', parentId, replyData)
     }
 
+    const handleSubmitReply = payload => {
+      emit('submit-reply', payload)
+    }
+
     return {
       showReply,
       newReplyText,
+      showAllReplies,
       avatarSize,
       buttonSize,
       iconSize,
       isNested,
+      totalReplies,
+      shouldCollapseReplies,
+      isRepliesVisible,
       formatDate,
       showReplyForm,
       cancelReply,
+      toggleReplies,
       submitReply,
       handleAddReply,
+      handleSubmitReply,
     }
   },
 }

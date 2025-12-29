@@ -74,10 +74,31 @@ class AkValidasiIjazahCommentController extends Controller
                 return response()->json(['error' => 'Validasi ijazah tidak ditemukan untuk pengguna ini'], 404);
             }
 
+            $payload = $request->attributes->get('jwt_payload', []);
+            $role = $payload['role'] ?? $payload['login_as'] ?? $payload['loginas'] ?? null;
+            $userType = $role === 'tendik' ? 'tendik' : 'mahasiswa';
+            $userId = $payload['id'] ?? $payload['username'] ?? $payload['nim'] ?? null;
+            $parentId = $validated['parent_id'] ?? null;
+
+            if (!$userId) {
+                return response()->json(['error' => 'User tidak terautentikasi'], 401);
+            }
+
+            if ($userType === 'mahasiswa' && is_null($parentId)) {
+                AkValidasiIjazahMahasiswa::where('kdvalidasiijazahmahasiswa', $resolvedValidasiId)
+                    ->update([
+                        'is_ijazah_validate' => false,
+                        'is_transkrip_validate' => false,
+                    ]);
+            }
+
             $dataToStore = [
                 'kdvalidasiijazahmahasiswa' => $resolvedValidasiId,
                 'parent_id' => $validated['parent_id'] ?? null,
+                'user_id' => $userId,
+                'user_type' => $userType,
                 'comment' => $validated['comment'],
+                'is_edited' => false,
                 'create_at' => now(),
                 'update_at' => now(),
             ];
@@ -152,9 +173,11 @@ class AkValidasiIjazahCommentController extends Controller
         return $replies->map(function ($reply) {
             return [
                 'id' => $reply->getKey(),
+                'parent_id' => $reply->parent_id,
                 'user' => $this->resolveCommenterName($reply),
                 'text' => $reply->comment,
                 'date' => optional($reply->create_at ?? $reply->created_at ?? now())->toDateTimeString(),
+                'user_type' => $reply->user_type ?? null,
                 'replies' => $this->transformReplies($reply->replies ?? collect()),
             ];
         });
@@ -167,9 +190,11 @@ class AkValidasiIjazahCommentController extends Controller
     {
         return [
             'id' => $comment->getKey(),
+            'parent_id' => $comment->parent_id,
             'user' => $this->resolveCommenterName($comment),
             'text' => $comment->comment ?? '',
             'date' => optional($comment->create_at ?? $comment->created_at ?? now())->toDateTimeString(),
+            'user_type' => $comment->user_type ?? null,
             'replies' => $this->transformReplies($comment->replies ?? collect()),
         ];
     }
@@ -179,8 +204,9 @@ class AkValidasiIjazahCommentController extends Controller
      */
     private function resolveCommenterName(AkValidasiIjazahMahasiswaComment $comment): string
     {
-        // Jika ini balasan (parent_id ada) tanpa penanda, fallback Admin
-        if (!is_null($comment->parent_id)) {
+        $userType = $comment->user_type ?? null;
+
+        if ($userType === 'tendik') {
             return 'Admin';
         }
 
@@ -200,6 +226,12 @@ class AkValidasiIjazahCommentController extends Controller
             $kdMahasiswa = $comment->validasiIjazah->kdmahasiswa;
         } else {
             $kdMahasiswa = AkValidasiIjazahMahasiswa::where('kdvalidasiijazahmahasiswa', $comment->kdvalidasiijazahmahasiswa)
+                ->value('kdmahasiswa');
+        }
+
+        if (!$kdMahasiswa && $comment->user_id) {
+            $kdMahasiswa = DB::table('mh_v_nama')
+                ->where('nim', $comment->user_id)
                 ->value('kdmahasiswa');
         }
 

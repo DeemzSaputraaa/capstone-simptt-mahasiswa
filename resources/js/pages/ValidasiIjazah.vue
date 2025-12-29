@@ -812,19 +812,20 @@ export default {
       showPdfViewer.value = true
     }
 
-    return {
-      form,
-      fileStatus,
-      updateFileStatus,
-      comments,
-      newComment,
-      addComment,
-      handleAddReply,
-      formatDate,
-      showValidationModal,
-      validationMessage,
-      handleSubmit,
-      openInNewTab,
+      return {
+        form,
+        fileStatus,
+        updateFileStatus,
+        comments,
+        newComment,
+        addComment,
+        handleAddReply,
+        handleSubmitReply,
+        formatDate,
+        showValidationModal,
+        validationMessage,
+        handleSubmit,
+        openInNewTab,
       user,
       ijazahPreview,
       transcriptPreview,

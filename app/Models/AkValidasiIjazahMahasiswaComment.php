@@ -21,7 +21,10 @@ class AkValidasiIjazahMahasiswaComment extends Model
     protected $fillable = [
         'kdvalidasiijazahmahasiswa',
         'parent_id',
+        'user_id',
+        'user_type',
         'comment',
+        'is_edited',
         'create_at',
         'update_at',
         'delete_at',

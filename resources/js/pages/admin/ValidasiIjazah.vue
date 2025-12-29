@@ -59,7 +59,7 @@ const filteredValidasi = computed(() => {
   const sorted = [...daftarValidasi.value].sort((a, b) => getSortDate(b) - getSortDate(a))
 
   return sorted.filter(item => {
-    const isApproved = !!item?.is_validate
+    const isApproved = !!item?.is_ijazah_validate && !!item?.is_transkrip_validate
     const hasComment = (item?.comment_count || 0) > 0
 
     if (filterApprove.value === 'approved' && !isApproved) return false
@@ -71,6 +71,87 @@ const filteredValidasi = computed(() => {
     return true
   })
 })
+
+const normalizeId = value => {
+  if (value === null || value === undefined) return null
+  const normalized = String(value).trim()
+  return normalized === '' ? null : normalized
+}
+
+const flattenComments = (items, parentId = null) => {
+  if (!Array.isArray(items)) return []
+  const flat = []
+
+  items.forEach(item => {
+    const replies = Array.isArray(item.replies) ? item.replies : []
+    const normalizedId = normalizeId(item?.id ?? item?.kdcomment ?? item?.comment_id)
+    const normalizedParentId = normalizeId(item?.parent_id ?? item?.parentId ?? parentId)
+    const normalized = {
+      ...item,
+      id: normalizedId,
+      parent_id: normalizedParentId,
+      replies: [],
+    }
+    flat.push(normalized)
+    flat.push(...flattenComments(replies, normalizedId))
+  })
+
+  return flat
+}
+
+const buildCommentTree = items => {
+  if (!Array.isArray(items)) return []
+
+  const flat = flattenComments(items)
+  if (!flat.length) return []
+
+  const byId = new Map()
+  flat.forEach(item => {
+    if (item?.id !== undefined && item?.id !== null)
+      byId.set(item.id, { ...item, replies: [] })
+  })
+
+  const roots = []
+  byId.forEach(node => {
+    if (node.parent_id !== null && node.parent_id !== undefined && byId.has(node.parent_id)) {
+      byId.get(node.parent_id).replies.push(node)
+    } else {
+      roots.push(node)
+    }
+  })
+
+  return roots
+}
+
+const commentTree = computed(() => buildCommentTree(comments.value))
+
+const countReplies = replies => {
+  if (!Array.isArray(replies) || !replies.length) return 0
+  return replies.reduce((total, reply) => {
+    const childReplies = countReplies(reply.replies)
+    return total + 1 + childReplies
+  }, 0)
+}
+
+const buildVisibleComments = (items, depth = 0) => {
+  if (!Array.isArray(items)) return []
+  const result = []
+
+  items.forEach(item => {
+    const replies = Array.isArray(item.replies) ? item.replies : []
+    const replyCount = countReplies(replies)
+
+    result.push({ ...item, depth, replyCount })
+    if (!replyCount) return
+    if (depth === 0 && replyCount > 1 && !expandedReplies.value[item.id]) return
+
+    result.push(...buildVisibleComments(replies, depth + 1))
+  })
+
+  return result
+}
+
+const visibleComments = computed(() => buildVisibleComments(commentTree.value))
 
 const openChat = async item => {
   selectedItem.value = item
@@ -359,7 +440,7 @@ onMounted(() => {
         </div>
         <div v-else>
           <div
-            v-if="comments.length === 0"
+            v-if="visibleComments.length === 0"
             class="comment-empty"
           >
             Belum ada komentar
@@ -369,12 +450,16 @@ onMounted(() => {
             class="comment-list"
           >
             <div
-              v-for="c in comments"
+              v-for="c in visibleComments"
               :key="c.id"
               class="comment-row"
+              :class="{ reply: c.depth > 0 }"
+              :style="{ marginLeft: `${c.depth * 24}px` }"
             >
               <div class="comment-avatar">{{ getInitial(c.user) }}</div>
-              <div class="comment-body">
+              <div
+                class="comment-body"
+              >
                 <div class="comment-user">{{ c.user }}</div>
                 <div class="comment-text">
                   {{ c.text }}
@@ -389,7 +474,7 @@ onMounted(() => {
                     Balas
                   </VBtn>
                   <VBtn
-                    v-if="(c.replies || []).length > 1"
+                    v-if="c.depth === 0 && (c.replyCount || 0) > 1"
                     size="x-small"
                     variant="text"
                     color="secondary"
@@ -427,68 +512,6 @@ onMounted(() => {
                     >
                       Kirim
                     </VBtn>
-                  </div>
-                </div>
-
-                <div
-                  v-if="c.replies && c.replies.length"
-                  class="comment-replies"
-                >
-                  <div
-                    v-for="r in ((c.replies || []).length > 1
-                      ? (isRepliesExpanded(c) ? c.replies : [])
-                      : c.replies)"
-                    :key="r.id"
-                    class="comment-row reply"
-                  >
-                    <div class="comment-avatar">{{ getInitial(r.user) }}</div>
-                    <div class="comment-body">
-                      <div class="comment-user">{{ r.user }}</div>
-                      <div class="comment-text">
-                        {{ r.text }}
-                      </div>
-                      <div class="comment-actions">
-                        <VBtn
-                          size="x-small"
-                          variant="text"
-                          color="secondary"
-                          @click="startReply(r)"
-                        >
-                          Balas
-                        </VBtn>
-                      </div>
-                      <div
-                        v-if="isReplyTarget(r)"
-                        class="reply-input"
-                      >
-                        <VTextarea
-                          v-model="replyText"
-                          auto-grow
-                          rows="1"
-                          hide-details
-                          placeholder="Tulis balasan..."
-                          class="reply-input-field"
-                        />
-                        <div class="reply-actions">
-                          <VBtn
-                            size="x-small"
-                            variant="text"
-                            color="secondary"
-                            @click="replyTo = null"
-                          >
-                            Batal
-                          </VBtn>
-                          <VBtn
-                            size="x-small"
-                            color="success"
-                            :loading="savingComment"
-                            @click="submitReply"
-                          >
-                            Kirim
-                          </VBtn>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -784,3 +807,4 @@ onMounted(() => {
   padding-top: 0;
 }
 </style>
+
