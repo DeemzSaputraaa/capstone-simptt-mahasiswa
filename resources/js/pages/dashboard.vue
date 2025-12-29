@@ -182,6 +182,18 @@ const setValidasiSummary = records => {
   }
 }
 
+const flattenCommentTree = (items, flattened = []) => {
+  if (!Array.isArray(items)) return flattened
+
+  items.forEach(item => {
+    flattened.push(item)
+    if (Array.isArray(item.replies) && item.replies.length)
+      flattenCommentTree(item.replies, flattened)
+  })
+
+  return flattened
+}
+
 const setLegalisasiSummary = records => {
   if (!records.length) {
     legalisasiSummary.value = { ...defaultSummary }
@@ -490,19 +502,40 @@ const loadNotifications = async () => {
         const validasiRecords = validasiData.filter(item => item.nim === userNim.value || String(item.kdmahasiswa) === String(userNim.value))
 
         setValidasiSummary(validasiRecords)
-        validasiNotifications = validasiData
-          .filter(item => item.nim === userNim.value || String(item.kdmahasiswa) === String(userNim.value))
-          .filter(item => !!item.last_admin_comment_text)
-          .map(item => ({
-            id: `validasi-${item.kdvalidasiijazahmahasiswa}`,
-            icon: 'ri-chat-3-line',
-            color: 'info',
-            title: item.last_admin_comment_text,
-            type: 'validasi-ijazah',
-            route: '/validasi-ijazah',
-            dataId: item.kdvalidasiijazahmahasiswa,
-            comment: item.last_admin_comment_text,
-          }))
+
+        const notifItems = []
+        await Promise.all(validasiRecords.map(async record => {
+          const recordId = record?.kdvalidasiijazahmahasiswa
+          if (!recordId) return
+          try {
+            const resComments = await fetch(`/api/comments/${recordId}`, { headers })
+            if (!resComments.ok) return
+            const commentJson = await resComments.json()
+            const flat = flattenCommentTree(Array.isArray(commentJson) ? commentJson : [])
+            flat
+              .filter(comment => comment?.user_type === 'tendik')
+              .forEach(comment => {
+                const title = comment?.text || comment?.comment || 'Komentar admin'
+                notifItems.push({
+                  id: `validasi-${recordId}-${comment?.id ?? Date.now()}`,
+                  icon: 'ri-chat-3-line',
+                  color: 'info',
+                  title,
+                  type: 'validasi-ijazah',
+                  route: '/validasi-ijazah',
+                  dataId: recordId,
+                  comment: title,
+                  sortDate: comment?.date || comment?.create_at || comment?.created_at || null,
+                })
+              })
+          } catch (err) {
+            console.error('Gagal memuat komentar validasi ijazah', err)
+          }
+        }))
+
+        validasiNotifications = notifItems
+          .sort((a, b) => new Date(b.sortDate || 0) - new Date(a.sortDate || 0))
+          .map(({ sortDate, ...item }) => item)
       }
     } catch (err) {
       console.error('Gagal memuat notifikasi validasi ijazah', err)
