@@ -2,15 +2,19 @@
   <div class="position-relative mb-6">
     <div class="draft-wrapper">
       <div class="draft-ijazah-preview position-relative">
-        <!-- Tombol PDF dipindahkan ke luar border -->
-        <VBtn
-          color="primary"
-          icon
-          class="view-pdf-btn"
-          @click="openPdfViewer"
-        >
-          <VIcon>mdi-square-edit-outline</VIcon>
-        </VBtn>
+        <div class="draft-toolbar">
+          <div class="draft-title">
+            Draft Ijazah
+          </div>
+          <VBtn
+            color="primary"
+            icon
+            class="view-pdf-btn"
+            @click="openPdfViewer"
+          >
+            <VIcon>ri-external-link-line</VIcon>
+          </VBtn>
+        </div>
         <div class="draft-ijazah-pdf">
           <!-- Existing draft ijazah content -->
 
@@ -345,6 +349,23 @@ const columns = computed(() => {
   padding-inline: 20px;
 }
 
+.draft-toolbar {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  inset-block-start: -52px;
+  inset-inline: 0;
+  padding-inline: 24px;
+}
+
+.draft-title {
+  color: #0f172a;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
 .draft-ijazah-pdf {
   position: relative;
   overflow: visible; /* allow button to extend outside the paper border */
@@ -577,10 +598,7 @@ const columns = computed(() => {
 }
 
 .view-pdf-btn {
-  position: absolute;
   z-index: 999;
-  inset-block-start: -50px; /* lift above border */
-  inset-inline-end: 30px;
 }
 
 .empty-row td {

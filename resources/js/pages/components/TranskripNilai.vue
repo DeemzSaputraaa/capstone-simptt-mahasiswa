@@ -2,15 +2,19 @@
   <div class="position-relative mb-6">
     <div class="transcript-wrapper">
       <div class="transcript-preview pa-6 position-relative">
-        <!-- Tombol PDF dipindahkan ke luar border -->
-        <VBtn
-          color="primary"
-          icon
-          class="view-pdf-btn"
-          @click="openPdfViewer"
-        >
-          <VIcon>mdi-file-pdf-box</VIcon>
-        </VBtn>
+        <div class="transcript-toolbar">
+          <div class="transcript-title">
+            Transkrip Nilai
+          </div>
+          <VBtn
+            color="primary"
+            icon
+            class="view-pdf-btn"
+            @click="openPdfViewer"
+          >
+            <VIcon>ri-external-link-line</VIcon>
+          </VBtn>
+        </div>
         <div class="transkrip-pdf">
         
         
@@ -582,6 +586,23 @@ const openPdfViewer = async () => {
   padding-inline: 20px;
 }
 
+.transcript-toolbar {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  inset-block-start: -52px;
+  inset-inline: 0;
+  padding-inline: 24px;
+}
+
+.transcript-title {
+  color: #0f172a;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
 .transkrip-pdf {
   position: relative;
   overflow: visible;
@@ -1029,10 +1050,7 @@ const openPdfViewer = async () => {
 }
 
 .view-pdf-btn {
-  position: absolute;
   z-index: 999;
-  inset-block-start: -50px; /* lift above the paper border */
-  inset-inline-end: 40px;
 }
 
 /* Tambahkan style untuk tooltip */
