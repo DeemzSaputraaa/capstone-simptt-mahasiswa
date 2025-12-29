@@ -30,6 +30,7 @@ const selectedItem = ref(null)
 const newComment = ref('')
 const commentText = ref('')
 const savingComment = ref(false)
+
 const filteredList = computed(() => {
   const list = mahasiswaList.value
   if (filterStatus.value === 'all') return list
@@ -123,6 +124,7 @@ const approveItem = async () => {
         status_ijazah: json.data.status_ijazah || 'approved',
         status_ktp: json.data.status_ktp || 'approved',
       }
+
       mahasiswaList.value = mahasiswaList.value.map(row => row.kdprayudisium === json.data.kdprayudisium
         ? { ...row, ...normalized }
         : row)
@@ -195,6 +197,7 @@ const saveComment = async () => {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     }
+
     const token = sessionStorage.getItem('jwt_token')
     if (token)
       headers.Authorization = `Bearer ${token}`
@@ -211,6 +214,7 @@ const saveComment = async () => {
 
     commentText.value = newComment.value
     selectedItem.value.comment = newComment.value
+
     // perbarui di list utama
     mahasiswaList.value = mahasiswaList.value.map(row => row.kdprayudisium === selectedItem.value.kdprayudisium
       ? { ...row, comment: newComment.value }
@@ -243,7 +247,7 @@ const isFullyApproved = item => {
     && item.status_ktp === 'approved'
 }
 
-const updateDocumentStatus = async (status) => {
+const updateDocumentStatus = async status => {
   if (!previewItem.value || !previewDocKey.value || updatingDocStatus.value) return
 
   updatingDocStatus.value = true
@@ -295,18 +299,21 @@ const getPreviewStatus = () => {
   if (previewDocKey.value === 'foto') return previewItem.value.status_foto || ''
   if (previewDocKey.value === 'ijazah') return previewItem.value.status_ijazah || ''
   if (previewDocKey.value === 'ktp') return previewItem.value.status_ktp || ''
+  
   return ''
 }
 
 const statusLabel = status => {
   if (status === 'approved') return 'Approved'
   if (status === 'revision') return 'Revision'
+  
   return 'Submitted'
 }
 
 const statusClass = status => {
   if (status === 'approved') return 'status-chip status-approved'
   if (status === 'revision') return 'status-chip status-revision'
+  
   return 'status-chip status-submitted'
 }
 
@@ -376,8 +383,8 @@ onMounted(fetchData)
           </td>
         </tr>
         <tr
-          v-else
           v-for="(m, i) in filteredList.slice(0, itemsPerPage)"
+          v-else
           :key="m.kdprayudisium"
         >
           <td>{{ i + 1 }}</td>
@@ -464,7 +471,8 @@ onMounted(fetchData)
                 icon
                 variant="text"
                 color="success"
-                :class="['action-btn', { 'action-btn-disabled': isFullyApproved(m) }]"
+                class="action-btn"
+                :class="[{ 'action-btn-disabled': isFullyApproved(m) }]"
                 :disabled="isFullyApproved(m)"
                 :loading="approvingId === m.kdprayudisium"
                 @click="openApproveDialog(m)"
@@ -490,7 +498,8 @@ onMounted(fetchData)
                 icon
                 variant="text"
                 color="error"
-                :class="['action-btn', { 'action-btn-disabled': isFullyApproved(m) }]"
+                class="action-btn"
+                :class="[{ 'action-btn-disabled': isFullyApproved(m) }]"
                 :loading="deletingId === m.kdprayudisium"
                 :disabled="deletingId !== null || isFullyApproved(m)"
                 @click="openDeleteDialog(m)"
@@ -583,7 +592,9 @@ onMounted(fetchData)
         </VCardTitle>
         <VCardText>
           <div class="comment-input d-flex align-center mb-6">
-            <div class="avatar-chip">A</div>
+            <div class="avatar-chip">
+              A
+            </div>
             <VTextarea
               v-model="newComment"
               placeholder="Tulis komentar..."
@@ -607,7 +618,9 @@ onMounted(fetchData)
             v-if="commentText"
             class="comment-item d-flex mb-5"
           >
-            <div class="avatar-chip">A</div>
+            <div class="avatar-chip">
+              A
+            </div>
             <div class="ms-4">
               <div class="d-flex align-center gap-2">
                 <span class="author">Admin</span>
@@ -709,11 +722,12 @@ onMounted(fetchData)
 /* Card Header */
 .admin-card-title {
   border-radius: 4px 4px 0 0;
-  background: linear-gradient(
-    135deg,
-    rgb(var(--v-theme-primary)) 0%,
-    rgba(var(--v-theme-primary), 0.85) 100%
-  );
+  background:
+    linear-gradient(
+      135deg,
+      rgb(var(--v-theme-primary)) 0%,
+      rgba(var(--v-theme-primary), 0.85) 100%
+    );
   color: rgb(var(--v-theme-on-primary)) !important;
   font-weight: 700;
   letter-spacing: 0.5px;
@@ -735,17 +749,18 @@ onMounted(fetchData)
   border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
   border-radius: 4px;
   background-color: rgb(var(--v-theme-surface));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 5%);
   color: rgb(var(--v-theme-on-surface));
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .pra-yudisium-table thead {
-  background: linear-gradient(
-    to right,
-    rgba(var(--v-theme-on-surface), 0.04),
-    rgba(var(--v-theme-on-surface), 0.06)
-  );
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background:
+    linear-gradient(
+      to right,
+      rgba(var(--v-theme-on-surface), 0.04),
+      rgba(var(--v-theme-on-surface), 0.06)
+    );
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 5%);
 }
 
 .pra-yudisium-table thead th {
@@ -765,10 +780,14 @@ onMounted(fetchData)
   border-block-end: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   color: rgba(var(--v-theme-on-surface), 0.8);
   font-size: 0.875rem;
-  padding-block: 1rem;
+  padding-block: 2rem;
   padding-inline: 0.75rem;
   transition: all 0.2s ease;
   vertical-align: middle;
+}
+
+.pra-yudisium-table tbody tr {
+  block-size: 140px;
 }
 
 .pra-yudisium-table tbody tr:not(:last-child) td {
@@ -777,7 +796,7 @@ onMounted(fetchData)
 
 .pra-yudisium-table tbody tr:hover td {
   background-color: rgba(var(--v-theme-on-surface), 0.05);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 5%);
   transform: translateY(-1px);
 }
 
@@ -787,7 +806,7 @@ onMounted(fetchData)
   border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
   border-radius: 6px;
   block-size: 75px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 5%);
   cursor: pointer;
   inline-size: 60px;
   object-fit: cover;
@@ -796,7 +815,7 @@ onMounted(fetchData)
 
 .foto-preview:hover,
 .dokumen-preview:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 10%);
   transform: scale(1.05);
 }
 
@@ -898,7 +917,7 @@ onMounted(fetchData)
 
 @media (prefers-color-scheme: dark) {
   .pra-yudisium-table {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 25%);
   }
 
   .pra-yudisium-table thead {
@@ -910,7 +929,7 @@ onMounted(fetchData)
   }
 
   .loading-overlay {
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 40%);
   }
 }
 
@@ -921,20 +940,20 @@ onMounted(fetchData)
 }
 
 .avatar-chip {
-  inline-size: 44px;
-  block-size: 44px;
-  border-radius: 50%;
-  background-color: rgb(var(--v-theme-primary));
-  color: rgb(var(--v-theme-on-primary));
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  border-radius: 50%;
+  background-color: rgb(var(--v-theme-primary));
+  block-size: 44px;
+  color: rgb(var(--v-theme-on-primary));
   font-weight: 700;
+  inline-size: 44px;
 }
 
 .comment-input .v-textarea {
-  background-color: rgba(var(--v-theme-on-surface), 0.03);
   border-radius: 8px;
+  background-color: rgba(var(--v-theme-on-surface), 0.03);
 }
 
 .comment-item .author {
@@ -942,13 +961,13 @@ onMounted(fetchData)
 }
 
 .comment-item .time {
-  font-size: 12px;
   color: rgba(var(--v-theme-on-surface), 0.7);
+  font-size: 12px;
 }
 
 .comment-text {
-  margin-top: 6px;
   line-height: 1.5;
+  margin-block-start: 6px;
 }
 
 .preview-frame {
@@ -975,12 +994,12 @@ onMounted(fetchData)
 }
 
 .status-approved {
-  background: rgba(27, 196, 125, 0.15);
+  background: rgba(27, 196, 125, 15%);
   color: #1bc47d;
 }
 
 .status-revision {
-  background: rgba(230, 57, 70, 0.15);
+  background: rgba(230, 57, 70, 15%);
   color: #e63946;
 }
 
@@ -997,22 +1016,22 @@ onMounted(fetchData)
 }
 
 .preview-actions {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  min-height: 48px;
+  min-block-size: 48px;
 }
 
 .preview-actions-center {
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
   gap: 12px;
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
 }
 
 .preview-actions-right {
-  margin-left: auto;
+  margin-inline-start: auto;
 }
 </style>

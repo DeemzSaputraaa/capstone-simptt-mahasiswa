@@ -19,6 +19,31 @@ const savingComment = ref(false)
 const replyTo = ref(null)
 const replyText = ref('')
 const expandedReplies = ref({})
+const seenCommentMap = ref({})
+
+const seenStorageKey = 'admin_validasi_seen_counts'
+
+const loadSeenMap = () => {
+  try {
+    const raw = localStorage.getItem(seenStorageKey)
+    if (raw) {
+      const parsed = JSON.parse(raw)
+      if (parsed && typeof parsed === 'object') {
+        seenCommentMap.value = parsed
+      }
+    }
+  } catch (err) {
+    seenCommentMap.value = {}
+  }
+}
+
+const saveSeenMap = () => {
+  try {
+    localStorage.setItem(seenStorageKey, JSON.stringify(seenCommentMap.value))
+  } catch (err) {
+    // Ignore storage errors
+  }
+}
 
 const authHeaders = () => {
   const token = sessionStorage.getItem('jwt_token')
@@ -55,18 +80,30 @@ const getSortDate = item => {
   return parsed && !Number.isNaN(parsed.getTime()) ? parsed.getTime() : 0
 }
 
+const hasNewCommentForAdmin = item => {
+  const count = item?.comment_count || 0
+  if (!count) return false
+
+  const recordId = item?.kdvalidasiijazahmahasiswa
+  if (!recordId) return false
+
+  const seenCount = Number(seenCommentMap.value[recordId] ?? 0)
+  return count > seenCount
+}
+
 const filteredValidasi = computed(() => {
   const sorted = [...daftarValidasi.value].sort((a, b) => getSortDate(b) - getSortDate(a))
 
   return sorted.filter(item => {
     const isApproved = !!item?.is_ijazah_validate && !!item?.is_transkrip_validate
     const hasComment = (item?.comment_count || 0) > 0
+    const hasUnread = hasNewCommentForAdmin(item)
 
     if (filterApprove.value === 'approved' && !isApproved) return false
     if (filterApprove.value === 'pending' && isApproved) return false
 
-    if (filterComment.value === 'new' && !hasComment) return false
-    if (filterComment.value === 'none' && hasComment) return false
+    if (filterComment.value === 'new' && !hasUnread) return false
+    if (filterComment.value === 'none' && hasUnread) return false
 
     return true
   })
@@ -159,6 +196,20 @@ const openChat = async item => {
   await fetchComments(item)
 }
 
+const countAllComments = items => flattenComments(items).length
+
+const findLatestCommentDate = items => {
+  const flat = flattenComments(items)
+  if (!flat.length) return null
+
+  return flat.reduce((latest, current) => {
+    const currentDate = current?.date ? new Date(current.date) : null
+    if (!currentDate || Number.isNaN(currentDate.getTime())) return latest
+    if (!latest || currentDate > latest) return currentDate
+    return latest
+  }, null)
+}
+
 const fetchComments = async item => {
   loadingComments.value = true
   errorMessage.value = null
@@ -170,6 +221,24 @@ const fetchComments = async item => {
       },
     })
     comments.value = data || []
+    const totalCount = countAllComments(comments.value)
+    const latestDate = findLatestCommentDate(comments.value)
+    const recordId = item?.kdvalidasiijazahmahasiswa
+    if (recordId) {
+      daftarValidasi.value = daftarValidasi.value.map(row => {
+        if (row.kdvalidasiijazahmahasiswa !== recordId) return row
+        return {
+          ...row,
+          comment_count: totalCount,
+          last_comment_at: latestDate ? latestDate.toISOString() : row.last_comment_at,
+        }
+      })
+      seenCommentMap.value = {
+        ...seenCommentMap.value,
+        [recordId]: totalCount,
+      }
+      saveSeenMap()
+    }
   } catch (err) {
     comments.value = []
     errorMessage.value = 'Gagal memuat komentar'
@@ -261,6 +330,7 @@ const getInitial = name => {
 }
 
 onMounted(() => {
+  loadSeenMap()
   loadValidasi()
 })
 </script>
@@ -353,8 +423,8 @@ onMounted(() => {
             >
               <div class="d-flex justify-center">
                 <VBadge
-                  v-if="(m.comment_count || 0) > 0"
-                  :content="m.comment_count"
+                  v-if="hasNewCommentForAdmin(m)"
+                  dot
                   color="error"
                   class="me-2"
                 >
