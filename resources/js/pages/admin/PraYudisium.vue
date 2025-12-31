@@ -39,11 +39,14 @@ const filteredList = computed(() => {
     const statuses = [item.status_foto, item.status_ijazah, item.status_ktp]
     const allApproved = statuses.length && statuses.every(status => status === 'approved')
     const hasRevision = statuses.some(status => status === 'revision')
+    const hasSubmitted = statuses.some(status => !status || status === 'submitted')
 
     if (filterStatus.value === 'approved')
       return item.is_validate || allApproved
     if (filterStatus.value === 'revision')
       return hasRevision
+    if (filterStatus.value === 'submitted')
+      return hasSubmitted
 
     return !item.is_validate && !allApproved && !hasRevision
   })
