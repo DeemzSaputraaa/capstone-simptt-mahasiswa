@@ -112,8 +112,8 @@ class AkValidasiIjazahController extends Controller
                 $record = AkValidasiIjazahMahasiswa::updateOrCreate(
                     ['kdmahasiswa' => $kdmahasiswa],
                     [
-                        'is_ijazah_validate' => false,
-                        'is_transkrip_validate' => false,
+                        'is_ijazah_validate' => true,
+                        'is_transkrip_validate' => true,
                         'coment_ijazah' => $request->input('coment_ijazah', $request->input('comment')),
                         'coment_transkrip' => $request->input('coment_transkrip'),
                         'diambil_sendiri' => $request->boolean('diambil_sendiri'),

@@ -47,6 +47,7 @@ const saveSeenMap = () => {
 
 const authHeaders = () => {
   const token = sessionStorage.getItem('jwt_token')
+  
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
@@ -60,6 +61,7 @@ const loadValidasi = async () => {
         ...authHeaders(),
       },
     })
+
     daftarValidasi.value = data || []
   } catch (err) {
     errorMessage.value = 'Gagal memuat daftar validasi'
@@ -71,12 +73,26 @@ const loadValidasi = async () => {
 const formatDate = date => {
   if (!date) return '-'
   const parsed = new Date(date)
+  
   return Number.isNaN(parsed.getTime()) ? '-' : parsed.toLocaleDateString('id-ID')
+}
+
+const statusLabel = item => {
+  const isApproved = !!item?.is_ijazah_validate && !!item?.is_transkrip_validate
+  
+  return isApproved ? 'Approved' : 'Pending'
+}
+
+const statusClass = item => {
+  const isApproved = !!item?.is_ijazah_validate && !!item?.is_transkrip_validate
+  
+  return isApproved ? 'status-chip status-approved' : 'status-chip status-pending'
 }
 
 const getSortDate = item => {
   const raw = item?.last_comment_at || item?.create_at || item?.tgl_diambil_ijazah
   const parsed = raw ? new Date(raw) : null
+  
   return parsed && !Number.isNaN(parsed.getTime()) ? parsed.getTime() : 0
 }
 
@@ -88,6 +104,7 @@ const hasNewCommentForAdmin = item => {
   if (!recordId) return false
 
   const seenCount = Number(seenCommentMap.value[recordId] ?? 0)
+  
   return count > seenCount
 }
 
@@ -112,6 +129,7 @@ const filteredValidasi = computed(() => {
 const normalizeId = value => {
   if (value === null || value === undefined) return null
   const normalized = String(value).trim()
+  
   return normalized === '' ? null : normalized
 }
 
@@ -123,12 +141,14 @@ const flattenComments = (items, parentId = null) => {
     const replies = Array.isArray(item.replies) ? item.replies : []
     const normalizedId = normalizeId(item?.id ?? item?.kdcomment ?? item?.comment_id)
     const normalizedParentId = normalizeId(item?.parent_id ?? item?.parentId ?? parentId)
+
     const normalized = {
       ...item,
       id: normalizedId,
       parent_id: normalizedParentId,
       replies: [],
     }
+
     flat.push(normalized)
     flat.push(...flattenComments(replies, normalizedId))
   })
@@ -143,12 +163,14 @@ const buildCommentTree = items => {
   if (!flat.length) return []
 
   const byId = new Map()
+
   flat.forEach(item => {
     if (item?.id !== undefined && item?.id !== null)
       byId.set(item.id, { ...item, replies: [] })
   })
 
   const roots = []
+
   byId.forEach(node => {
     if (node.parent_id !== null && node.parent_id !== undefined && byId.has(node.parent_id)) {
       byId.get(node.parent_id).replies.push(node)
@@ -164,8 +186,10 @@ const commentTree = computed(() => buildCommentTree(comments.value))
 
 const countReplies = replies => {
   if (!Array.isArray(replies) || !replies.length) return 0
+  
   return replies.reduce((total, reply) => {
     const childReplies = countReplies(reply.replies)
+    
     return total + 1 + childReplies
   }, 0)
 }
@@ -206,6 +230,7 @@ const findLatestCommentDate = items => {
     const currentDate = current?.date ? new Date(current.date) : null
     if (!currentDate || Number.isNaN(currentDate.getTime())) return latest
     if (!latest || currentDate > latest) return currentDate
+    
     return latest
   }, null)
 }
@@ -241,13 +266,16 @@ const fetchComments = async item => {
         ...authHeaders(),
       },
     })
+
     comments.value = normalizeCommentDates(data || [])
+
     const totalCount = countAllComments(comments.value)
     const latestDate = findLatestCommentDate(comments.value)
     const recordId = item?.kdvalidasiijazahmahasiswa
     if (recordId) {
       daftarValidasi.value = daftarValidasi.value.map(row => {
         if (row.kdvalidasiijazahmahasiswa !== recordId) return row
+        
         return {
           ...row,
           comment_count: totalCount,
@@ -347,6 +375,7 @@ const isRepliesExpanded = comment => {
 
 const getInitial = name => {
   const value = (name || '').trim()
+  
   return value ? value.charAt(0).toUpperCase() : 'A'
 }
 
@@ -363,13 +392,13 @@ onMounted(() => {
     </VCardTitle>
     <div class="validasi-filters">
       <div class="filter-item">
-        <span>Status Approve</span>
+        <span>Status</span>
         <VSelect
           v-model="filterApprove"
           :items="[
             { title: 'Semua', value: 'all' },
             { title: 'Approved', value: 'approved' },
-            { title: 'Belum', value: 'pending' },
+            { title: 'Pending', value: 'pending' },
           ]"
           density="compact"
           style="max-inline-size: 160px;"
@@ -405,6 +434,7 @@ onMounted(() => {
             <th>Nama</th>
             <th>NIM</th>
             <th>Prodi</th>
+            <th>Status</th>
             <th>Tanggal</th>
             <th class="text-center">
               Detail
@@ -414,7 +444,7 @@ onMounted(() => {
         <tbody>
           <tr v-if="loading">
             <td
-              colspan="6"
+              colspan="7"
               class="text-center py-6"
             >
               Memuat data...
@@ -422,22 +452,35 @@ onMounted(() => {
           </tr>
           <tr v-else-if="!filteredValidasi.length">
             <td
-              colspan="6"
+              colspan="7"
               class="text-center py-6"
             >
               Tidak ada data validasi.
             </td>
           </tr>
           <tr
-            v-else
             v-for="(m, i) in filteredValidasi.slice(0, itemsPerPage)"
+            v-else
             :key="m.kdvalidasiijazahmahasiswa ?? m.nim ?? i"
           >
-            <td data-label="No">{{ i + 1 }}</td>
-            <td data-label="Nama">{{ m.namalengkap || '-' }}</td>
-            <td data-label="NIM">{{ m.nim || '-' }}</td>
-            <td data-label="Prodi">{{ m.prodi || '-' }}</td>
-            <td data-label="Tanggal">{{ formatDate(m.create_at || m.last_comment_at || m.tgl_diambil_ijazah) }}</td>
+            <td data-label="No">
+              {{ i + 1 }}
+            </td>
+            <td data-label="Nama">
+              {{ m.namalengkap || '-' }}
+            </td>
+            <td data-label="NIM">
+              {{ m.nim || '-' }}
+            </td>
+            <td data-label="Prodi">
+              {{ m.prodi || '-' }}
+            </td>
+            <td data-label="Status">
+              <span :class="statusClass(m)">{{ statusLabel(m) }}</span>
+            </td>
+            <td data-label="Tanggal">
+              {{ formatDate(m.create_at || m.last_comment_at || m.tgl_diambil_ijazah) }}
+            </td>
             <td
               data-label="Detail"
               class="text-center"
@@ -507,7 +550,9 @@ onMounted(() => {
 
       <VCardText>
         <div class="comment-input">
-          <div class="comment-avatar admin-avatar">{{ getInitial('Admin') }}</div>
+          <div class="comment-avatar admin-avatar">
+            {{ getInitial('Admin') }}
+          </div>
           <VTextarea
             v-model="newComment"
             class="comment-input-field"
@@ -547,12 +592,16 @@ onMounted(() => {
               :class="{ reply: c.depth > 0 }"
               :style="{ marginLeft: `${c.depth * 24}px` }"
             >
-              <div class="comment-avatar">{{ getInitial(c.user) }}</div>
-              <div
-                class="comment-body"
-              >
-                <div class="comment-user">{{ c.user }}</div>
-                <div class="comment-date">{{ formatCommentDate(c.date) }}</div>
+              <div class="comment-avatar">
+                {{ getInitial(c.user) }}
+              </div>
+              <div class="comment-body">
+                <div class="comment-user">
+                  {{ c.user }}
+                </div>
+                <div class="comment-date">
+                  {{ formatCommentDate(c.date) }}
+                </div>
                 <div class="comment-text">
                   {{ c.text }}
                 </div>
@@ -629,11 +678,12 @@ onMounted(() => {
 <style scoped>
 .admin-card-title {
   border-radius: 4px 4px 0 0;
-  background: linear-gradient(
-    135deg,
-    rgb(var(--v-theme-primary)) 0%,
-    rgba(var(--v-theme-primary), 0.85) 100%
-  );
+  background:
+    linear-gradient(
+      135deg,
+      rgb(var(--v-theme-primary)) 0%,
+      rgba(var(--v-theme-primary), 0.85) 100%
+    );
   color: rgb(var(--v-theme-on-primary)) !important;
   font-weight: 700;
   letter-spacing: 0.5px;
@@ -652,8 +702,8 @@ onMounted(() => {
 .validasi-filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
   align-items: center;
+  gap: 16px;
   padding-block: 12px 16px;
   padding-inline: 20px;
 }
@@ -665,12 +715,14 @@ onMounted(() => {
 }
 
 .error-box {
-  margin: 1rem 1.5rem;
-  padding: 0.75rem 1rem;
   border: 1px solid rgba(var(--v-theme-error), 0.4);
-  color: rgb(var(--v-theme-error));
   border-radius: 6px;
   background-color: rgba(var(--v-theme-error), 0.08);
+  color: rgb(var(--v-theme-error));
+  margin-block: 1rem;
+  margin-inline: 1.5rem;
+  padding-block: 0.75rem;
+  padding-inline: 1rem;
 }
 
 .table-wrapper {
@@ -682,17 +734,18 @@ onMounted(() => {
   border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
   border-radius: 4px;
   background-color: rgb(var(--v-theme-surface));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 5%);
   color: rgb(var(--v-theme-on-surface));
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .validasi-table thead {
-  background: linear-gradient(
-    to right,
-    rgba(var(--v-theme-on-surface), 0.04),
-    rgba(var(--v-theme-on-surface), 0.06)
-  );
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background:
+    linear-gradient(
+      to right,
+      rgba(var(--v-theme-on-surface), 0.04),
+      rgba(var(--v-theme-on-surface), 0.06)
+    );
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 5%);
 }
 
 .validasi-table thead th {
@@ -724,8 +777,29 @@ onMounted(() => {
 
 .validasi-table tbody tr:hover td {
   background-color: rgba(var(--v-theme-on-surface), 0.05);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 5%);
   transform: translateY(-1px);
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding-block: 2px;
+  padding-inline: 8px;
+  text-transform: uppercase;
+}
+
+.status-approved {
+  background: rgba(27, 196, 125, 15%);
+  color: #1bc47d;
+}
+
+.status-pending {
+  background: rgba(var(--v-theme-on-surface), 0.08);
+  color: rgba(var(--v-theme-on-surface), 0.7);
 }
 
 .action-btn {
@@ -736,7 +810,7 @@ onMounted(() => {
 }
 
 .action-btn:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 10%);
   opacity: 1;
   transform: translateY(-2px);
 }
@@ -761,24 +835,24 @@ onMounted(() => {
 
   .validasi-table tbody tr {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 8px;
     padding: 12px;
+    gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   }
 
   .validasi-table tbody td {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 4px;
     background-color: rgba(var(--v-theme-surface), 0.9);
+    gap: 4px;
   }
 
   .validasi-table tbody td::before {
+    color: rgba(var(--v-theme-on-surface), 0.7);
     content: attr(data-label);
     font-size: 12px;
     font-weight: 600;
-    color: rgba(var(--v-theme-on-surface), 0.7);
     text-transform: uppercase;
   }
 
@@ -789,7 +863,7 @@ onMounted(() => {
 
 @media (prefers-color-scheme: dark) {
   .validasi-table {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 25%);
   }
 
   .validasi-table thead {
@@ -801,21 +875,20 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-top: 8px;
-  margin-bottom: 16px;
+  margin-block: 8px 16px;
 }
 
 .comment-avatar {
   display: inline-flex;
+  flex: 0 0 36px;
   align-items: center;
   justify-content: center;
-  inline-size: 36px;
-  block-size: 36px;
   border-radius: 999px;
   background: rgb(var(--v-theme-primary));
+  block-size: 36px;
   color: rgb(var(--v-theme-on-primary));
   font-weight: 700;
-  flex: 0 0 36px;
+  inline-size: 36px;
 }
 
 .comment-input-field {
@@ -829,7 +902,7 @@ onMounted(() => {
 
 .comment-empty {
   color: rgba(var(--v-theme-on-surface), 0.6);
-  margin-bottom: 12px;
+  margin-block-end: 12px;
 }
 
 .comment-list {
@@ -852,20 +925,21 @@ onMounted(() => {
   flex: 1 1 auto;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   border-radius: 10px;
-  padding: 8px 12px;
   background: rgba(var(--v-theme-surface), 0.9);
+  padding-block: 8px;
+  padding-inline: 12px;
 }
 
 .comment-user {
-  font-weight: 700;
   color: rgba(var(--v-theme-on-surface), 0.9);
-  margin-bottom: 4px;
+  font-weight: 700;
+  margin-block-end: 4px;
 }
 
 .comment-date {
   color: rgba(var(--v-theme-on-surface), 0.7);
   font-size: 0.8rem;
-  margin-bottom: 4px;
+  margin-block-end: 4px;
 }
 
 .comment-text {
@@ -874,18 +948,18 @@ onMounted(() => {
 }
 
 .comment-actions {
-  margin-top: 4px;
+  margin-block-start: 4px;
 }
 
 .reply-input {
-  margin-top: 8px;
   padding: 10px;
   border-radius: 10px;
   background: rgba(var(--v-theme-on-surface), 0.04);
+  margin-block-start: 8px;
 }
 
 .reply-input-field {
-  margin-bottom: 8px;
+  margin-block-end: 8px;
 }
 
 .reply-actions {
@@ -898,11 +972,11 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-top: 8px;
+  margin-block-start: 8px;
 }
 
 .comment-actions-footer {
-  padding-top: 0;
+  padding-block-start: 0;
 }
 </style>
 

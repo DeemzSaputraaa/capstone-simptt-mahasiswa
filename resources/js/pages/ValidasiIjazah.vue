@@ -118,6 +118,42 @@
           </VCard>
         </VDialog>
 
+        <!-- Confirm Save Modal -->
+        <VDialog
+          v-model="showConfirmModal"
+          max-width="460"
+        >
+          <VCard class="confirm-card">
+            <VCardTitle class="confirm-title">
+              Konfirmasi Simpan
+            </VCardTitle>
+            <VCardText class="confirm-subtitle">
+              <strong>Apakah anda yakin ingin menyimpannya?</strong>
+              <br>
+              <strong>Coba cek ulang lagi datanya.</strong>
+            </VCardText>
+            <VCardActions class="confirm-actions">
+              <VSpacer />
+              <VBtn
+                color="default"
+                variant="flat"
+                class="confirm-cancel"
+                @click="showConfirmModal = false"
+              >
+                Batal
+              </VBtn>
+              <VBtn
+                color="primary"
+                class="confirm-submit"
+                variant="flat"
+                @click="confirmSimpan"
+              >
+                Ya, Simpan
+              </VBtn>
+            </VCardActions>
+          </VCard>
+        </VDialog>
+
         <!-- Dialog untuk PDF Viewer -->
         <VDialog
           v-model="showPdfViewer"
@@ -183,6 +219,7 @@ export default {
 
     const showValidationModal = ref(false)
     const validationMessage = ref('')
+    const showConfirmModal = ref(false)
 
     const ijazahPreview = ref(null)
     const transcriptPreview = ref(null)
@@ -412,6 +449,7 @@ export default {
         console.log('Loading comments from database...')
 
         const endpointId = getCommentsEndpointId()
+
         const response = await fetch(`/api/comments/${endpointId}`, {
           headers: {
             ...getAuthHeaders(),
@@ -492,6 +530,7 @@ export default {
 
         if (!response.ok) {
           console.error('Failed to save reply', response.status)
+          
           return
         }
 
@@ -547,8 +586,37 @@ export default {
     }
 
     const onSimpan = () => {
-      validationMessage.value = 'Perubahan berhasil disimpan'
-      showValidationModal.value = true
+      showConfirmModal.value = true
+    }
+
+    const confirmSimpan = async () => {
+      showConfirmModal.value = false
+      try {
+        const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+
+        const response = await fetch('/api/ak-validasi-ijazah', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            ...(csrf ? { 'X-CSRF-TOKEN': csrf } : {}),
+            ...getAuthHeaders(),
+          },
+          body: JSON.stringify({}),
+        })
+
+        if (!response.ok) {
+          const errorText = await response.text()
+          throw new Error(errorText || `Gagal menyimpan (${response.status})`)
+        }
+
+        validationMessage.value = 'Perubahan berhasil disimpan'
+        showValidationModal.value = true
+      } catch (error) {
+        validationMessage.value = 'Gagal menyimpan data'
+        showValidationModal.value = true
+        console.error('Error saving validasi ijazah:', error)
+      }
     }
 
     // Fungsi untuk membuka draft di tab baru
@@ -814,20 +882,21 @@ export default {
       showPdfViewer.value = true
     }
 
-      return {
-        form,
-        fileStatus,
-        updateFileStatus,
-        comments,
-        newComment,
-        addComment,
-        handleAddReply,
-        handleSubmitReply,
-        formatDate,
-        showValidationModal,
-        validationMessage,
-        handleSubmit,
-        openInNewTab,
+    return {
+      form,
+      fileStatus,
+      updateFileStatus,
+      comments,
+      newComment,
+      addComment,
+      handleAddReply,
+      handleSubmitReply,
+      formatDate,
+      showValidationModal,
+      validationMessage,
+      showConfirmModal,
+      handleSubmit,
+      openInNewTab,
       user,
       ijazahPreview,
       transcriptPreview,
@@ -836,6 +905,7 @@ export default {
       matakuliah,
       onLapor,
       onSimpan,
+      confirmSimpan,
       showComments,
       loadCommentsFromDatabase,
       generatePDF,
@@ -934,6 +1004,41 @@ export default {
 
 .comment-submit-btn {
   min-inline-size: 140px;
+}
+
+.confirm-card {
+  border-radius: 12px;
+
+  /* width: fit-content; */
+}
+
+.confirm-title {
+  color: #1f9d8a;
+  font-weight: 700;
+  padding-block-start: 20px;
+  text-align: center;
+}
+
+.confirm-subtitle {
+  color: rgba(var(--v-theme-on-surface), 0.7);
+  padding-block-start: 0;
+  text-align: center;
+}
+
+.confirm-actions {
+  justify-content: flex-end;
+  padding-block: 16px 24px;
+  padding-inline: 24px;
+}
+
+.confirm-cancel {
+  background: #e5e7eb;
+  color: #6b7280;
+}
+
+.confirm-submit {
+  background: #1f9d8a;
+  color: #fff !important;
 }
 
 .comment-card {
