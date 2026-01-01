@@ -38,6 +38,8 @@ const biayaValue = ref('')
 
 const showDeleteDialog = ref(false)
 const deleteCandidate = ref(null)
+const showDetailDialog = ref(false)
+const detailItem = ref(null)
 
 const form = ref({
   kdmahasiswa: '',
@@ -100,12 +102,12 @@ const isApproved = row => Boolean(row?.tgl_dikirim)
 
 const openApprove = item => {
   if (!item) return
-  if (!item.noresi) {
-    openResiDialog(item)
-    return
-  }
   if (item.biaya_legalisasi === null || item.biaya_legalisasi === undefined || item.biaya_legalisasi === '') {
     openBiayaDialog(item)
+    return
+  }
+  if (!item.noresi) {
+    openResiDialog(item)
     return
   }
 
@@ -276,6 +278,16 @@ const saveApprove = async () => {
 const openDeleteDialog = item => {
   deleteCandidate.value = item
   showDeleteDialog.value = true
+}
+
+const openDetailDialog = item => {
+  detailItem.value = item
+  showDetailDialog.value = true
+}
+
+const closeDetailDialog = () => {
+  showDetailDialog.value = false
+  detailItem.value = null
 }
 
 const closeDeleteDialog = () => {
@@ -577,8 +589,8 @@ onBeforeUnmount(() => {
             <th>Nama Mahasiswa</th>
             <th>Dokumen</th>
             <th>Jumlah</th>
-            <th>No. Resi</th>
             <th>Biaya</th>
+            <th>No. Resi</th>
             <th>Tgl Dikirim</th>
             <th class="text-center">Aksi</th>
           </tr>
@@ -604,6 +616,7 @@ onBeforeUnmount(() => {
             v-else
             v-for="(m, i) in filteredLegalisasi.slice(0, itemsPerPage)"
             :key="m.kdlegalisasi || i"
+            :class="{ 'row-received': m.status_penerimaan === 'received' }"
           >
             <td data-label="No">{{ i + 1 }}</td>
             <td data-label="Nama Mahasiswa">
@@ -611,31 +624,43 @@ onBeforeUnmount(() => {
             </td>
             <td data-label="Dokumen">{{ m.dokumen ?? '-' }}</td>
             <td data-label="Jumlah">{{ m.jumlah_legalisasi ?? '-' }}</td>
-    <td data-label="No. Resi">
-      <VBtn
-        size="small"
-        class="resi-btn"
-        :loading="approvingId === getRowId(m)"
-        :disabled="!!m.noresi || approvingId !== null"
-        @click="openResiDialog(m)"
-      >
-        Resi
-      </VBtn>
-    </td>
     <td data-label="Biaya">
       <VBtn
         size="small"
         class="resi-btn"
         :loading="approvingId === getRowId(m)"
-        :disabled="m.biaya_legalisasi !== null && m.biaya_legalisasi !== undefined && m.biaya_legalisasi !== ''"
+        :disabled="m.biaya_legalisasi !== null && m.biaya_legalisasi !== undefined && m.biaya_legalisasi !== '' || approvingId !== null"
         @click="openBiayaDialog(m)"
       >
         Biaya
       </VBtn>
     </td>
+    <td data-label="No. Resi">
+      <VBtn
+        size="small"
+        class="resi-btn"
+        :loading="approvingId === getRowId(m)"
+        :disabled="!m.biaya_legalisasi || !!m.noresi || approvingId !== null"
+        @click="openResiDialog(m)"
+      >
+        Resi
+      </VBtn>
+    </td>
             <td data-label="Tgl Dikirim">{{ m.tgl_dikirim ?? '-' }}</td>
             <td data-label="Aksi" class="text-center">
               <div class="d-flex justify-center">
+                <VBtn
+                  icon
+                  variant="text"
+                  color="info"
+                  class="action-btn"
+                  @click="openDetailDialog(m)"
+                >
+                  <VIcon
+                    icon="ri-information-line"
+                    size="20"
+                  />
+                </VBtn>
                 <VBtn
                   icon
                   variant="text"
@@ -796,6 +821,64 @@ onBeforeUnmount(() => {
   </VDialog>
 
   <VDialog
+    v-model="showDetailDialog"
+    max-width="560"
+    class="detail-dialog"
+  >
+    <VCard class="detail-card">
+      <VCardTitle class="detail-title">Detail Legalisasi</VCardTitle>
+      <VCardText>
+        <div
+          v-if="detailItem"
+          class="summary detail-summary"
+        >
+          <div class="summary-row">
+            <span class="summary-label">NIM Mahasiswa</span><span class="summary-value">{{ detailItem.nim ?? '-' }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Nama Mahasiswa</span><span class="summary-value">{{ detailItem.nama_mahasiswa ?? '-' }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Dokumen</span><span class="summary-value">{{ detailItem.dokumen ?? '-' }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Jumlah</span><span class="summary-value">{{ detailItem.jumlah_legalisasi ?? '-' }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Biaya</span><span class="summary-value">{{ detailItem.biaya_legalisasi ?? '-' }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Alamat</span><span class="summary-value">{{ detailItem.alamat_kirim ?? '-' }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Nama Penerima</span><span class="summary-value">{{ detailItem.nama_penerima_legalisasi ?? '-' }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">No Telp Penerima</span><span class="summary-value">{{ detailItem.telp_penerima ?? '-' }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">No. Resi</span><span class="summary-value">{{ detailItem.noresi ?? '-' }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Tgl Dikirim</span><span class="summary-value">{{ detailItem.tgl_dikirim ?? '-' }}</span>
+          </div>
+        </div>
+      </VCardText>
+      <VCardActions class="detail-actions">
+        <VSpacer />
+        <VBtn
+          variant="tonal"
+          color="grey"
+          class="detail-btn"
+          @click="closeDetailDialog"
+        >
+          Tutup
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
+
+  <VDialog
     v-model="showResiDialog"
     max-width="420"
   >
@@ -946,6 +1029,16 @@ onBeforeUnmount(() => {
   background-color: rgba(var(--v-theme-on-surface), 0.05);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
   transform: translateY(-1px);
+}
+
+.legalisasi-table tbody tr.row-received td {
+  background-color: rgba(27, 196, 125, 0.18);
+  color: #0f5132;
+  font-weight: 600;
+}
+
+.v-theme--dark .legalisasi-table tbody tr.row-received td {
+  color: #fff;
 }
 
 .text-center { text-align: center; }
@@ -1132,6 +1225,39 @@ onBeforeUnmount(() => {
 .delete-btn-primary {
   background: #e63946 !important;
   color: #fff !important;
+}
+
+.detail-card {
+  border-radius: 22px;
+  padding-block: 12px 8px;
+  padding-inline: 8px;
+}
+
+.detail-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  text-align: center;
+  color: #17a2a6;
+  padding-block: 12px 4px;
+}
+
+.detail-summary {
+  max-inline-size: 520px;
+  margin-inline: auto;
+}
+
+.detail-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding-block-end: 16px;
+}
+
+.detail-btn {
+  border-radius: 8px;
+  min-inline-size: 140px;
+  text-transform: none;
+  font-weight: 600;
 }
 
 @media (max-width: 960px) {

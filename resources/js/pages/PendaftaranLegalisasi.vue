@@ -54,38 +54,40 @@
               <colgroup>
                 <col class="col-no">
                 <col class="col-tanggal">
-                <col class="col-tagihan">
-                <col class="col-va">
-                <col class="col-resi">
-                <col class="col-status">
-              </colgroup>
-              <thead>
-                <tr>
-                  <th>No</th>
-                  <th>Tanggal Pengajuan</th>
-                  <th>Tagihan</th>
-                  <th>Jumlah</th>
-                  <th>No. Resi</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-if="loading">
-                  <td
-                    colspan="6"
-                    class="empty-row"
-                  >
-                    Memuat data...
-                  </td>
-                </tr>
-                <tr v-else-if="!paginatedData.length">
-                  <td
-                    colspan="6"
-                    class="empty-row"
-                  >
-                    Tidak ada data pengajuan legalisasi.
-                  </td>
-                </tr>
+              <col class="col-tagihan">
+              <col class="col-va">
+              <col class="col-resi">
+              <col class="col-status">
+              <col class="col-aksi">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Tanggal Pengajuan</th>
+                <th>Tagihan</th>
+                <th>Jumlah</th>
+                <th>No. Resi</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-if="loading">
+                <td
+                  colspan="7"
+                  class="empty-row"
+                >
+                  Memuat data...
+                </td>
+              </tr>
+              <tr v-else-if="!paginatedData.length">
+                <td
+                  colspan="7"
+                  class="empty-row"
+                >
+                  Tidak ada data pengajuan legalisasi.
+                </td>
+              </tr>
                 <tr
                   v-for="(item, index) in paginatedData"
                   :key="item.kdlegalisasi || item.id || index"
@@ -108,8 +110,34 @@
                   <td v-else>
                     -
                   </td>
-                  <td :class="statusClass(statusText(item))">
-                    {{ statusText(item) }}
+                  <td>
+                    <span :class="statusClass(statusText(item))">
+                      {{ statusText(item) }}
+                    </span>
+                  </td>
+                  <td data-label="Aksi" class="action-cell">
+                    <VBtn
+                      icon
+                      variant="text"
+                      color="success"
+                      class="action-icon-btn"
+                      :loading="receivingId === getRowId(item)"
+                      :disabled="!canConfirmReceipt(item) || receivingId !== null"
+                      @click="updateReceiptStatus(item, 'received')"
+                    >
+                      <VIcon icon="ri-check-line" />
+                    </VBtn>
+                    <VBtn
+                      icon
+                      variant="text"
+                      color="error"
+                      class="action-icon-btn"
+                      :loading="receivingId === getRowId(item)"
+                      :disabled="!canConfirmReceipt(item) || receivingId !== null"
+                      @click="updateReceiptStatus(item, 'not_received')"
+                    >
+                      <VIcon icon="ri-close-line" />
+                    </VBtn>
                   </td>
                 </tr>
               </tbody>
@@ -294,6 +322,8 @@
                 v-else
                 color="#17a2a6"
                 style="border-radius: 10px; background: rgb(var(--v-theme-primary)); color: #fff; font-size: 1.1rem; font-weight: 500; min-block-size: 48px; min-inline-size: 120px;"
+                :loading="submitLoading"
+                :disabled="submitLoading"
                 @click="handleSubmit"
               >
                 Kirim
@@ -708,12 +738,12 @@ export default {
     })
     
     const statusClass = status => {
-      if (!status) return 'bg-white'
-      switch((status || '').toLowerCase()) {
-      case 'done': return 'bg-green'
-      case 'dikirim': return 'bg-white'
-      default: return 'bg-white'
-      }
+      const key = (status || '').toLowerCase()
+      if (key === 'diterima') return 'status-chip status-approved'
+      if (key === 'gagal') return 'status-chip status-failed'
+      if (key === 'dikirim') return 'status-chip status-shipped'
+
+      return 'status-chip status-pending'
     }
 
     const formatDate = date => date ? new Date(date).toLocaleDateString('id-ID') : '-'
@@ -730,9 +760,59 @@ export default {
     }
 
     const statusText = item => {
+      if (item?.status_penerimaan === 'received') return 'Diterima'
+      if (item?.status_penerimaan === 'not_received') return 'Gagal'
       if (item?.tgl_dikirim) return 'Dikirim'
-      
+
       return 'Pending'
+    }
+
+    const getRowId = item => item?.kdlegalisasi || item?.id
+
+    const canConfirmReceipt = item => !!item?.tgl_dikirim && !item?.status_penerimaan
+
+    const updateReceiptStatus = async (item, status) => {
+      const id = getRowId(item)
+      if (!id) return
+      if (!canConfirmReceipt(item)) return
+
+      receivingId.value = id
+      errorMessage.value = ''
+      successMessage.value = ''
+
+      try {
+        const headers = {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        }
+        const token = sessionStorage.getItem('jwt_token')
+        if (token)
+          headers.Authorization = `Bearer ${token}`
+
+        const res = await fetch(`/api/form-legalisasi/${id}`, {
+          method: 'PUT',
+          headers,
+          body: JSON.stringify({ status_penerimaan: status }),
+        })
+
+        const json = await res.json()
+        if (!res.ok || json.success === false)
+          throw new Error(json.message || 'Gagal memperbarui status penerimaan')
+
+        pengajuanList.value = pengajuanList.value.map(row => {
+          if (getRowId(row) !== id) return row
+          return { ...row, ...json.data }
+        })
+
+        if (json.new_record) {
+          pengajuanList.value.unshift(json.new_record)
+        }
+      } catch (e) {
+        errorMessage.value = e.message || 'Gagal memperbarui status penerimaan'
+        openModal('error', errorMessage.value)
+      } finally {
+        receivingId.value = null
+      }
     }
 
     // State pengajuan yang dipilih
@@ -766,6 +846,7 @@ export default {
     const notifMessage = ref('')
     const userNim = ref('')
     const notifTimer = ref(null)
+    const receivingId = ref(null)
 
     const showCaraBayarDialog = ref(false)
     const activeBank = ref('bsi')
@@ -1013,6 +1094,10 @@ export default {
       formatDate,
       formatRupiah,
       statusText,
+      receivingId,
+      getRowId,
+      canConfirmReceipt,
+      updateReceiptStatus,
       paginatedData,
       currentPage,
       itemsPerPage,
@@ -1057,6 +1142,7 @@ export default {
 .pengajuan-table col.col-va { inline-size: 14%; }
 .pengajuan-table col.col-resi { inline-size: 22%; }
 .pengajuan-table col.col-status { inline-size: 12%; }
+.pengajuan-table col.col-aksi { inline-size: 10%; }
 
 .pengajuan-table th,
 .pengajuan-table td {
@@ -1094,6 +1180,47 @@ export default {
 
 .pengajuan-table tbody tr:hover td {
   background-color: rgba(var(--v-theme-on-surface), 0.04);
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding-block: 2px;
+  padding-inline: 10px;
+  text-transform: uppercase;
+}
+
+.status-approved {
+  background: rgba(27, 196, 125, 0.15);
+  color: #1bc47d;
+}
+
+.status-failed {
+  background: rgba(230, 57, 70, 0.15);
+  color: #e63946;
+}
+
+.status-shipped {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+.status-pending {
+  background: rgba(var(--v-theme-on-surface), 0.08);
+  color: rgba(var(--v-theme-on-surface), 0.7);
+}
+
+.action-cell {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.action-icon-btn {
+  min-inline-size: 36px;
 }
 
 .styled-summary-table td {

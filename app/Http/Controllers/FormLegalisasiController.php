@@ -127,14 +127,36 @@ class FormLegalisasiController extends Controller
             'telp_penerima' => 'nullable|string|max:50',
             'comment' => 'nullable|string',
             'dokumen' => 'nullable|string|max:50',
+            'status_penerimaan' => 'nullable|in:received,not_received',
         ]);
 
         $formLegalisasi = FormLegalisasi::findOrFail($id);
         $formLegalisasi->update($validated);
 
+        $newRecord = null;
+        $requestedStatus = $validated['status_penerimaan'] ?? null;
+        if ($requestedStatus === 'not_received' && $formLegalisasi->status_penerimaan === 'not_received') {
+            $newRecord = FormLegalisasi::create([
+                'kdmahasiswa' => $formLegalisasi->kdmahasiswa,
+                'jumlah_legalisasi' => $formLegalisasi->jumlah_legalisasi,
+                'biaya_legalisasi' => null,
+                'alamat_kirim' => $formLegalisasi->alamat_kirim,
+                'nama_penerima_legalisasi' => $formLegalisasi->nama_penerima_legalisasi,
+                'noresi' => null,
+                'idtagihan' => null,
+                'tgl_dikirim' => null,
+                'kdlegalisasi_sebelum' => $formLegalisasi->getKey(),
+                'telp_penerima' => $formLegalisasi->telp_penerima,
+                'comment' => $formLegalisasi->comment,
+                'dokumen' => $formLegalisasi->dokumen,
+                'status_penerimaan' => null,
+            ]);
+        }
+
         return response()->json([
             'success' => true,
             'data' => $formLegalisasi,
+            'new_record' => $newRecord,
         ]);
     }
 

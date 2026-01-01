@@ -25,6 +25,7 @@ class FormLegalisasi extends Model
         'telp_penerima',
         'comment',
         'dokumen',
+        'status_penerimaan',
     ];
 
     public $timestamps = true;
