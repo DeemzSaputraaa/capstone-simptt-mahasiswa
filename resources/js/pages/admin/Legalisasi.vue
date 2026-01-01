@@ -139,6 +139,10 @@ const closeResiDialog = () => {
 
 const saveResi = async () => {
   if (!resiTarget.value) return
+  if (!/^[A-Za-z0-9]+$/.test(resiValue.value || '')) {
+    errorMessage.value = 'Nomor resi hanya boleh berisi huruf dan angka'
+    return
+  }
 
   errorMessage.value = ''
   successMessage.value = ''
@@ -888,6 +892,8 @@ onBeforeUnmount(() => {
         <VTextField
           v-model="resiValue"
           label="Nomor Resi"
+          inputmode="text"
+          pattern="[A-Za-z0-9]+"
           variant="outlined"
           autofocus
         />

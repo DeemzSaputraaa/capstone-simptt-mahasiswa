@@ -108,22 +108,23 @@ const hasNewCommentForAdmin = item => {
   return count > seenCount
 }
 
+
 const filteredValidasi = computed(() => {
   const sorted = [...daftarValidasi.value].sort((a, b) => getSortDate(b) - getSortDate(a))
 
   return sorted.filter(item => {
     const isApproved = !!item?.is_ijazah_validate && !!item?.is_transkrip_validate
     const hasComment = (item?.comment_count || 0) > 0
-    const hasUnread = hasNewCommentForAdmin(item)
+  const hasUnread = hasNewCommentForAdmin(item)
 
-    if (filterApprove.value === 'approved' && !isApproved) return false
-    if (filterApprove.value === 'pending' && isApproved) return false
+  if (filterApprove.value === 'approved' && !isApproved) return false
+  if (filterApprove.value === 'pending' && isApproved) return false
 
-    if (filterComment.value === 'new' && !hasUnread) return false
-    if (filterComment.value === 'none' && hasUnread) return false
+  if (filterComment.value === 'unread' && !hasUnread) return false
+  if (filterComment.value === 'read' && hasUnread) return false
 
-    return true
-  })
+  return true
+})
 })
 
 const normalizeId = value => {
@@ -410,8 +411,8 @@ onMounted(() => {
           v-model="filterComment"
           :items="[
             { title: 'Semua', value: 'all' },
-            { title: 'Ada', value: 'new' },
-            { title: 'Tidak Ada', value: 'none' },
+            { title: 'Belum Dibaca', value: 'unread' },
+            { title: 'Telah Dibaca', value: 'read' },
           ]"
           density="compact"
           style="max-inline-size: 160px;"
@@ -814,6 +815,7 @@ onMounted(() => {
   opacity: 1;
   transform: translateY(-2px);
 }
+
 
 .table-footer {
   display: flex;

@@ -54,40 +54,40 @@
               <colgroup>
                 <col class="col-no">
                 <col class="col-tanggal">
-              <col class="col-tagihan">
-              <col class="col-va">
-              <col class="col-resi">
-              <col class="col-status">
-              <col class="col-aksi">
-            </colgroup>
-            <thead>
-              <tr>
-                <th>No</th>
-                <th>Tanggal Pengajuan</th>
-                <th>Tagihan</th>
-                <th>Jumlah</th>
-                <th>No. Resi</th>
-                <th>Status</th>
-                <th>Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-if="loading">
-                <td
-                  colspan="7"
-                  class="empty-row"
-                >
-                  Memuat data...
-                </td>
-              </tr>
-              <tr v-else-if="!paginatedData.length">
-                <td
-                  colspan="7"
-                  class="empty-row"
-                >
-                  Tidak ada data pengajuan legalisasi.
-                </td>
-              </tr>
+                <col class="col-tagihan">
+                <col class="col-va">
+                <col class="col-resi">
+                <col class="col-status">
+                <col class="col-aksi">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Tanggal Pengajuan</th>
+                  <th>Tagihan</th>
+                  <th>Jumlah</th>
+                  <th>No. Resi</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-if="loading">
+                  <td
+                    colspan="7"
+                    class="empty-row"
+                  >
+                    Memuat data...
+                  </td>
+                </tr>
+                <tr v-else-if="!paginatedData.length">
+                  <td
+                    colspan="7"
+                    class="empty-row"
+                  >
+                    Tidak ada data pengajuan legalisasi.
+                  </td>
+                </tr>
                 <tr
                   v-for="(item, index) in paginatedData"
                   :key="item.kdlegalisasi || item.id || index"
@@ -115,7 +115,10 @@
                       {{ statusText(item) }}
                     </span>
                   </td>
-                  <td data-label="Aksi" class="action-cell">
+                  <td
+                    data-label="Aksi"
+                    class="action-cell"
+                  >
                     <VBtn
                       icon
                       variant="text"
@@ -220,6 +223,8 @@
                 <VTextField
                   v-model="form.alamat"
                   label="Alamat"
+                  hint="Contoh: Jl. Mlati No. 12, Sleman"
+                  persistent-hint
                   outlined
                   dense
                   hide-details
@@ -231,6 +236,8 @@
                 <VTextField
                   v-model="form.namaPenerima"
                   label="Nama Penerima"
+                  hint="Hanya huruf"
+                  persistent-hint
                   outlined
                   dense
                   hide-details
@@ -242,6 +249,8 @@
                 <VTextField
                   v-model="form.noTelpPenerima"
                   label="No Telp Penerima"
+                  hint="Hanya angka"
+                  persistent-hint
                   outlined
                   dense
                   hide-details
@@ -785,6 +794,7 @@ export default {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         }
+
         const token = sessionStorage.getItem('jwt_token')
         if (token)
           headers.Authorization = `Bearer ${token}`
@@ -801,6 +811,7 @@ export default {
 
         pengajuanList.value = pengajuanList.value.map(row => {
           if (getRowId(row) !== id) return row
+          
           return { ...row, ...json.data }
         })
 
@@ -929,6 +940,21 @@ export default {
       if (currentStep.value === 1) {
         if (!form.value.jml || !form.value.alamat || !form.value.namaPenerima || !form.value.noTelpPenerima) {
           openModal('warning', 'Mohon lengkapi semua data pendaftaran legalisasi')
+          
+          return
+        }
+        if (!/^[A-Z0-9\s.,-]+$/i.test(form.value.alamat || '')) {
+          openModal('warning', 'Alamat hanya boleh berisi huruf, angka, spasi, titik, koma, dan tanda strip')
+          
+          return
+        }
+        if (!/^[A-Z\s]+$/i.test(form.value.namaPenerima || '')) {
+          openModal('warning', 'Nama penerima hanya boleh berisi huruf dan spasi')
+          
+          return
+        }
+        if (!/^\d+$/.test(form.value.noTelpPenerima || '')) {
+          openModal('warning', 'No telp penerima hanya boleh berisi angka')
           
           return
         }
@@ -1194,17 +1220,17 @@ export default {
 }
 
 .status-approved {
-  background: rgba(27, 196, 125, 0.15);
+  background: rgba(27, 196, 125, 15%);
   color: #1bc47d;
 }
 
 .status-failed {
-  background: rgba(230, 57, 70, 0.15);
+  background: rgba(230, 57, 70, 15%);
   color: #e63946;
 }
 
 .status-shipped {
-  background: rgba(59, 130, 246, 0.15);
+  background: rgba(59, 130, 246, 15%);
   color: #3b82f6;
 }
 
