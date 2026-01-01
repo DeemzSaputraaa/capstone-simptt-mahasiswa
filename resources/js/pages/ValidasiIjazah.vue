@@ -59,23 +59,25 @@
           </VCardTitle>
           <VCardText>
             <!-- Form komentar -->
-            <VTextField
-              v-model="newComment"
-              label="Tulis komentar..."
-              outlined
-              dense
-              hide-details
-              class="mb-3"
-              @keyup.enter="addComment"
-            />
-            <VBtn
-              color="primary"
-              size="small"
-              class="mb-4"
-              @click="addComment"
-            >
-              Kirim Komentar
-            </VBtn>
+            <div class="comment-input-row">
+              <VTextField
+                v-model="newComment"
+                label="Tulis komentar..."
+                outlined
+                dense
+                hide-details
+                class="comment-input-field"
+                @keyup.enter="addComment"
+              />
+              <VBtn
+                color="primary"
+                size="small"
+                class="comment-submit-btn"
+                @click="addComment"
+              >
+                Kirim Komentar
+              </VBtn>
+            </div>
             <!-- Daftar Komentar -->
             <div class="comments-list">
               <CommentItem
@@ -916,6 +918,22 @@ export default {
   border: 1px solid rgba(0, 0, 0, 12%);
   border-radius: 8px;
   background-color: var(--v-theme-surface);
+}
+
+.comment-input-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-block-end: 16px;
+}
+
+.comment-input-field {
+  flex: 1 1 240px;
+}
+
+.comment-submit-btn {
+  min-inline-size: 140px;
 }
 
 .comment-card {

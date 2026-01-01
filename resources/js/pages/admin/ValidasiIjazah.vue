@@ -210,6 +210,27 @@ const findLatestCommentDate = items => {
   }, null)
 }
 
+const formatCommentDate = value => {
+  if (!value) return '-'
+  const parsed = value instanceof Date ? value : new Date(value)
+  if (Number.isNaN(parsed.getTime())) return '-'
+
+  return new Intl.DateTimeFormat('id-ID', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(parsed)
+}
+
+const normalizeCommentDates = items => {
+  if (!Array.isArray(items)) return []
+
+  return items.map(item => ({
+    ...item,
+    date: item?.date ? new Date(item.date) : new Date(),
+    replies: normalizeCommentDates(item?.replies),
+  }))
+}
+
 const fetchComments = async item => {
   loadingComments.value = true
   errorMessage.value = null
@@ -220,7 +241,7 @@ const fetchComments = async item => {
         ...authHeaders(),
       },
     })
-    comments.value = data || []
+    comments.value = normalizeCommentDates(data || [])
     const totalCount = countAllComments(comments.value)
     const latestDate = findLatestCommentDate(comments.value)
     const recordId = item?.kdvalidasiijazahmahasiswa
@@ -531,6 +552,7 @@ onMounted(() => {
                 class="comment-body"
               >
                 <div class="comment-user">{{ c.user }}</div>
+                <div class="comment-date">{{ formatCommentDate(c.date) }}</div>
                 <div class="comment-text">
                   {{ c.text }}
                 </div>
@@ -837,6 +859,12 @@ onMounted(() => {
 .comment-user {
   font-weight: 700;
   color: rgba(var(--v-theme-on-surface), 0.9);
+  margin-bottom: 4px;
+}
+
+.comment-date {
+  color: rgba(var(--v-theme-on-surface), 0.7);
+  font-size: 0.8rem;
   margin-bottom: 4px;
 }
 
