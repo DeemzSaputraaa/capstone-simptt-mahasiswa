@@ -30,7 +30,9 @@
                 <span
                   class="info-label-center"
                   style=" font-size: 6pt;font-style: italic;"
-                >student number / name :</span>
+                >student number / name</span>
+                <span class="info-separator">:</span>
+                <span class="info-value-center">{{ userDisplay.nim }} / {{ userDisplay.nameEn }}</span>
               </div>
               <div class="info-row">
                 <span class="info-label-center">TEMPAT/TANGGAL LAHIR</span>
@@ -42,6 +44,8 @@
                   class="info-label-center"
                   style=" font-size: 6pt;font-style: italic;"
                 >Place of Birth/Date</span>
+                <span class="info-separator">:</span>
+                <span class="info-value-center">{{ userDisplay.birthPlaceEn }}, {{ userDisplay.birthDateEn }}</span>
               </div>
               <div class="info-row">
                 <span class="info-label-center">PROGRAM STUDI / JENJANG</span>
@@ -53,6 +57,8 @@
                   class="info-label-center"
                   style=" font-size: 6pt;font-style: italic;"
                 >Study Program / Level</span>
+                <span class="info-separator">:</span>
+                <span class="info-value-center">{{ userDisplay.studyProgramEn }} / {{ userDisplay.educationLevelEn }}</span>
               </div>
               <div class="info-row">
                 <span class="info-label-center">TANGGAL KELULUSAN</span>
@@ -64,50 +70,58 @@
                   class="info-label-center"
                   style=" font-size: 6pt;font-style: italic;"
                 >Graduation Date</span>
+                <span class="info-separator">:</span>
+                <span class="info-value-center">{{ userDisplay.graduationDateEn }}</span>
               </div>
               <div class="info-row">
                 <span class="info-label-center">TOTAL SKS</span>
                 <span class="info-separator">:</span>
-                <span class="info-value-center">146</span>
+                <span class="info-value-center">{{ totalCredits }}</span>
               </div>
               <div class="info-row">
                 <span
                   class="info-label-center"
                   style=" font-size: 6pt;font-style: italic;"
                 >Total Credits</span>
+                <span class="info-separator">:</span>
+                <span class="info-value-center">{{ totalCredits }}</span>
               </div>
               <div class="info-row">
                 <span class="info-label-center">INDEKS PRESTASI</span>
                 <span class="info-separator">:</span>
-                <span class="info-value-center">2.94</span>
+                <span class="info-value-center">{{ userDisplay.gpa }}</span>
               </div>
               <div class="info-row">
                 <span
                   class="info-label-center"
                   style=" font-size: 6pt;font-style: italic;"
                 >Grade Point Average</span>
+                <span class="info-separator">:</span>
+                <span class="info-value-center">{{ userDisplay.gpa }}</span>
               </div>
               <div class="info-row">
                 <span class="info-label-center">PREDIKAT KELULUSAN</span>
                 <span class="info-separator">:</span>
-                <span class="info-value-center">MEMUASKAN / <span class="italic-text">SATISFACTORY</span></span>
+                <span class="info-value-center">{{ graduationPredicateDisplay }}</span>
               </div>
               <div class="info-row">
                 <span
                   class="info-label-center"
                   style=" font-size: 6pt;font-style: italic;"
                 >Graduation Predicate</span>
+                <span class="info-separator">:</span>
+                <span class="info-value-center">{{ graduationPredicateEnDisplay }}</span>
               </div>
               <div class="info-row">
                 <span class="info-label-center">STATUS</span>
                 <span class="info-separator">:</span>
-                <span class="status-text-inline">Akreditasi LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 tanggal 19 Maret 2024 dengan peringkat "Baik Sekali".</span>
+                <span class="status-text-inline">{{ userDisplay.accreditationDetail }}</span>
               </div>
               <div class="info-row">
                 <span
                   class="italic-text"
                   style="font-size: 6pt;"
-                >Accredited "Very Good" by LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 on March 19, 2024.</span>
+                >{{ userDisplay.accreditationDetailEn }}</span>
               </div>
             </div>
           </div>
@@ -209,7 +223,7 @@
                       {{ mk.nilai }}
                     </td>
                     <td class="td-center">
-                      {{ formatKredit(mk.kredit) }}
+                      {{ formatNilaiAngka(mk.nilaiangka) }}
                     </td>
                   </template>
                   <template v-else-if="mk.isLastEmpty">
@@ -231,27 +245,24 @@
                           </div>
                         </div>
                         <div class="judul-ta">
-                          SISTEM INFORMASI PENDAFTARAN PADA KLINIK FISIOTERAPI<br>
-                          UNIVERSITAS AISYIAH YOGYAKARTA MENGGUNAKAN METODE RAD<br>
-                          (RAPID APPLICATION DEVELOPMENT)
+                          {{ userDisplay.thesisTitle }}
                         </div>
                         <div class="judul-ta italic-text">
-                          REGISTRATION INFORMATION SYSTEM AT AISYIYAH UNIVERSITY PHYSIOTHERAPY CLINIC<br>
-                          YOGYAKARTA USING RAD METHOD (RAPID APPLICATION DEVELOPMENT)
+                          {{ userDisplay.thesisTitleEn }}
                         </div>
                       </div>
 
                       <div class="ta-signature">
                         <div class="location-date">
-                          YOGYAKARTA, 22 MARET 2025<br>
-                          <span class="italic-text">YOGYAKARTA, MARCH 22, 2025</span>
+                          {{ userDisplay.transcriptPlaceDate }}<br>
+                          <span class="italic-text">{{ userDisplay.transcriptPlaceDateEn }}</span>
                         </div>
                         <div class="dekan">
-                          DEKAN FAKULTAS SAINS DAN TEKNOLOGI,<br>
-                          <span class="italic-text">DEAN OF FACULTY OF SCIENCE AND TECHNOLOGY,</span>
+                          {{ userDisplay.certificateSigner2Title }},<br>
+                          <span class="italic-text">{{ userDisplay.certificateSigner2TitleEn }}</span>
                         </div>
                         <div class="nama">
-                          <u>Ar. TIKA AINUNNISA FITRIA, S.T., M.T., Ph.D</u>
+                          <u>{{ userDisplay.certificateSigner2Name }}</u>
                         </div>
                       </div>
                     </div>
@@ -294,46 +305,139 @@ const baseUser = computed(() => {
   return hasProps ? props.user : authUser.value
 })
 
+const formatDateId = value => {
+  if (!value) return ''
+  const raw = String(value).split('T')[0]
+  const match = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+  if (!match) return value
+  const [, year, month, day] = match
+  const months = [
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember',
+  ]
+  const monthName = months[Number(month) - 1] || month
+  return `${Number(day)} ${monthName} ${year}`
+}
+
+const formatDateEn = value => {
+  if (!value) return ''
+  const raw = String(value).trim().split('T')[0]
+  const isoMatch = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+  const monthMap = {
+    januari: 'January',
+    februari: 'February',
+    maret: 'March',
+    april: 'April',
+    mei: 'May',
+    juni: 'June',
+    juli: 'July',
+    agustus: 'August',
+    september: 'September',
+    oktober: 'October',
+    november: 'November',
+    desember: 'December',
+    january: 'January',
+    february: 'February',
+    march: 'March',
+    april_en: 'April',
+    may: 'May',
+    june: 'June',
+    july: 'July',
+    august: 'August',
+    september_en: 'September',
+    october: 'October',
+    november_en: 'November',
+    december: 'December',
+  }
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ]
+  if (isoMatch) {
+    const [, year, month, day] = isoMatch
+    const monthName = months[Number(month) - 1] || month
+    return `${monthName} ${Number(day)}, ${year}`
+  }
+  const textMatch = raw.match(/^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$/)
+  if (textMatch) {
+    const [, day, monthNameRaw, year] = textMatch
+    const key = monthNameRaw.toLowerCase()
+    const monthName = monthMap[key] || monthNameRaw
+    return `${monthName} ${Number(day)}, ${year}`
+  }
+  return value
+}
+
 const userDisplay = computed(() => ({
   nim: baseUser.value?.nim ?? '',
   name: baseUser.value?.namalengkap ?? baseUser.value?.name ?? '',
+  nameEn: baseUser.value?.name_en ?? baseUser.value?.name ?? '',
   birthPlace: baseUser.value?.tempatlahir ?? baseUser.value?.birthPlace ?? '',
-  birthDate: baseUser.value?.tanggallahir ?? baseUser.value?.birthDate ?? '',
+  birthPlaceEn: baseUser.value?.birth_place_en ?? baseUser.value?.birthPlace ?? baseUser.value?.tempatlahir ?? '',
+  birthDate: formatDateId(baseUser.value?.tanggallahir ?? baseUser.value?.birthDate ?? ''),
+  birthDateEn: formatDateEn(baseUser.value?.birth_date_en ?? baseUser.value?.birthDate ?? baseUser.value?.tanggallahir ?? ''),
   studyProgram: baseUser.value?.prodi ?? baseUser.value?.studyProgram ?? '',
+  studyProgramEn: baseUser.value?.studyProgramEn ?? baseUser.value?.study_program_en ?? '',
   degree: baseUser.value?.degree ?? baseUser.value?.jenjang ?? '',
-  graduationDate: baseUser.value?.tanggallulus ?? baseUser.value?.graduationDate ?? '',
+  educationLevelEn: baseUser.value?.educationLevelEn ?? baseUser.value?.education_level_en ?? '',
+  graduationDate: formatDateId(baseUser.value?.tanggallulus ?? baseUser.value?.graduationDate ?? ''),
+  graduationDateEn: formatDateEn(baseUser.value?.graduationDateEn ?? baseUser.value?.graduation_date_en ?? ''),
+  gpa: baseUser.value?.gpa ?? baseUser.value?.ipk ?? '',
+  accreditationDetail: baseUser.value?.accreditationDetail ?? baseUser.value?.detailakreditasi ?? '',
+  accreditationDetailEn: baseUser.value?.accreditationDetailEn ?? baseUser.value?.detailakreditasiinggris ?? '',
+  graduationPredicate: baseUser.value?.graduationPredicate ?? baseUser.value?.predikat ?? '',
+  graduationPredicateEn: baseUser.value?.graduationPredicateEn ?? '',
+  thesisTitle: baseUser.value?.thesisTitle ?? baseUser.value?.judulkaryatulis ?? '',
+  thesisTitleEn: baseUser.value?.thesisTitleEn ?? baseUser.value?.judulkaryatulisinggris ?? '',
+  transcriptPlaceDate: baseUser.value?.transcriptPlaceDate ?? baseUser.value?.tmptgltranskrip ?? '',
+  transcriptPlaceDateEn: baseUser.value?.transcriptPlaceDateEn ?? baseUser.value?.tmptgltranskripinggris ?? '',
+  certificateSigner2Title: baseUser.value?.certificateSigner2Title ?? baseUser.value?.jabatanttd2ijazah ?? '',
+  certificateSigner2TitleEn: baseUser.value?.certificateSigner2TitleEn ?? baseUser.value?.jabatanttd2ijazahinggris ?? '',
+  certificateSigner2Name: baseUser.value?.certificateSigner2Name ?? baseUser.value?.namattd2ijazah ?? '',
 }))
 
-// Helper function untuk konversi nilai ke bobot
-const getNilaiBobot = nilai => {
-  const bobotMap = {
-    'A': 4.0,
-    'AB': 3.5,
-    'B': 3.0,
-    'BC': 2.5,
-    'C': 2.0,
-    'D': 1.0,
-    'E': 0.0,
-  }
-  
-  return bobotMap[nilai] || 0.0
-}
+const totalCredits = computed(() => props.matakuliah.reduce((sum, mk) => sum + Number(mk.sks || 0), 0))
 
-// Helper function untuk format kredit dengan desimal yang tepat
-const formatKredit = kredit => {
-  const num = parseFloat(kredit)
+const graduationPredicateDisplay = computed(() => {
+  return userDisplay.value.graduationPredicate || 'MEMUASKAN'
+})
 
-  // Jika bilangan bulat (desimal .0), tampilkan 1 angka desimal
-  // Jika ada pecahan, tampilkan 2 angka desimal
+const graduationPredicateEnDisplay = computed(() => {
+  return userDisplay.value.graduationPredicateEn || 'SATISFACTORY'
+})
+
+// Helper function untuk format nilai angka dengan desimal yang tepat
+const formatNilaiAngka = nilaiangka => {
+  const num = Number(nilaiangka)
+  if (Number.isNaN(num)) return nilaiangka || ''
   return num % 1 === 0 ? num.toFixed(1) : num.toFixed(2)
 }
 
 const columns = computed(() => {
-  // Add bobot and kredit to each matakuliah
+  // Add nomor urut dan pastikan nilai angka tersedia
   const enrichedData = props.matakuliah.map(mk => ({
     ...mk,
-    bobot: getNilaiBobot(mk.nilai),
-    kredit: formatKredit(mk.sks * getNilaiBobot(mk.nilai)),
+    nilaiangka: mk.nilaiangka ?? '',
   }))
 
   // Set fixed size untuk setiap kolom

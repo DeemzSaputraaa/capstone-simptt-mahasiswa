@@ -307,6 +307,7 @@ class AuthController extends Controller
     public function me(Request $request)
     {
         try {
+            $stripTags = static fn($value) => is_string($value) ? strip_tags($value) : $value;
             $token = JWTAuth::parseToken();
             $payload = $token->getPayload()->toArray();
 
@@ -330,7 +331,10 @@ class AuthController extends Controller
                         'm.kdprodi',
                         'm.kdjenjang',
                         'm.kdunitkerjaprodi',
-                        'm.kdunitkerjafakultas'
+                        'm.kdunitkerjafakultas',
+                        'm.ipk',
+                        'm.judulkaryatulis',
+                        'm.judulkaryatulisinggris'
                     )
                     ->first();
 
@@ -361,8 +365,26 @@ class AuthController extends Controller
                 'birth_place' => $profile->tempatlahir ?? null,
                 'birth_date' => $profile->tanggallahir ?? null,
                 'study_program' => $yudisiumInfo->namaprodi ?? $profile->prodi ?? null,
+                'study_program_en' => $yudisiumInfo->namaprodiinggris ?? null,
                 'degree' => $yudisiumInfo->gelar ?? null,
                 'graduation_date' => $yudisiumInfo->tglkelulusan ?? $yudisiumMeta->tgllulus ?? null,
+                'graduation_date_en' => $yudisiumInfo->tglkelulusaninggris ?? null,
+                'education_level' => $yudisiumInfo->jenjang ?? null,
+                'education_level_en' => $yudisiumInfo->jenjanginggris ?? null,
+                'accreditation_detail' => $yudisiumInfo->detailakreditasi ?? null,
+                'accreditation_detail_en' => $yudisiumInfo->detailakreditasiinggris ?? null,
+                'gpa' => $profile->ipk ?? null,
+                'thesis_title' => $stripTags($profile->judulkaryatulis ?? null),
+                'thesis_title_en' => $stripTags($profile->judulkaryatulisinggris ?? null),
+                'degree_en' => $yudisiumInfo->gelaringgris ?? null,
+                'transcript_place_date' => $yudisiumInfo->tmptgltranskrip ?? null,
+                'transcript_place_date_en' => $yudisiumInfo->tmptgltranskripinggris ?? null,
+                'transcript_signer1_title' => $yudisiumInfo->jabatanttd1transkrip ?? null,
+                'transcript_signer1_title_en' => $yudisiumInfo->jabatanttd1transkripinggris ?? null,
+                'transcript_signer1_name' => $yudisiumInfo->namattd1transkrip ?? null,
+                'certificate_signer2_title' => $yudisiumInfo->jabatanttd2ijazah ?? null,
+                'certificate_signer2_title_en' => $yudisiumInfo->jabatanttd2ijazahinggris ?? null,
+                'certificate_signer2_name' => $yudisiumInfo->namattd2ijazah ?? null,
                 'meta' => [
                     'login_as' => $loginAs,
                     'kdprodi' => $profile->kdprodi ?? null,

@@ -28,6 +28,7 @@ class NilaiKrsController extends Controller
                     'kdkrsnilai',
                     'kodematakuliah',
                     'matakuliah',
+                    'matakuliahinggris',
                     'nilai',
                     'nilaiangka',
                     'sks'

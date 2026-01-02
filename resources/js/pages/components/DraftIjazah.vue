@@ -46,7 +46,7 @@
                   </td>
                   <td class="value">
                     <span class="value-main">{{ user.birthPlace?.toUpperCase() }}, {{ user.birthDate?.toUpperCase() }}</span><br>
-                    <span class="value-sub">{{ user.birthPlace }}, {{ user.birthDate }}</span>
+                    <span class="value-sub">{{ user.birthPlace }}, {{ user.birthDateEn || user.birthDate }}</span>
                   </td>
                 </tr>
                 <tr>
@@ -91,8 +91,8 @@
                     :
                   </td>
                   <td class="value">
-                    <span class="value-main">{{ user.degree?.toUpperCase() }}</span><br>
-                    <span class="value-sub">{{ user.degree }}</span>
+                    <span class="value-main">{{ user.educationLevel?.toUpperCase() || user.degree?.toUpperCase() }}</span><br>
+                    <span class="value-sub">{{ user.educationLevelEn || user.degree }}</span>
                   </td>
                 </tr>
                 <tr>
@@ -104,7 +104,7 @@
                   </td>
                   <td class="value">
                     <span class="value-main">{{ user.graduationDate?.toUpperCase() }}</span><br>
-                    <span class="value-sub">{{ user.graduationDate }}</span>
+                    <span class="value-sub">{{ user.graduationDateEn || user.graduationDate }}</span>
                   </td>
                 </tr>
                 <tr>
@@ -115,24 +115,24 @@
                     :
                   </td>
                   <td class="value">
-                    Akreditasi LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 tanggal 19 Maret 2024 dengan peringkat "Baik Sekali".<br><span class="sub-label">Accredited "Very Good" by LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 on March 19, 2024.</span>
+                    {{ user.accreditationDetail }}<br><span class="sub-label">{{ user.accreditationDetailEn }}</span>
                   </td>
                 </tr>
               </tbody>
             </table>
-            <div class="ijazah-explanation">
-              Ijazah ini diserahkan setelah yang bersangkutan memenuhi semua persyaratan yang ditentukan, dan kepadanya dilimpahkan segala wewenang dan hak yang berhubungan dengan ijazah yang dimilikinya, serta berhak memakai gelar Sarjana Komputer (S.Kom.).<br>
-              <span class="sub-label">This certificate is awarded in recognition of fulfillment of the requirements for the degree. Therefore, the person has been awarded the degree of Bachelor of Computer Science with all rights and privileges associated with the degree.</span>
-            </div>
+          <div class="ijazah-explanation">
+              Ijazah ini diserahkan setelah yang bersangkutan memenuhi semua persyaratan yang ditentukan, dan kepadanya dilimpahkan segala wewenang dan hak yang berhubungan dengan ijazah yang dimilikinya, serta berhak memakai gelar {{ user.degree || '' }}.<br>
+              <span class="sub-label">This certificate is awarded in recognition of fulfillment of the requirements for the degree. Therefore, the person has been awarded the degree of {{ user.degreeEn || '' }} with all rights and privileges associated with the degree.</span>
+          </div>
           </div>
           <div class="ijazah-signatures">
             <div class="rektor">
               <div class="signature-label">
-                REKTOR,<br><span class="sub-label">RECTOR,</span>
+                {{ user.transcriptSigner1Title }},<br><span class="sub-label">{{ user.transcriptSigner1TitleEn }}</span>
               </div>
               <div class="ttd-space" />
               <div class="nama">
-                Dr. WARSITI, S.Kp., M.Kep., Sp.Mat.
+                {{ user.transcriptSigner1Name }}
               </div>
             </div>
             <div class="stamp-area">
@@ -140,14 +140,14 @@
             </div>
             <div class="dekan">
               <div class="date-location">
-                YOGYAKARTA, 22 MARET 2025<br><span class="sub-label">YOGYAKARTA, MARCH 22, 2025</span>
+                {{ user.transcriptPlaceDate }}<br><span class="sub-label">{{ user.transcriptPlaceDateEn }}</span>
               </div>
               <div class="signature-label">
-                DEKAN FAKULTAS SAINS DAN TEKNOLOGI,<br><span class="sub-label">DEAN OF FACULTY OF SCIENCE AND TECHNOLOGY,</span>
+                {{ user.certificateSigner2Title }},<br><span class="sub-label">{{ user.certificateSigner2TitleEn }}</span>
               </div>
               <div class="ttd-space" />
               <div class="nama">
-                Ar. TIKA AINUNNISA FITRIA, S.T., M.T., Ph.D
+                {{ user.certificateSigner2Name }}
               </div>
             </div>
           </div>

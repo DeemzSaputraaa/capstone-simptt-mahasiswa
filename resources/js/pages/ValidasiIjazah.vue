@@ -242,73 +242,33 @@ export default {
       nim: '',
       birthPlace: '',
       birthDate: '',
+      birthDateEn: '',
       studyProgram: '',
+      studyProgramEn: '',
       degree: '',
+      degreeEn: '',
       graduationDate: '',
+      graduationDateEn: '',
+      educationLevel: '',
+      educationLevelEn: '',
+      accreditationDetail: '',
+      accreditationDetailEn: '',
+      gpa: '',
+      graduationPredicate: '',
+      graduationPredicateEn: '',
+      thesisTitle: '',
+      thesisTitleEn: '',
+      transcriptPlaceDate: '',
+      transcriptPlaceDateEn: '',
+      transcriptSigner1Title: '',
+      transcriptSigner1TitleEn: '',
+      transcriptSigner1Name: '',
+      certificateSigner2Title: '',
+      certificateSigner2TitleEn: '',
+      certificateSigner2Name: '',
     })
 
-    // Daftar matakuliah (array of object)
-    const matakuliah = ref([
-      { no: 1, kode: 'TIK0050', nama: 'PENGUJIAN PERANGKAT LUNAK', nama_en: 'Software Testing', sks: 3, nilai: 'A' },
-      { no: 2, kode: 'TIK0051', nama: 'REKAYASA WEB', nama_en: 'Web Engineering', sks: 3, nilai: 'C' },
-      { no: 3, kode: 'TIK0054', nama: 'INTEGRASI SISTEM', nama_en: 'System Integration', sks: 3, nilai: 'A' },
-      { no: 4, kode: 'TIK1001', nama: 'KALKULUS', nama_en: 'Calculus', sks: 2, nilai: 'BC' },
-      { no: 5, kode: 'TIK1002', nama: 'LOGIKA INFORMATIKA', nama_en: 'Informatics Logic', sks: 2, nilai: 'BC' },
-      { no: 6, kode: 'TIK1003', nama: 'PENGANTAR TEKNOLOGI INFORMASI', nama_en: 'Introduction to Information Technology', sks: 3, nilai: 'A' },
-      { no: 7, kode: 'TIK1004', nama: 'DASAR PEMROGRAMAN', nama_en: 'Basic Programming', sks: 3, nilai: 'B' },
-      { no: 8, kode: 'TIK1005', nama: 'BASIS DATA', nama_en: 'Database', sks: 3, nilai: 'B' },
-      { no: 9, kode: 'TIK2006', nama: 'MATEMATIKA DISKRIT', nama_en: 'Discrete Mathematics', sks: 2, nilai: 'B' },
-      { no: 10, kode: 'TIK2007', nama: 'ALGORITMA PEMROGRAMAN', nama_en: 'Programming Algorithm', sks: 3, nilai: 'A' },
-      { no: 11, kode: 'TIK2008', nama: 'STATISTIK DAN PROBABILITAS', nama_en: 'Statistics and Probability', sks: 2, nilai: 'B' },
-      { no: 12, kode: 'TIK2009', nama: 'ORGANISASI DAN ARSITEKTUR KOMPUTER', nama_en: 'Computer Organization and Architecture', sks: 3, nilai: 'A' },
-      { no: 13, kode: 'TIK2010', nama: 'JARINGAN KOMPUTER', nama_en: 'Computer Network', sks: 3, nilai: 'B' },
-      { no: 14, kode: 'TIK2011', nama: 'PEMROGRAMAN BERORIENTASI OBJEK', nama_en: 'Object Oriented Programming', sks: 3, nilai: 'A' },
-      { no: 15, kode: 'TIK3012', nama: 'PEMROGRAMAN WEB', nama_en: 'Web Programming', sks: 3, nilai: 'A' },
-      { no: 16, kode: 'TIK3013', nama: 'STRUKTUR DATA', nama_en: 'Data Structure', sks: 3, nilai: 'A' },
-      { no: 17, kode: 'TIK3014', nama: 'SISTEM OPERASI', nama_en: 'Operating System', sks: 3, nilai: 'A' },
-      { no: 18, kode: 'TIK3015', nama: 'ANALISIS DAN PERANCANGAN SISTEM INFORMASI', nama_en: 'Information System Analysis and Design', sks: 3, nilai: 'B' },
-      { no: 19, kode: 'TIK3016', nama: 'GRAFIKA KOMPUTER', nama_en: 'Computer Graphics', sks: 2, nilai: 'B' },
-      { no: 20, kode: 'TIK3017', nama: 'SISTEM PAKAR', nama_en: 'Expert System', sks: 2, nilai: 'B' },
-      { no: 21, kode: 'TIK3018', nama: 'PEMROGRAMAN PERANGKAT BERGERAK', nama_en: 'Mobile Device Programming', sks: 3, nilai: 'A' },
-      { no: 22, kode: 'TIK3019', nama: 'KEAMANAN INFORMASI', nama_en: 'Information Security', sks: 3, nilai: 'B' },
-      { no: 23, kode: 'TIK4020', nama: 'REKAYASA PERANGKAT LUNAK', nama_en: 'Software Engineering', sks: 3, nilai: 'B' },
-      { no: 24, kode: 'TIK4021', nama: 'PEMROGRAMAN VISUAL', nama_en: 'Visual Programming', sks: 3, nilai: 'A' },
-      { no: 25, kode: 'TIK4022', nama: 'DATA MINING', nama_en: 'Data Mining', sks: 2, nilai: 'B' },
-      { no: 26, kode: 'TIK4023', nama: 'PEMROGRAMAN JARINGAN', nama_en: 'Network Programming', sks: 3, nilai: 'A' },
-      { no: 27, kode: 'TIK4024', nama: 'KECERDASAN BUATAN', nama_en: 'Artificial Intelligence', sks: 3, nilai: 'A' },
-      { no: 28, kode: 'TIK4025', nama: 'ARSITEKTUR ENTERPRISE', nama_en: 'Enterprise Architecture', sks: 2, nilai: 'C' },
-      { no: 29, kode: 'TIK5026', nama: 'TEORI BAHASA DAN OTOMATA', nama_en: 'Theory of Formal Language and Automata', sks: 3, nilai: 'B' },
-      { no: 30, kode: 'TIK5027', nama: 'MANAJEMEN PROYEK TEKNOLOGI INFORMASI', nama_en: 'Information Technology Project Management', sks: 3, nilai: 'B' },
-      { no: 31, kode: 'TIK5028', nama: 'SISTEM INFORMASI GEOGRAFIS', nama_en: 'Geographic Information System', sks: 3, nilai: 'BC' },
-      { no: 32, kode: 'TIK5029', nama: 'DESAIN DAN ANALISIS ALGORITMA', nama_en: 'Algorithm Design and Analysis', sks: 3, nilai: 'B' },
-      { no: 33, kode: 'TIK5030', nama: 'SISTEM INFORMASI RUMAH SAKIT', nama_en: 'Hospital Information System', sks: 2, nilai: 'BC' },
-      { no: 34, kode: 'TIK5031', nama: 'SISTEM PENDUKUNG KEPUTUSAN', nama_en: 'Decision Support System', sks: 2, nilai: 'C' },
-      { no: 35, kode: 'TIK5032', nama: 'PEMROGRAMAN SISTEM DAN JARINGAN', nama_en: 'System and Network Programming', sks: 3, nilai: 'BC' },
-      { no: 36, kode: 'TIK6033', nama: 'INTERNSHIP', nama_en: 'Internship', sks: 3, nilai: 'C' },
-      { no: 37, kode: 'TIK6034', nama: 'TRENDS IN INFORMATION TECHNOLOGY', nama_en: 'Trends in Information Technology', sks: 2, nilai: 'C' },
-      { no: 38, kode: 'TIK6035', nama: 'EXPERT SYSTEM', nama_en: 'Expert System', sks: 3, nilai: 'C' },
-      { no: 39, kode: 'TIK6036', nama: 'TEKNOLOGI INFORMASI KESEHATAN', nama_en: 'Health Information Technology', sks: 3, nilai: 'A' },
-      { no: 40, kode: 'TIK6037', nama: 'INFORMATION SYSTEM PROJECT MANAGEMENT', nama_en: 'Information System Project Management', sks: 3, nilai: 'B' },
-      { no: 41, kode: 'TIK6038', nama: 'E-BUSINESS', nama_en: 'E-Business', sks: 2, nilai: 'C' },
-      { no: 42, kode: 'TIK6039', nama: 'PERANCANGAN DAN IMPLEMENTASI DATABASE', nama_en: 'Database Design and Implementation', sks: 3, nilai: 'B' },
-      { no: 43, kode: 'TIK6040', nama: 'FRAMEWORK PROGRAMMING', nama_en: 'Framework Programming', sks: 3, nilai: 'A' },
-      { no: 44, kode: 'TIK6041', nama: 'CLIENT-SERVER PROGRAMMING', nama_en: 'Client-Server Programming', sks: 3, nilai: 'B' },
-      { no: 45, kode: 'TIK6042', nama: 'AUDIT SISTEM INFORMASI', nama_en: 'Information System Audit', sks: 2, nilai: 'B' },
-      { no: 46, kode: 'TIK6043', nama: 'CLOUD COMPUTING', nama_en: 'Cloud Computing', sks: 2, nilai: 'C' },
-      { no: 47, kode: 'TIK6044', nama: 'SISTEM INFORMASI MANAJEMEN', nama_en: 'Management Information System', sks: 3, nilai: 'B' },
-      { no: 48, kode: 'TIK6045', nama: 'DATA WAREHOUSE DAN BUSINESS INTELLIGENCE', nama_en: 'Data Warehouse and Business Intelligence', sks: 3, nilai: 'B' },
-      { no: 49, kode: 'TIK6046', nama: 'BIG DATA ANALYTICS', nama_en: 'Big Data Analytics', sks: 3, nilai: 'A' },
-      { no: 50, kode: 'TIK6047', nama: 'PEMROGRAMAN GAME', nama_en: 'Game Programming', sks: 2, nilai: 'B' },
-      { no: 51, kode: 'TIK6048', nama: 'ARTIFICIAL INTELLIGENCE', nama_en: 'Artificial Intelligence', sks: 3, nilai: 'A' },
-      { no: 52, kode: 'TIK6049', nama: 'COMPUTER VISION', nama_en: 'Computer Vision', sks: 3, nilai: 'A' },
-      { no: 53, kode: 'TIK6050', nama: 'MACHINE LEARNING', nama_en: 'Machine Learning', sks: 3, nilai: 'A' },
-      { no: 54, kode: 'TIK6051', nama: 'NATURAL LANGUAGE PROCESSING', nama_en: 'Natural Language Processing', sks: 3, nilai: 'A' },
-      { no: 55, kode: 'UNI0009', nama: 'ENGLISH FOR ACADEMIC READING', nama_en: 'English for Academic Reading', sks: 1, nilai: 'AB' },
-      { no: 56, kode: 'UNI0010', nama: 'ENGLISH FOR ACADEMIC WRITING', nama_en: 'English for Academic Writing', sks: 1, nilai: 'A' },
-      { no: 57, kode: 'UNI0011', nama: 'KEWIRAUSAHAAN', nama_en: 'Entrepreneurship', sks: 3, nilai: 'A' },
-      { no: 58, kode: 'UNI0012', nama: 'KULIAH KERJA NYATA (KKN)', nama_en: 'Community Service', sks: 3, nilai: 'A' },
-      { no: 59, kode: 'UNI0013', nama: 'SKRIPSI', nama_en: 'Thesis', sks: 6, nilai: 'C' },
-    ])
+    const matakuliah = ref([])
 
     const route = useRoute()
     const notifId = route.query.notif
@@ -343,18 +303,151 @@ export default {
 
         const data = await response.json()
         const profile = data.data || data // API /api/me mengembalikan { success, data }
+        const formatDateId = value => {
+          if (!value) return ''
+          const raw = String(value).split('T')[0]
+          const match = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+          if (!match) return value
+          const [, year, month, day] = match
+          const months = [
+            'Januari',
+            'Februari',
+            'Maret',
+            'April',
+            'Mei',
+            'Juni',
+            'Juli',
+            'Agustus',
+            'September',
+            'Oktober',
+            'November',
+            'Desember',
+          ]
+          const monthName = months[Number(month) - 1] || month
+          return `${Number(day)} ${monthName} ${year}`
+        }
+        const formatDateEn = value => {
+          if (!value) return ''
+          const raw = String(value).trim().split('T')[0]
+          const isoMatch = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+          const monthMap = {
+            januari: 'January',
+            februari: 'February',
+            maret: 'March',
+            april: 'April',
+            mei: 'May',
+            juni: 'June',
+            juli: 'July',
+            agustus: 'August',
+            september: 'September',
+            oktober: 'October',
+            november: 'November',
+            desember: 'December',
+            january: 'January',
+            february: 'February',
+            march: 'March',
+            april_en: 'April',
+            may: 'May',
+            june: 'June',
+            july: 'July',
+            august: 'August',
+            september_en: 'September',
+            october: 'October',
+            november_en: 'November',
+            december: 'December',
+          }
+          const months = [
+            'January',
+            'February',
+            'March',
+            'April',
+            'May',
+            'June',
+            'July',
+            'August',
+            'September',
+            'October',
+            'November',
+            'December',
+          ]
+          if (isoMatch) {
+            const [, year, month, day] = isoMatch
+            const monthName = months[Number(month) - 1] || month
+            return `${monthName} ${Number(day)}, ${year}`
+          }
+          const textMatch = raw.match(/^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$/)
+          if (textMatch) {
+            const [, day, monthNameRaw, year] = textMatch
+            const key = monthNameRaw.toLowerCase()
+            const monthName = monthMap[key] || monthNameRaw
+            return `${monthName} ${Number(day)}, ${year}`
+          }
+          return value
+        }
 
         user.value = {
           name: profile.name || profile.namalengkap || '',
           nim: profile.nim || profile.username || '',
           birthPlace: profile.tempatlahir || profile.birth_place || '',
-          birthDate: profile.tanggallahir || profile.birth_date || '',
+          birthDate: formatDateId(profile.tanggallahir || profile.birth_date || ''),
+          birthDateEn: formatDateEn(profile.birth_date_en || profile.tanggallahir || profile.birth_date || ''),
           studyProgram: profile.study_program || profile.prodi || profile.studyProgram || '',
+          studyProgramEn: profile.study_program_en || profile.namaprodiinggris || '',
           degree: profile.degree || profile.gelar || '',
-          graduationDate: profile.graduation_date || profile.tglkelulusan || profile.graduationDate || '',
+          degreeEn: profile.degree_en || profile.gelaringgris || '',
+          graduationDate: formatDateId(profile.graduation_date || profile.tglkelulusan || profile.graduationDate || ''),
+          graduationDateEn: formatDateEn(profile.graduation_date_en || profile.tglkelulusaninggris || ''),
+          educationLevel: profile.education_level || profile.jenjang || '',
+          educationLevelEn: profile.education_level_en || profile.jenjanginggris || '',
+          accreditationDetail: profile.accreditation_detail || profile.detailakreditasi || '',
+          accreditationDetailEn: profile.accreditation_detail_en || profile.detailakreditasiinggris || '',
+          gpa: profile.gpa || profile.ipk || '',
+          graduationPredicate: profile.graduation_predicate || profile.predikat || '',
+          graduationPredicateEn: profile.graduation_predicate_en || '',
+          thesisTitle: profile.thesis_title || profile.judulkaryatulis || '',
+          thesisTitleEn: profile.thesis_title_en || profile.judulkaryatulisinggris || '',
+          transcriptPlaceDate: profile.transcript_place_date || profile.tmptgltranskrip || '',
+          transcriptPlaceDateEn: profile.transcript_place_date_en || profile.tmptgltranskripinggris || '',
+          transcriptSigner1Title: profile.transcript_signer1_title || profile.jabatanttd1transkrip || '',
+          transcriptSigner1TitleEn: profile.transcript_signer1_title_en || profile.jabatanttd1transkripinggris || '',
+          transcriptSigner1Name: profile.transcript_signer1_name || profile.namattd1transkrip || '',
+          certificateSigner2Title: profile.certificate_signer2_title || profile.jabatanttd2ijazah || '',
+          certificateSigner2TitleEn: profile.certificate_signer2_title_en || profile.jabatanttd2ijazahinggris || '',
+          certificateSigner2Name: profile.certificate_signer2_name || profile.namattd2ijazah || '',
         }
       } catch (error) {
         console.error('Tidak bisa memuat data user:', error)
+      }
+    }
+
+    const fetchMatakuliah = async () => {
+      try {
+        const response = await fetch('/api/nilai-krs', {
+          headers: {
+            ...getAuthHeaders(),
+          },
+        })
+
+        if (!response.ok) {
+          const errorText = await response.text()
+          throw new Error(errorText || `Gagal memuat matakuliah (${response.status})`)
+        }
+
+        const data = await response.json()
+        const rows = Array.isArray(data.data) ? data.data : data
+
+        matakuliah.value = rows.map((row, index) => ({
+          no: index + 1,
+          kode: row.kodematakuliah || row.kode || '',
+          nama: row.matakuliah || '',
+          nama_en: row.matakuliahinggris || row.matakuliah_en || '',
+          sks: row.sks || 0,
+          nilai: row.nilai || '',
+          nilaiangka: row.nilaiangka ?? '',
+        }))
+      } catch (error) {
+        console.error('Tidak bisa memuat matakuliah:', error)
+        matakuliah.value = []
       }
     }
 
@@ -757,6 +850,7 @@ export default {
     // Load comments saat komponen dimount jika ada notifikasi
     onMounted(async () => {
       await fetchCurrentUser()
+      await fetchMatakuliah()
 
       if (notifId) {
         showComments.value = true
