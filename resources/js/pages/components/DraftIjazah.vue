@@ -163,7 +163,6 @@ import { computed } from 'vue'
 
 const props = defineProps({
   user: { type: Object, required: true },
-  matakuliah: { type: Array, required: true },
 })
 
 const openPdfViewer = async () => {

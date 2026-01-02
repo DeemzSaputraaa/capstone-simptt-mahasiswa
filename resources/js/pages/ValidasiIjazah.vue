@@ -138,12 +138,13 @@
               Konfirmasi Simpan
             </VCardTitle>
             <VCardText class="confirm-subtitle">
-              <strong>Apakah anda yakin ingin menyimpannya?</strong>
+              <strong>Apakah Anda yakin ingin menyimpan perubahan?</strong>
               <br>
-              <strong>Coba cek ulang lagi datanya.</strong>
+              <span style="color: #666; font-size: 14px;">
+                Pastikan status validasi dan kelengkapan dokumen sudah sesuai sebelum menyimpan.
+              </span>
             </VCardText>
-            <VCardActions class="confirm-actions">
-              <VSpacer />
+            <VCardActions class="confirm-actions justify-center" style="padding: 16px; gap: 12px;">
               <VBtn
                 color="default"
                 variant="flat"
@@ -893,6 +894,207 @@ export default {
       showPdfViewer.value = true
     }
 
+    const generateCombinedPDF = async () => {
+      try {
+        const ijazahElement = document.querySelector('.draft-ijazah-pdf')
+        const transkripElement = document.querySelector('.transkrip-pdf')
+        
+        if (!ijazahElement || !transkripElement) {
+          alert('Error: Tidak dapat menemukan elemen preview')
+          return
+        }
+
+        // Save original borders
+        const ijazahOriginalBorder = ijazahElement.style.border
+        const transkripOriginalBorder = transkripElement.style.border
+        
+        // Temporarily hide borders for PDF generation
+        ijazahElement.style.border = 'none'
+        transkripElement.style.border = 'none'
+
+        console.log('Generating ijazah PDF...')
+        
+        // Generate ijazah PDF
+        const ijazahOpt = {
+          margin: [5, 5, 5, 5],
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { 
+            scale: 2,
+            useCORS: true,
+            logging: false,
+          },
+          jsPDF: { 
+            unit: 'mm', 
+            format: 'a4', 
+            orientation: 'landscape',
+          },
+        }
+        
+        const ijazahPdfBytes = await html2pdf()
+          .set(ijazahOpt)
+          .from(ijazahElement)
+          .outputPdf('arraybuffer')
+        
+        console.log('Generating transkrip PDF...')
+        
+        // Add custom CSS for vertical text rotation (same as TranskripNilai.vue)
+        const transkripStyleElement = document.createElement('style')
+        transkripStyleElement.id = 'transkrip-pdf-style-temp'
+        transkripStyleElement.textContent = `
+          .transkrip-table .vertical-header {
+            display: inline-block !important;
+            width: 100% !important;
+            height: 100% !important;
+            position: relative !important;
+            transform: rotate(90deg) !important;
+            transform-origin: center center !important;
+            white-space: nowrap !important;
+            margin-top: -35px !important;
+          }
+          .transkrip-table .vertical-text-eng {
+            display: block !important;
+            font-size: 5pt !important;
+            font-style: italic !important;
+            font-weight: bold !important;
+            text-align: center !important;
+            line-height: 1.2 !important;
+            margin: 0 !important;
+          }
+          .transkrip-table .vertical-text-indo {
+            display: block !important;
+            font-size: 5pt !important;
+            font-weight: bold !important;
+            text-align: center !important;
+            line-height: 1.2 !important;
+            margin: 0 !important;
+          }
+        `
+        transkripElement.appendChild(transkripStyleElement)
+        
+        // Generate transkrip PDF
+        const transkripOpt = {
+          margin: [5, 2.5, 0, 2.5],
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { 
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            letterRendering: true,
+          },
+          jsPDF: { 
+            unit: 'mm', 
+            format: [337.9, 278],
+            orientation: 'landscape',
+          },
+        }
+        
+        const transkripPdfBytes = await html2pdf()
+          .set(transkripOpt)
+          .from(transkripElement)
+          .outputPdf('arraybuffer')
+        
+        console.log('Merging PDFs using pdf-lib...')
+        
+        // Import pdf-lib
+        const { PDFDocument } = await import('pdf-lib')
+        
+        // Load both PDFs
+        const ijazahPdfDoc = await PDFDocument.load(ijazahPdfBytes)
+        const transkripPdfDoc = await PDFDocument.load(transkripPdfBytes)
+        
+        // Create a new PDF document
+        const mergedPdf = await PDFDocument.create()
+        
+        // Copy all pages from ijazah PDF
+        const ijazahPages = await mergedPdf.copyPages(ijazahPdfDoc, ijazahPdfDoc.getPageIndices())
+        ijazahPages.forEach((page) => {
+          mergedPdf.addPage(page)
+        })
+        
+        // Copy all pages from transkrip PDF
+        const transkripPages = await mergedPdf.copyPages(transkripPdfDoc, transkripPdfDoc.getPageIndices())
+        transkripPages.forEach((page) => {
+          mergedPdf.addPage(page)
+        })
+        
+        console.log('Saving merged PDF...')
+        
+        // Serialize the merged PDF to bytes
+        const mergedPdfBytes = await mergedPdf.save()
+        
+        // Create blob from bytes
+        const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' })
+        const blobUrl = URL.createObjectURL(blob)
+        
+        console.log('Opening merged PDF in new window...')
+        
+        // Open in new window
+        const pdfWindow = window.open('', '_blank')
+        if (!pdfWindow) {
+          alert('Please allow popups for this website')
+          return
+        }
+
+        pdfWindow.document.write(`
+          <html dir="ltr" lang="en">
+          <head>
+            <meta charset="utf-8">
+            <title>Ijazah dan Transkrip.pdf</title>
+            <style>
+              html, body {
+                height: 100%;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+              }
+              embed {
+                width: 100%;
+                height: 100%;
+                display: block;
+              }
+            </style>
+          </head>
+          <body>
+            <embed 
+              type="application/pdf" 
+              src="${blobUrl}#toolbar=1&navpanes=1&scrollbar=1&view=FitH"
+              width="100%"
+              height="100%"
+            >
+          </body>
+          </html>
+        `)
+        pdfWindow.document.close()
+
+        pdfWindow.onbeforeunload = () => {
+          URL.revokeObjectURL(blobUrl)
+        }
+        
+        console.log('PDF merged and opened successfully!')
+        
+        // Restore original borders
+        ijazahElement.style.border = ijazahOriginalBorder
+        transkripElement.style.border = transkripOriginalBorder
+        
+        // Remove temporary style element
+        const tempStyle = document.getElementById('transkrip-pdf-style-temp')
+        if (tempStyle) tempStyle.remove()
+      } catch (error) {
+        console.error('Error generating combined PDF:', error)
+        alert('Error generating PDF: ' + error.message)
+        
+        // Restore original borders even on error
+        const ijazahElement = document.querySelector('.draft-ijazah-pdf')
+        const transkripElement = document.querySelector('.transkrip-pdf')
+        if (ijazahElement) ijazahElement.style.border = ''
+        if (transkripElement) transkripElement.style.border = ''
+        
+        // Remove temporary style element even on error
+        const tempStyle = document.getElementById('transkrip-pdf-style-temp')
+        if (tempStyle) tempStyle.remove()
+      }
+    }
+
     return {
       form,
       fileStatus,
@@ -920,6 +1122,7 @@ export default {
       showComments,
       loadCommentsFromDatabase,
       generatePDF,
+      generateCombinedPDF,
       container,
       canvas, 
       scale,
