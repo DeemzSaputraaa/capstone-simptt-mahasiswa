@@ -18,17 +18,6 @@
         <div class="draft-ijazah-pdf">
           <!-- Existing draft ijazah content -->
 
-          <!-- Nomor Ijazah Nasional (aligned label + value, with English sublabel) -->
-          <div class="ijazah-nomor-top" aria-hidden="false">
-            <div class="nomor-container">
-              <div class="nomor-row">
-                <div class="nomor-labels">Nomor Ijazah Nasional :</div>
-                <div class="nomor-value">05102259012021/500002</div>
-              </div>
-              <div class="nomor-sublabel italic-text">National Certificate Number</div>
-            </div>
-          </div>
-
           <div class="ijazah-header">
             <div class="ijazah-title">
             <!-- Space for university logo/seal -->

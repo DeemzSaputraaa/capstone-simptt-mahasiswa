@@ -595,6 +595,7 @@ onBeforeUnmount(() => {
             <th>Jumlah</th>
             <th>Biaya</th>
             <th>No. Resi</th>
+            <th>No. Resi</th>
             <th>Tgl Dikirim</th>
             <th class="text-center">Aksi</th>
           </tr>
@@ -629,6 +630,7 @@ onBeforeUnmount(() => {
             <td data-label="Dokumen">{{ m.dokumen ?? '-' }}</td>
             <td data-label="Jumlah">{{ m.jumlah_legalisasi ?? '-' }}</td>
     <td data-label="Biaya">
+    <td data-label="Biaya">
       <VBtn
         size="small"
         class="resi-btn"
@@ -637,8 +639,10 @@ onBeforeUnmount(() => {
         @click="openBiayaDialog(m)"
       >
         Biaya
+        Biaya
       </VBtn>
     </td>
+    <td data-label="No. Resi">
     <td data-label="No. Resi">
       <VBtn
         size="small"
@@ -647,6 +651,7 @@ onBeforeUnmount(() => {
         :disabled="!m.biaya_legalisasi || !!m.noresi || approvingId !== null"
         @click="openResiDialog(m)"
       >
+        Resi
         Resi
       </VBtn>
     </td>
@@ -966,11 +971,12 @@ onBeforeUnmount(() => {
 
 .admin-card-title {
   border-radius: 4px 4px 0 0;
-  background: linear-gradient(
-    135deg,
-    rgb(var(--v-theme-primary)) 0%,
-    rgba(var(--v-theme-primary), 0.85) 100%
-  );
+  background:
+    linear-gradient(
+      135deg,
+      rgb(var(--v-theme-primary)) 0%,
+      rgba(var(--v-theme-primary), 0.85) 100%
+    );
   color: rgb(var(--v-theme-on-primary)) !important;
   font-weight: 700;
   letter-spacing: 0.5px;
@@ -991,17 +997,18 @@ onBeforeUnmount(() => {
   border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
   border-radius: 4px;
   background-color: rgb(var(--v-theme-surface));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 5%);
   color: rgb(var(--v-theme-on-surface));
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .legalisasi-table thead {
-  background: linear-gradient(
-    to right,
-    rgba(var(--v-theme-on-surface), 0.04),
-    rgba(var(--v-theme-on-surface), 0.06)
-  );
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background:
+    linear-gradient(
+      to right,
+      rgba(var(--v-theme-on-surface), 0.04),
+      rgba(var(--v-theme-on-surface), 0.06)
+    );
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 5%);
 }
 
 .legalisasi-table thead th {
@@ -1033,7 +1040,7 @@ onBeforeUnmount(() => {
 
 .legalisasi-table tbody tr:hover td {
   background-color: rgba(var(--v-theme-on-surface), 0.05);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 5%);
   transform: translateY(-1px);
 }
 
@@ -1063,9 +1070,9 @@ onBeforeUnmount(() => {
 .legalisasi-filters {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 16px;
   margin-block: 12px 20px;
-  align-items: center;
   padding-inline: 24px;
 }
 
@@ -1076,13 +1083,13 @@ onBeforeUnmount(() => {
 }
 
 .filter-apply-btn {
-  margin-left: auto;
   border-radius: 8px;
-  min-inline-size: 120px;
-  text-transform: none;
-  font-weight: 600;
   background: #17a2a6 !important;
   color: #fff !important;
+  font-weight: 600;
+  margin-inline-start: auto;
+  min-inline-size: 120px;
+  text-transform: none;
 }
 
 .summary {
@@ -1105,17 +1112,17 @@ onBeforeUnmount(() => {
 }
 
 .resi-btn {
-  text-transform: none;
-  min-inline-size: 72px;
   background: #17a2a6 !important;
   color: #fff !important;
   font-weight: 600;
+  min-inline-size: 72px;
+  text-transform: none;
 }
 
 .resi-btn:disabled,
 .filter-apply-btn:disabled {
-  background: rgba(23, 162, 166, 0.35) !important;
-  color: rgba(255, 255, 255, 0.85) !important;
+  background: rgba(23, 162, 166, 35%) !important;
+  color: rgba(255, 255, 255, 85%) !important;
 }
 
 .approve-card {
@@ -1125,24 +1132,24 @@ onBeforeUnmount(() => {
 }
 
 .approve-title {
+  color: #1bc47d;
   font-size: 1.4rem;
   font-weight: 700;
-  text-align: center;
-  color: #1bc47d;
   padding-block: 12px 4px;
+  text-align: center;
 }
 
 .approve-subtitle {
-  text-align: center;
+  color: rgba(var(--v-theme-on-surface), 0.6);
   font-size: 0.95rem;
   font-weight: 600;
-  color: rgba(var(--v-theme-on-surface), 0.6);
   margin-block-end: 16px;
+  text-align: center;
 }
 
 .approve-summary {
-  max-inline-size: 520px;
   margin-inline: auto;
+  max-inline-size: 520px;
 }
 
 .approve-actions {
@@ -1154,9 +1161,9 @@ onBeforeUnmount(() => {
 
 .approve-btn {
   border-radius: 8px;
+  font-weight: 600;
   min-inline-size: 140px;
   text-transform: none;
-  font-weight: 600;
 }
 
 .approve-btn-primary {
@@ -1165,8 +1172,8 @@ onBeforeUnmount(() => {
 }
 
 .approve-date {
-  max-inline-size: 520px;
   margin-inline: auto;
+  max-inline-size: 520px;
 }
 
 .approve-date :deep(.v-field__append-inner) {
@@ -1178,13 +1185,13 @@ onBeforeUnmount(() => {
 }
 
 .approve-date :deep(input[type="date"]) {
-  padding-right: 40px;
+  padding-inline-end: 40px;
 }
 
 .approve-date :deep(input[type="date"]::-webkit-calendar-picker-indicator) {
   position: absolute;
-  right: 12px;
   margin: 0;
+  inset-inline-end: 12px;
 }
 
 .delete-card {
@@ -1194,24 +1201,24 @@ onBeforeUnmount(() => {
 }
 
 .delete-title {
+  color: #e63946;
   font-size: 1.35rem;
   font-weight: 700;
-  text-align: center;
-  color: #e63946;
   padding-block: 12px 4px;
+  text-align: center;
 }
 
 .delete-subtitle {
-  text-align: center;
+  color: rgba(var(--v-theme-on-surface), 0.6);
   font-size: 0.95rem;
   font-weight: 600;
-  color: rgba(var(--v-theme-on-surface), 0.6);
   margin-block-end: 16px;
+  text-align: center;
 }
 
 .delete-summary {
-  max-inline-size: 520px;
   margin-inline: auto;
+  max-inline-size: 520px;
 }
 
 .delete-actions {
@@ -1223,9 +1230,9 @@ onBeforeUnmount(() => {
 
 .delete-btn {
   border-radius: 8px;
+  font-weight: 600;
   min-inline-size: 140px;
   text-transform: none;
-  font-weight: 600;
 }
 
 .delete-btn-primary {
@@ -1273,31 +1280,31 @@ onBeforeUnmount(() => {
 
   .legalisasi-table tbody tr {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 8px;
     padding: 12px;
+    gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   }
 
   .legalisasi-table tbody td {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 4px;
     background-color: rgba(var(--v-theme-surface), 0.9);
+    gap: 4px;
   }
 
   .legalisasi-table tbody td::before {
+    color: rgba(var(--v-theme-on-surface), 0.7);
     content: attr(data-label);
     font-size: 12px;
     font-weight: 600;
-    color: rgba(var(--v-theme-on-surface), 0.7);
     text-transform: uppercase;
   }
 }
 
 @media (prefers-color-scheme: dark) {
   .legalisasi-table {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 25%);
   }
 
   .legalisasi-table thead {

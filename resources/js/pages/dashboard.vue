@@ -1,13 +1,13 @@
 <script setup>
 import {
-  CategoryScale,
-  Chart,
-  Filler,
-  LineController,
-  LineElement,
-  LinearScale,
-  PointElement,
-  Tooltip,
+    CategoryScale,
+    Chart,
+    Filler,
+    LineController,
+    LineElement,
+    LinearScale,
+    PointElement,
+    Tooltip,
 } from 'chart.js'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -427,6 +427,7 @@ const loadNotifications = async () => {
         route: '/pra-yudisium',
         dataId: item.kdprayudisium,
         comment: item.comment,
+        sortDate: item.update_at || item.create_at || null,
       }))
 
     const praRecords = data.filter(item => item.nim === userNim.value || String(item.kdmahasiswa) === String(userNim.value))
@@ -464,6 +465,7 @@ const loadNotifications = async () => {
               route: '/pendaftaran-legalisasi',
               dataId: item.kdlegalisasi || item.id,
               comment: title,
+              sortDate: item.tgl_dikirim || item.update_at || item.create_at || null,
             }
           })
       }
@@ -490,6 +492,7 @@ const loadNotifications = async () => {
         route: '/pra-yudisium',
         dataId: item.kdprayudisium,
         comment: 'Pengajuan Pra Yudisium Anda disetujui.',
+        sortDate: item.update_at || item.create_at || null,
       }))
 
     // Notifikasi untuk balasan admin di validasi ijazah & transkrip
@@ -541,7 +544,11 @@ const loadNotifications = async () => {
       console.error('Gagal memuat notifikasi validasi ijazah', err)
     }
 
-    notifications.value = [...studentNotifications, ...approvedNotifications, ...legalisasiNotifications, ...validasiNotifications]
+    // Sort all notifications by newest first (reverse chronological)
+    const allNotifications = [...studentNotifications, ...approvedNotifications, ...legalisasiNotifications, ...validasiNotifications]
+    notifications.value = allNotifications
+      .sort((a, b) => new Date(b.sortDate || 0) - new Date(a.sortDate || 0))
+      .map(({ sortDate, ...item }) => item)
   } catch (err) {
     console.error(err)
   }

@@ -27,6 +27,12 @@
                 <span class="info-value-center">{{ userDisplay.nim }} / {{ userDisplay.name }}</span>
               </div>
               <div class="info-row">
+                <span
+                  class="info-label-center"
+                  style=" font-size: 6pt;font-style: italic;"
+                >student number / name :</span>
+              </div>
+              <div class="info-row">
                 <span class="info-label-center">TEMPAT/TANGGAL LAHIR</span>
                 <span class="info-separator">:</span>
                 <span class="info-value-center">{{ userDisplay.birthPlace }}, {{ userDisplay.birthDate }}</span>
@@ -103,13 +109,6 @@
                   style="font-size: 6pt;"
                 >Accredited "Very Good" by LAM INFOKOM No. 027/SK/LAM-INFOKOM/Ak/S/III/2024 on March 19, 2024.</span>
               </div>
-            </div>
-            <div class="transkrip-nomor" aria-hidden="false">
-              <div class="nomor-row">
-                <div class="nomor-label">Nomor Ijazah Nasional :</div>
-                <div class="nomor-value-box">05102259012021/500002</div>
-              </div>
-              <div class="nomor-sublabel italic-text">National Certificate Number</div>
             </div>
           </div>
 
@@ -380,48 +379,42 @@ const openPdfViewer = async () => {
 
   style.innerHTML = `
     .transkrip-table .th-vertical {
-      block-size: 54px !important;
-      inline-size: 30px !important;
-      min-inline-size: 30px !important;
-      padding-block: 3px !important;
-      padding-inline: 1px !important;
+      height: 54px !important;
+      width: 30px !important;
+      min-width: 30px !important;
+      padding: 3px 1px !important;
+      vertical-align: middle !important;
+      text-align: center !important;
+      overflow: hidden !important;
     }
     .transkrip-table .vertical-header {
-      display: flex !important;
-      overflow: visible !important;
-      flex-direction: column !important;
-      align-items: center !important;
-      justify-content: center !important;
-      block-size: 100% !important;
-      font-size: 6pt !important;
-      font-weight: bold !important;
-      gap: 2px !important;
-      line-height: 1 !important;
-      margin-block: 0 !important;
-      margin-inline: auto !important;
-      text-orientation: mixed !important;
-      transform: none !important;
+      display: inline-block !important;
+      width: 100% !important;
+      height: 100% !important;
+      position: relative !important;
+      transform: rotate(90deg) !important;
+      transform-origin: center center !important;
       white-space: nowrap !important;
-      writing-mode: vertical-lr !important;
-    }
-    .transkrip-table .vertical-text-indo {
-      display: block !important;
-      font-size: 6pt !important;
-      font-weight: bold !important;
-      inline-size: 100% !important;
-      overflow-wrap: normal !important;
-      text-align: center !important;
-      word-break: keep-all !important;
+      /* UBAH NILAI margin-top UNTUK MENGGESER POSISI TEKS KE ATAS/BAWAH */
+      /* Nilai negatif = geser ke atas, Nilai positif = geser ke bawah */
+      margin-top: -35px !important;
     }
     .transkrip-table .vertical-text-eng {
       display: block !important;
-      font-size: 6pt !important;
+      font-size: 5pt !important;
       font-style: italic !important;
       font-weight: bold !important;
-      inline-size: 100% !important;
-      overflow-wrap: normal !important;
       text-align: center !important;
-      word-break: keep-all !important;
+      line-height: 1.2 !important;
+      margin: 0 !important;
+    }
+    .transkrip-table .vertical-text-indo {
+      display: block !important;
+      font-size: 5pt !important;
+      font-weight: bold !important;
+      text-align: center !important;
+      line-height: 1.2 !important;
+      margin: 0 !important;
     }
   `
   element.appendChild(style)

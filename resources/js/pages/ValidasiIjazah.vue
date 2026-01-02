@@ -34,18 +34,28 @@
         </div>
 
         <div class="action-bar">
-          <VBtn
-            color="error"
-            @click="onLapor"
-          >
-            Lapor
-          </VBtn>
-          <VBtn
-            color="primary"
-            @click="onSimpan"
-          >
-            Simpan
-          </VBtn>
+          <div class="action-bar-left">
+            <VBtn
+              color="success"
+              @click="generateCombinedPDF"
+            >
+              Cetak Ijazah dan Transkrip
+            </VBtn>
+          </div>
+          <div class="action-bar-right">
+            <VBtn
+              color="error"
+              @click="onLapor"
+            >
+              Lapor
+            </VBtn>
+            <VBtn
+              color="primary"
+              @click="onSimpan"
+            >
+              Simpan
+            </VBtn>
+          </div>
         </div>
 
         <!-- Card 3: Komentar -->
@@ -189,6 +199,7 @@
 </template>
 
 <script>
+import html2pdf from 'html2pdf.js'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import CommentItem from '../components/CommentItem.vue'
@@ -1077,9 +1088,15 @@ export default {
 .comment-text,
 .reply-text {
   line-height: 1.5;
-  margin-block-end: 12px;
+  margin-block-end: 0;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+.print-button-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .reply-text {
@@ -1319,9 +1336,16 @@ canvas {
 .action-bar {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 12px;
   margin-block: 20px 24px;
+}
+
+.action-bar-left,
+.action-bar-right {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 @media (max-width: 960px) {
