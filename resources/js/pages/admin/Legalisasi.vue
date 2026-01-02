@@ -22,6 +22,7 @@ const deletingId = ref(null)
 
 const showApproveDialog = ref(false)
 const selectedItem = ref(null)
+
 const approveForm = ref({
   noresi: '',
   tgl_dikirim: '',
@@ -104,10 +105,12 @@ const openApprove = item => {
   if (!item) return
   if (item.biaya_legalisasi === null || item.biaya_legalisasi === undefined || item.biaya_legalisasi === '') {
     openBiayaDialog(item)
+    
     return
   }
   if (!item.noresi) {
     openResiDialog(item)
+    
     return
   }
 
@@ -139,8 +142,9 @@ const closeResiDialog = () => {
 
 const saveResi = async () => {
   if (!resiTarget.value) return
-  if (!/^[A-Za-z0-9]+$/.test(resiValue.value || '')) {
+  if (!/^[A-Z0-9]+$/i.test(resiValue.value || '')) {
     errorMessage.value = 'Nomor resi hanya boleh berisi huruf dan angka'
+    
     return
   }
 
@@ -153,11 +157,13 @@ const saveResi = async () => {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     }
+
     const token = sessionStorage.getItem('jwt_token')
     if (token)
       headers.Authorization = `Bearer ${token}`
 
     const id = getRowId(resiTarget.value)
+
     const res = await fetch(`/api/form-legalisasi/${id}`, {
       method: 'PUT',
       headers,
@@ -170,6 +176,7 @@ const saveResi = async () => {
 
     daftarLegalisasi.value = daftarLegalisasi.value.map(row => {
       if (getRowId(row) !== id) return row
+      
       return { ...row, ...json.data }
     })
 
@@ -206,11 +213,13 @@ const saveBiaya = async () => {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     }
+
     const token = sessionStorage.getItem('jwt_token')
     if (token)
       headers.Authorization = `Bearer ${token}`
 
     const id = getRowId(biayaTarget.value)
+
     const res = await fetch(`/api/form-legalisasi/${id}`, {
       method: 'PUT',
       headers,
@@ -223,6 +232,7 @@ const saveBiaya = async () => {
 
     daftarLegalisasi.value = daftarLegalisasi.value.map(row => {
       if (getRowId(row) !== id) return row
+      
       return { ...row, ...json.data }
     })
 
@@ -247,11 +257,13 @@ const saveApprove = async () => {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     }
+
     const token = sessionStorage.getItem('jwt_token')
     if (token)
       headers.Authorization = `Bearer ${token}`
 
     const id = getRowId(selectedItem.value)
+
     const res = await fetch(`/api/form-legalisasi/${id}`, {
       method: 'PUT',
       headers,
@@ -267,6 +279,7 @@ const saveApprove = async () => {
     // update lokal
     daftarLegalisasi.value = daftarLegalisasi.value.map(row => {
       if (getRowId(row) !== id) return row
+      
       return { ...row, ...json.data }
     })
 
@@ -323,6 +336,7 @@ const deleteItem = async item => {
       method: 'DELETE',
       headers,
     })
+
     const json = await res.json().catch(() => ({}))
     if (!res.ok)
       throw new Error(json.message || `Gagal menghapus (${res.status})`)
@@ -344,6 +358,7 @@ const submitForm = async () => {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     }
+
     const token = sessionStorage.getItem('jwt_token')
     if (token)
       headers.Authorization = `Bearer ${token}`
@@ -420,7 +435,7 @@ onBeforeUnmount(() => {
 
 <template>
   <VCard>
-  <VCardTitle class="admin-card-title">
+    <VCardTitle class="admin-card-title">
       Legalisasi
     </VCardTitle>
     <div class="legalisasi-filters">
@@ -489,100 +504,100 @@ onBeforeUnmount(() => {
     </VAlert>
 
     <!--
-    <VCard
+      <VCard
       variant="outlined"
       class="pa-4 mb-6"
-    >
+      >
       <div class="text-subtitle-1 font-weight-bold mb-3">
-        Form Pengajuan Legalisasi
+      Form Pengajuan Legalisasi
       </div>
       <VRow>
-        <VCol cols="12" md="6">
-          <VTextField
-            v-model="form.kdmahasiswa"
-            label="KDMahasiswa"
-            placeholder="Isi kdmahasiswa"
-            type="number"
-          />
-        </VCol>
-        <VCol cols="12" md="3">
-          <VTextField
-            v-model="form.jumlah_legalisasi"
-            label="Jumlah Legalisasi"
-            type="number"
-            min="1"
-          />
-        </VCol>
-        <VCol cols="12" md="3">
-          <VTextField
-            v-model="form.biaya_legalisasi"
-            label="Biaya Legalisasi"
-            type="number"
-          />
-        </VCol>
-        <VCol cols="12" md="6">
-          <VTextField
-            v-model="form.alamat_kirim"
-            label="Alamat Kirim"
-            placeholder="Alamat lengkap"
-          />
-        </VCol>
-        <VCol cols="12" md="6">
-          <VTextField
-            v-model="form.nama_penerima_legalisasi"
-            label="Nama Penerima"
-          />
-        </VCol>
-        <VCol cols="12" md="4">
-          <VTextField
-            v-model="form.telp_penerima"
-            label="Telepon Penerima"
-          />
-        </VCol>
-        <VCol cols="12" md="4">
-          <VTextField
-            v-model="form.idtagihan"
-            label="ID Tagihan"
-          />
-        </VCol>
-        <VCol cols="12" md="4">
-          <VTextField
-            v-model="form.noresi"
-            label="No. Resi"
-          />
-        </VCol>
-        <VCol cols="12" md="4">
-          <VTextField
-            v-model="form.tgl_dikirim"
-            label="Tanggal Dikirim"
-            type="date"
-          />
-        </VCol>
-        <VCol cols="12" md="4">
-          <VTextField
-            v-model="form.kdlegalisasi_sebelum"
-            label="KD Legalisasi Sebelumnya"
-            type="number"
-          />
-        </VCol>
-        <VCol cols="12">
-          <VTextarea
-            v-model="form.comment"
-            label="Catatan"
-            rows="2"
-          />
-        </VCol>
-        <VCol cols="12" class="d-flex justify-end">
-          <VBtn
-            color="primary"
-            :loading="loading"
-            @click="submitForm"
-          >
-            Simpan Pengajuan
-          </VBtn>
-        </VCol>
+      <VCol cols="12" md="6">
+      <VTextField
+      v-model="form.kdmahasiswa"
+      label="KDMahasiswa"
+      placeholder="Isi kdmahasiswa"
+      type="number"
+      />
+      </VCol>
+      <VCol cols="12" md="3">
+      <VTextField
+      v-model="form.jumlah_legalisasi"
+      label="Jumlah Legalisasi"
+      type="number"
+      min="1"
+      />
+      </VCol>
+      <VCol cols="12" md="3">
+      <VTextField
+      v-model="form.biaya_legalisasi"
+      label="Biaya Legalisasi"
+      type="number"
+      />
+      </VCol>
+      <VCol cols="12" md="6">
+      <VTextField
+      v-model="form.alamat_kirim"
+      label="Alamat Kirim"
+      placeholder="Alamat lengkap"
+      />
+      </VCol>
+      <VCol cols="12" md="6">
+      <VTextField
+      v-model="form.nama_penerima_legalisasi"
+      label="Nama Penerima"
+      />
+      </VCol>
+      <VCol cols="12" md="4">
+      <VTextField
+      v-model="form.telp_penerima"
+      label="Telepon Penerima"
+      />
+      </VCol>
+      <VCol cols="12" md="4">
+      <VTextField
+      v-model="form.idtagihan"
+      label="ID Tagihan"
+      />
+      </VCol>
+      <VCol cols="12" md="4">
+      <VTextField
+      v-model="form.noresi"
+      label="No. Resi"
+      />
+      </VCol>
+      <VCol cols="12" md="4">
+      <VTextField
+      v-model="form.tgl_dikirim"
+      label="Tanggal Dikirim"
+      type="date"
+      />
+      </VCol>
+      <VCol cols="12" md="4">
+      <VTextField
+      v-model="form.kdlegalisasi_sebelum"
+      label="KD Legalisasi Sebelumnya"
+      type="number"
+      />
+      </VCol>
+      <VCol cols="12">
+      <VTextarea
+      v-model="form.comment"
+      label="Catatan"
+      rows="2"
+      />
+      </VCol>
+      <VCol cols="12" class="d-flex justify-end">
+      <VBtn
+      color="primary"
+      :loading="loading"
+      @click="submitForm"
+      >
+      Simpan Pengajuan
+      </VBtn>
+      </VCol>
       </VRow>
-    </VCard>
+      </VCard>
     -->
 
     <div class="table-wrapper">
@@ -595,9 +610,10 @@ onBeforeUnmount(() => {
             <th>Jumlah</th>
             <th>Biaya</th>
             <th>No. Resi</th>
-            <th>No. Resi</th>
             <th>Tgl Dikirim</th>
-            <th class="text-center">Aksi</th>
+            <th class="text-center">
+              Aksi
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -618,45 +634,52 @@ onBeforeUnmount(() => {
             </td>
           </tr>
           <tr
-            v-else
             v-for="(m, i) in filteredLegalisasi.slice(0, itemsPerPage)"
+            v-else
             :key="m.kdlegalisasi || i"
             :class="{ 'row-received': m.status_penerimaan === 'received' }"
           >
-            <td data-label="No">{{ i + 1 }}</td>
+            <td data-label="No">
+              {{ i + 1 }}
+            </td>
             <td data-label="Nama Mahasiswa">
               {{ m.nama_mahasiswa ?? '-' }}
             </td>
-            <td data-label="Dokumen">{{ m.dokumen ?? '-' }}</td>
-            <td data-label="Jumlah">{{ m.jumlah_legalisasi ?? '-' }}</td>
-    <td data-label="Biaya">
-    <td data-label="Biaya">
-      <VBtn
-        size="small"
-        class="resi-btn"
-        :loading="approvingId === getRowId(m)"
-        :disabled="m.biaya_legalisasi !== null && m.biaya_legalisasi !== undefined && m.biaya_legalisasi !== '' || approvingId !== null"
-        @click="openBiayaDialog(m)"
-      >
-        Biaya
-        Biaya
-      </VBtn>
-    </td>
-    <td data-label="No. Resi">
-    <td data-label="No. Resi">
-      <VBtn
-        size="small"
-        class="resi-btn"
-        :loading="approvingId === getRowId(m)"
-        :disabled="!m.biaya_legalisasi || !!m.noresi || approvingId !== null"
-        @click="openResiDialog(m)"
-      >
-        Resi
-        Resi
-      </VBtn>
-    </td>
-            <td data-label="Tgl Dikirim">{{ m.tgl_dikirim ?? '-' }}</td>
-            <td data-label="Aksi" class="text-center">
+            <td data-label="Dokumen">
+              {{ m.dokumen ?? '-' }}
+            </td>
+            <td data-label="Jumlah">
+              {{ m.jumlah_legalisasi ?? '-' }}
+            </td>
+            <td data-label="Biaya">
+              <VBtn
+                size="small"
+                class="resi-btn"
+                :loading="approvingId === getRowId(m)"
+                :disabled="m.biaya_legalisasi !== null && m.biaya_legalisasi !== undefined && m.biaya_legalisasi !== '' || approvingId !== null"
+                @click="openBiayaDialog(m)"
+              >
+                Biaya
+              </VBtn>
+            </td>
+            <td data-label="No. Resi">
+              <VBtn
+                size="small"
+                class="resi-btn"
+                :loading="approvingId === getRowId(m)"
+                :disabled="!m.biaya_legalisasi || !!m.noresi || approvingId !== null"
+                @click="openResiDialog(m)"
+              >
+                Resi
+              </VBtn>
+            </td>
+            <td data-label="Tgl Dikirim">
+              {{ m.tgl_dikirim ?? '-' }}
+            </td>
+            <td
+              data-label="Aksi"
+              class="text-center"
+            >
               <div class="d-flex justify-center">
                 <VBtn
                   icon
@@ -721,7 +744,9 @@ onBeforeUnmount(() => {
     class="approve-dialog"
   >
     <VCard class="approve-card">
-      <VCardTitle class="approve-title">Approve Legalisasi</VCardTitle>
+      <VCardTitle class="approve-title">
+        Approve Legalisasi
+      </VCardTitle>
       <VCardText>
         <div class="approve-subtitle">
           Ringkasan Pengajuan
@@ -752,13 +777,13 @@ onBeforeUnmount(() => {
             <span class="summary-label">Alamat</span><span class="summary-value">{{ selectedItem.alamat_kirim }}</span>
           </div>
         </div>
-      <VTextField
-        v-model="approveForm.tgl_dikirim"
-        label="Tanggal Dikirim"
-        type="date"
-        variant="outlined"
-        density="compact"
-        class="mt-4 approve-date"
+        <VTextField
+          v-model="approveForm.tgl_dikirim"
+          label="Tanggal Dikirim"
+          type="date"
+          variant="outlined"
+          density="compact"
+          class="mt-4 approve-date"
         />
       </VCardText>
       <VCardActions class="approve-actions">
@@ -788,9 +813,13 @@ onBeforeUnmount(() => {
     class="delete-dialog"
   >
     <VCard class="delete-card">
-      <VCardTitle class="delete-title">Hapus Pengajuan Legalisasi</VCardTitle>
+      <VCardTitle class="delete-title">
+        Hapus Pengajuan Legalisasi
+      </VCardTitle>
       <VCardText>
-        <div class="delete-subtitle">Yakin ingin menghapus pengajuan ini?</div>
+        <div class="delete-subtitle">
+          Yakin ingin menghapus pengajuan ini?
+        </div>
         <div
           v-if="deleteCandidate"
           class="summary delete-summary"
@@ -835,7 +864,9 @@ onBeforeUnmount(() => {
     class="detail-dialog"
   >
     <VCard class="detail-card">
-      <VCardTitle class="detail-title">Detail Legalisasi</VCardTitle>
+      <VCardTitle class="detail-title">
+        Detail Legalisasi
+      </VCardTitle>
       <VCardText>
         <div
           v-if="detailItem"
@@ -1045,7 +1076,7 @@ onBeforeUnmount(() => {
 }
 
 .legalisasi-table tbody tr.row-received td {
-  background-color: rgba(27, 196, 125, 0.18);
+  background-color: rgba(27, 196, 125, 18%);
   color: #0f5132;
   font-weight: 600;
 }
@@ -1247,16 +1278,16 @@ onBeforeUnmount(() => {
 }
 
 .detail-title {
+  color: #17a2a6;
   font-size: 1.35rem;
   font-weight: 700;
-  text-align: center;
-  color: #17a2a6;
   padding-block: 12px 4px;
+  text-align: center;
 }
 
 .detail-summary {
-  max-inline-size: 520px;
   margin-inline: auto;
+  max-inline-size: 520px;
 }
 
 .detail-actions {
@@ -1268,9 +1299,9 @@ onBeforeUnmount(() => {
 
 .detail-btn {
   border-radius: 8px;
+  font-weight: 600;
   min-inline-size: 140px;
   text-transform: none;
-  font-weight: 600;
 }
 
 @media (max-width: 960px) {
