@@ -17,8 +17,17 @@ class AkValidasiIjazahController extends Controller
     public function index(Request $request)
     {
         try {
+            $mhNama = DB::table('mh_v_nama')
+                ->select(
+                    'kdmahasiswa',
+                    DB::raw('MIN(nim) as nim'),
+                    DB::raw('MIN(namalengkap) as namalengkap'),
+                    DB::raw('MIN(prodi) as prodi')
+                )
+                ->groupBy('kdmahasiswa');
+
             $records = DB::table('ak_validasi_ijazah_mahasiswa as v')
-                ->leftJoin('mh_v_nama as m', 'm.kdmahasiswa', '=', 'v.kdmahasiswa')
+                ->leftJoinSub($mhNama, 'm', 'm.kdmahasiswa', '=', 'v.kdmahasiswa')
                 ->select(
                     'v.kdvalidasiijazahmahasiswa',
                     'v.kdmahasiswa',

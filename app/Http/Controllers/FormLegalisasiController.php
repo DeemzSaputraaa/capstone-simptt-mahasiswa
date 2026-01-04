@@ -22,8 +22,16 @@ class FormLegalisasiController extends Controller
             $kdmahasiswa = \DB::table('mh_v_nama')->where('nim', $nim)->value('kdmahasiswa');
         }
 
+        $mhNama = \DB::table('mh_v_nama')
+            ->select(
+                'kdmahasiswa',
+                \DB::raw('MIN(nim) as nim'),
+                \DB::raw('MIN(namalengkap) as namalengkap')
+            )
+            ->groupBy('kdmahasiswa');
+
         $query = FormLegalisasi::query()
-            ->leftJoin('mh_v_nama as m', 'm.kdmahasiswa', '=', 'form_legalisasi.kdmahasiswa')
+            ->leftJoinSub($mhNama, 'm', 'm.kdmahasiswa', '=', 'form_legalisasi.kdmahasiswa')
             ->select('form_legalisasi.*', 'm.nim', 'm.namalengkap as nama_mahasiswa')
             ->orderByDesc('form_legalisasi.create_at');
 

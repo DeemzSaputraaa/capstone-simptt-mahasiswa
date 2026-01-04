@@ -1534,6 +1534,27 @@ export default {
   text-align: start;
 }
 
+.v-theme--dark .styled-summary-table {
+  background: rgb(var(--v-theme-surface));
+  box-shadow: none;
+}
+
+.v-theme--dark .styled-summary-table tr {
+  background: rgba(var(--v-theme-on-surface), 0.04);
+  border-block-end: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+}
+
+.v-theme--dark .styled-summary-table .label {
+  background: rgba(var(--v-theme-on-surface), 0.06);
+  border-inline-end: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  color: rgba(var(--v-theme-on-surface), 0.8);
+}
+
+.v-theme--dark .styled-summary-table .value {
+  background: rgba(var(--v-theme-on-surface), 0.04);
+  color: rgba(var(--v-theme-on-surface), 0.85);
+}
+
 .wizard-date-sidebar {
   margin-inline-end: 32px;
   min-inline-size: 80px;

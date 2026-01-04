@@ -17,8 +17,17 @@ class PraYudisiumController extends Controller
     public function index()
     {
         try {
+            // simpan database hanya 1 
+            $mhNama = DB::table('mh_v_nama')
+                ->select(
+                    'kdmahasiswa',
+                    DB::raw('MIN(nim) as nim'),
+                    DB::raw('MIN(namalengkap) as namalengkap')
+                )
+                ->groupBy('kdmahasiswa');
+
             $records = AkPraYudisium::query()
-                ->leftJoin('mh_v_nama as m', 'm.kdmahasiswa', '=', 'ak_pra_yudisium.kdmahasiswa')
+                ->leftJoinSub($mhNama, 'm', 'm.kdmahasiswa', '=', 'ak_pra_yudisium.kdmahasiswa')
                 ->select(
                     'ak_pra_yudisium.kdprayudisium',
                     'ak_pra_yudisium.kdmahasiswa',
@@ -337,7 +346,7 @@ class PraYudisiumController extends Controller
                 'status_foto' => $request->get('status_foto'),
                 'status_ijazah' => $request->get('status_ijazah'),
                 'status_ktp' => $request->get('status_ktp'),
-            ], fn ($value) => $value !== null);
+            ], fn($value) => $value !== null);
 
             if (!$updates) {
                 return response()->json([
