@@ -965,26 +965,36 @@ export default {
     const currentPdfData = ref('')
     const pdfTitle = ref('')
 
-    const generatePdfData = async element => {
-      const opt = {
-        margin: 10,
+    const generatePdfData = async (element, customOpt = {}) => {
+      const defaultOpt = {
+        margin: 0,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2 },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       }
+
+      const opt = { ...defaultOpt, ...customOpt }
 
       return await html2pdf().from(element).set(opt).outputPdf('datauristring')
     }
 
     const showIjazahPdf = async () => {
       pdfTitle.value = 'Draft Ijazah'
-      currentPdfData.value = await generatePdfData(ijazahPreview.value.$el)
+      currentPdfData.value = await generatePdfData(ijazahPreview.value.$el, {
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+      })
       showPdfViewer.value = true
     }
 
     const showTranscriptPdf = async () => {
       pdfTitle.value = 'Transkrip Nilai'
-      currentPdfData.value = await generatePdfData(transcriptPreview.value.$el)
+      currentPdfData.value = await generatePdfData(transcriptPreview.value.$el, {
+        jsPDF: { 
+          unit: 'mm', 
+          format: [337.9, 278], 
+          orientation: 'landscape' 
+        }
+      })
       showPdfViewer.value = true
     }
 
@@ -1035,6 +1045,9 @@ export default {
         const transkripStyleElement = document.createElement('style')
         transkripStyleElement.id = 'transkrip-pdf-style-temp'
         transkripStyleElement.textContent = `
+          .transkrip-info-center {
+            margin-inline-start: 145px !important;
+          }
           .transkrip-table .vertical-header {
             display: inline-block !important;
             width: 100% !important;
@@ -1067,7 +1080,7 @@ export default {
         
         // Generate transkrip PDF
         const transkripOpt = {
-          margin: [5, 2.5, 0, 2.5],
+          margin: 0,
           image: { type: 'jpeg', quality: 0.98 },
           html2canvas: { 
             scale: 2,

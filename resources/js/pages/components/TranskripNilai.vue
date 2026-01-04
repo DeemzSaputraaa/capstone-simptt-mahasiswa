@@ -22,106 +22,59 @@
             <div></div>
             <div class="transkrip-info-center">
               <div class="info-row">
-                <span class="info-label-center">NIM/NAMA LENGKAP</span>
+                <span class="info-label-center">NIM/NAMA LENGKAP<br><span style="font-size: 6pt; font-style: italic;">student number / name</span></span>
                 <span class="info-separator">:</span>
                 <span class="info-value-center">{{ userDisplay.nim }} / {{ userDisplay.name }}</span>
               </div>
+
               <div class="info-row">
-                <span
-                  class="info-label-center"
-                  style=" font-size: 6pt;font-style: italic;"
-                >student number / name</span>
+                <span class="info-label-center">TEMPAT/TANGGAL LAHIR<br><span style="font-size: 6pt; font-style: italic;">Place of Birth/Date</span></span>
                 <span class="info-separator">:</span>
-                <span class="info-value-center">{{ userDisplay.nim }} / {{ userDisplay.nameEn }}</span>
+                <span class="info-value-center">
+                  {{ userDisplay.birthPlace }}, {{ userDisplay.birthDate }}<br>
+                  <span style="font-size: 6pt; font-style: italic;">{{ userDisplay.birthPlaceEn }}, {{ userDisplay.birthDateEn }}</span>
+                </span>
               </div>
               <div class="info-row">
-                <span class="info-label-center">TEMPAT/TANGGAL LAHIR</span>
+                <span class="info-label-center">PROGRAM STUDI / JENJANG<br><span style="font-size: 6pt; font-style: italic;">Study Program / Level</span></span>
                 <span class="info-separator">:</span>
-                <span class="info-value-center">{{ userDisplay.birthPlace }}, {{ userDisplay.birthDate }}</span>
+                <span class="info-value-center">
+                  {{ userDisplay.studyProgram }} / {{ userDisplay.degree }}<br>
+                  <span style="font-size: 6pt; font-style: italic;">{{ userDisplay.studyProgramEn }} / {{ userDisplay.educationLevelEn }}</span>
+                </span>
               </div>
               <div class="info-row">
-                <span
-                  class="info-label-center"
-                  style=" font-size: 6pt;font-style: italic;"
-                >Place of Birth/Date</span>
+                <span class="info-label-center">TANGGAL KELULUSAN<br><span style="font-size: 6pt; font-style: italic;">Graduation Date</span></span>
                 <span class="info-separator">:</span>
-                <span class="info-value-center">{{ userDisplay.birthPlaceEn }}, {{ userDisplay.birthDateEn }}</span>
+                <span class="info-value-center">
+                  {{ userDisplay.graduationDate }}<br>
+                  <span style="font-size: 6pt; font-style: italic;">{{ userDisplay.graduationDateEn }}</span>
+                </span>
               </div>
               <div class="info-row">
-                <span class="info-label-center">PROGRAM STUDI / JENJANG</span>
-                <span class="info-separator">:</span>
-                <span class="info-value-center">{{ userDisplay.studyProgram }} / {{ userDisplay.degree }}</span>
-              </div>
-              <div class="info-row">
-                <span
-                  class="info-label-center"
-                  style=" font-size: 6pt;font-style: italic;"
-                >Study Program / Level</span>
-                <span class="info-separator">:</span>
-                <span class="info-value-center">{{ userDisplay.studyProgramEn }} / {{ userDisplay.educationLevelEn }}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label-center">TANGGAL KELULUSAN</span>
-                <span class="info-separator">:</span>
-                <span class="info-value-center">{{ userDisplay.graduationDate }}</span>
-              </div>
-              <div class="info-row">
-                <span
-                  class="info-label-center"
-                  style=" font-size: 6pt;font-style: italic;"
-                >Graduation Date</span>
-                <span class="info-separator">:</span>
-                <span class="info-value-center">{{ userDisplay.graduationDateEn }}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label-center">TOTAL SKS</span>
+                <span class="info-label-center">TOTAL SKS<br><span style="font-size: 6pt; font-style: italic;">Total Credits</span></span>
                 <span class="info-separator">:</span>
                 <span class="info-value-center">{{ totalCredits }}</span>
               </div>
+
               <div class="info-row">
-                <span
-                  class="info-label-center"
-                  style=" font-size: 6pt;font-style: italic;"
-                >Total Credits</span>
-                <span class="info-separator">:</span>
-                <span class="info-value-center">{{ totalCredits }}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label-center">INDEKS PRESTASI</span>
+                <span class="info-label-center">INDEKS PRESTASI<br><span style="font-size: 6pt; font-style: italic;">Grade Point Average</span></span>
                 <span class="info-separator">:</span>
                 <span class="info-value-center">{{ userDisplay.gpa }}</span>
               </div>
+
               <div class="info-row">
-                <span
-                  class="info-label-center"
-                  style=" font-size: 6pt;font-style: italic;"
-                >Grade Point Average</span>
+                <span class="info-label-center">PREDIKAT KELULUSAN<br><span style="font-size: 6pt; font-style: italic;">Graduation Predicate</span></span>
                 <span class="info-separator">:</span>
-                <span class="info-value-center">{{ userDisplay.gpa }}</span>
+                <span class="info-value-center">{{ graduationPredicateDisplay }}/<span style="font-style: italic;">{{ graduationPredicateEnDisplay }}</span></span>
               </div>
               <div class="info-row">
-                <span class="info-label-center">PREDIKAT KELULUSAN</span>
+                <span class="info-label-center">STATUS<br><span style="font-size: 6pt; font-style: italic;">Status</span></span>
                 <span class="info-separator">:</span>
-                <span class="info-value-center">{{ graduationPredicateDisplay }}</span>
-              </div>
-              <div class="info-row">
-                <span
-                  class="info-label-center"
-                  style=" font-size: 6pt;font-style: italic;"
-                >Graduation Predicate</span>
-                <span class="info-separator">:</span>
-                <span class="info-value-center">{{ graduationPredicateEnDisplay }}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label-center">STATUS</span>
-                <span class="info-separator">:</span>
-                <span class="status-text-inline">{{ userDisplay.accreditationDetail }}</span>
-              </div>
-              <div class="info-row">
-                <span
-                  class="italic-text"
-                  style="font-size: 6pt;"
-                >{{ userDisplay.accreditationDetailEn }}</span>
+                <span class="status-text-inline">
+                  {{ userDisplay.accreditationDetail }}<br>
+                  <span style="font-style: italic;">{{ userDisplay.accreditationDetailEn }}</span>
+                </span>
               </div>
             </div>
           </div>
@@ -482,6 +435,9 @@ const openPdfViewer = async () => {
   const style = document.createElement('style')
 
   style.innerHTML = `
+    .transkrip-info-center {
+      margin-inline-start: 145px !important;
+    }
     .transkrip-table .th-vertical {
       height: 54px !important;
       width: 30px !important;
@@ -524,7 +480,7 @@ const openPdfViewer = async () => {
   element.appendChild(style)
 
   const opt = {
-    margin: [5, 2.5, 0, 2.5],
+    margin: 0,
     filename: 'transkrip-nilai.pdf',
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: { 
@@ -733,29 +689,43 @@ const openPdfViewer = async () => {
   font-size: 6.5pt;
   grid-column: 2;
   line-height: 1.2;
-  margin-inline-start: 60px;
+  margin-inline-start: 190px;
   text-align: start;
 }
 
 .info-row {
-  display: block;
+  display: grid;
+  align-items: baseline;
+  gap: 8px;
+  grid-template-columns: 115px auto 1fr;
   margin-block-end: 1px;
   text-align: start;
 }
 
 .info-label-center {
-  display: inline;
+  display: block;
   font-weight: normal;
+  text-align: start;
+  white-space: nowrap;
 }
 
 .info-separator {
-  display: inline;
-  padding-inline: 3px;
+  display: block;
+  text-align: start;
+  white-space: nowrap;
 }
 
 .info-value-center {
-  display: inline;
+  display: block;
   font-weight: normal;
+  text-align: start;
+}
+
+.info-row-plain {
+  display: block;
+  margin-block-end: 1px;
+  margin-inline-start: 0;
+  text-align: start;
 }
 
 .status-text-inline {
@@ -1049,7 +1019,8 @@ const openPdfViewer = async () => {
   align-items: center;
   gap: 8px;
   margin-block-start: auto;
-  padding-block-start: 195px;
+  padding-block: 175px;
+  padding-block-end: 25px;
 }
 
 .ta-section {
