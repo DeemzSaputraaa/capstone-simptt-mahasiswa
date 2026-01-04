@@ -5,6 +5,21 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 const itemsPerPage = ref(10)
 const daftarLegalisasi = ref([])
+
+
+const getItemsPerPageOptions = total => {
+  if (total <= 75) return [5, 10, 20, 50, 75]
+  if (total <= 100) return [5, 25, 50, 75, 100]
+  if (total <= 1000) return [5, 50, 100, 500, 1000]
+
+  return [5, 100, 500, 1000, total]
+}
+
+const itemsPerPageOptions = computed(() => {
+  const total = Array.isArray(daftarLegalisasi.value) ? daftarLegalisasi.value.length : 0
+  return getItemsPerPageOptions(total)
+})
+
 const loading = ref(false)
 const errorMessage = ref('')
 const successMessage = ref('')
@@ -189,9 +204,22 @@ const saveResi = async () => {
   }
 }
 
+const formatRupiahInput = value => {
+  const digits = String(value ?? '').replace(/\D/g, '')
+  if (!digits) return ''
+
+  return digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+}
+
+const parseRupiahInput = value => String(value ?? '').replace(/\D/g, '')
+
+const onBiayaInput = event => {
+  biayaValue.value = formatRupiahInput(event?.target?.value)
+}
+
 const openBiayaDialog = item => {
   biayaTarget.value = item
-  biayaValue.value = item?.biaya_legalisasi ?? ''
+  biayaValue.value = formatRupiahInput(item?.biaya_legalisasi ?? '')
   showBiayaDialog.value = true
 }
 
@@ -219,11 +247,17 @@ const saveBiaya = async () => {
       headers.Authorization = `Bearer ${token}`
 
     const id = getRowId(biayaTarget.value)
+    const amount = parseRupiahInput(biayaValue.value)
+    if (!amount) {
+      errorMessage.value = 'Biaya tidak valid'
+
+      return
+    }
 
     const res = await fetch(`/api/form-legalisasi/${id}`, {
       method: 'PUT',
       headers,
-      body: JSON.stringify({ biaya_legalisasi: biayaValue.value }),
+      body: JSON.stringify({ biaya_legalisasi: Number(amount) }),
     })
 
     const json = await res.json()
@@ -419,6 +453,12 @@ watch(successMessage, value => {
   }, 30000)
 })
 
+watch(itemsPerPageOptions, options => {
+  if (!Array.isArray(options) || options.length === 0) return
+  if (!options.includes(itemsPerPage.value))
+    itemsPerPage.value = options[0]
+})
+
 watch(errorMessage, value => {
   if (!value) return
   if (errorTimer) clearTimeout(errorTimer)
@@ -440,9 +480,9 @@ onBeforeUnmount(() => {
     </VCardTitle>
     <div class="legalisasi-filters">
       <div class="filter-item">
-        <span>Status Resi</span>
+        <span>Status Biaya</span>
         <VSelect
-          v-model="pendingFilterResi"
+          v-model="pendingFilterBiaya"
           :items="[
             { title: 'Semua', value: 'all' },
             { title: 'Sudah', value: 'yes' },
@@ -453,9 +493,9 @@ onBeforeUnmount(() => {
         />
       </div>
       <div class="filter-item">
-        <span>Status Biaya</span>
+        <span>Status Resi</span>
         <VSelect
-          v-model="pendingFilterBiaya"
+          v-model="pendingFilterResi"
           :items="[
             { title: 'Semua', value: 'all' },
             { title: 'Sudah', value: 'yes' },
@@ -471,7 +511,7 @@ onBeforeUnmount(() => {
           v-model="pendingFilterApprove"
           :items="[
             { title: 'Semua', value: 'all' },
-            { title: 'Approved', value: 'yes' },
+            { title: 'Sudah', value: 'yes' },
             { title: 'Belum', value: 'no' },
           ]"
           density="compact"
@@ -732,7 +772,7 @@ onBeforeUnmount(() => {
       <span>Showing per Page</span>
       <VSelect
         v-model="itemsPerPage"
-        :items="[5, 10, 20]"
+        :items="itemsPerPageOptions"
         density="compact"
         style="max-inline-size: 100px;"
       />
@@ -964,10 +1004,12 @@ onBeforeUnmount(() => {
         <VTextField
           v-model="biayaValue"
           label="Biaya (Rp)"
-          type="number"
-          min="0"
+          type="text"
+          inputmode="numeric"
+          pattern="\d*"
           variant="outlined"
           autofocus
+          @input="onBiayaInput"
         />
       </VCardText>
       <VCardActions class="justify-end">

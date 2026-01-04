@@ -1,10 +1,30 @@
 
 <script setup>
 import axios from 'axios'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 
 const itemsPerPage = ref(5)
 const daftarValidasi = ref([])
+
+const getItemsPerPageOptions = total => {
+  if (total <= 75) return [5, 10, 20, 50, 75]
+  if (total <= 100) return [5, 25, 50, 75, 100]
+  if (total <= 1000) return [5, 50, 100, 500, 1000]
+
+  return [5, 100, 500, 1000, total]
+}
+
+const itemsPerPageOptions = computed(() => {
+  const total = Array.isArray(daftarValidasi.value) ? daftarValidasi.value.length : 0
+  return getItemsPerPageOptions(total)
+})
+
+watch(itemsPerPageOptions, options => {
+  if (!Array.isArray(options) || options.length === 0) return
+  if (!options.includes(itemsPerPage.value))
+    itemsPerPage.value = options[0]
+})
+
 const loading = ref(false)
 const errorMessage = ref(null)
 const filterApprove = ref('all')
@@ -115,16 +135,16 @@ const filteredValidasi = computed(() => {
   return sorted.filter(item => {
     const isApproved = !!item?.is_ijazah_validate && !!item?.is_transkrip_validate
     const hasComment = (item?.comment_count || 0) > 0
-  const hasUnread = hasNewCommentForAdmin(item)
+    const hasUnread = hasNewCommentForAdmin(item)
 
-  if (filterApprove.value === 'approved' && !isApproved) return false
-  if (filterApprove.value === 'pending' && isApproved) return false
+    if (filterApprove.value === 'approved' && !isApproved) return false
+    if (filterApprove.value === 'pending' && isApproved) return false
 
-  if (filterComment.value === 'unread' && !hasUnread) return false
-  if (filterComment.value === 'read' && hasUnread) return false
+    if (filterComment.value === 'unread' && !hasUnread) return false
+    if (filterComment.value === 'read' && hasUnread) return false
 
-  return true
-})
+    return true
+  })
 })
 
 const normalizeId = value => {
@@ -406,7 +426,7 @@ onMounted(() => {
         />
       </div>
       <div class="filter-item">
-        <span>Komentar Baru</span>
+        <span>Komentar</span>
         <VSelect
           v-model="filterComment"
           :items="[
@@ -530,7 +550,7 @@ onMounted(() => {
       <span>Showing per Page</span>
       <VSelect
         v-model="itemsPerPage"
-        :items="[5, 10, 20]"
+        :items="itemsPerPageOptions"
         density="compact"
         style="max-inline-size: 100px;"
       />
@@ -815,7 +835,6 @@ onMounted(() => {
   opacity: 1;
   transform: translateY(-2px);
 }
-
 
 .table-footer {
   display: flex;

@@ -1,11 +1,31 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 
 const itemsPerPage = ref(5)
 const filterStatus = ref('all')
 const loading = ref(false)
 const errorMessage = ref('')
 const mahasiswaList = ref([])
+
+const getItemsPerPageOptions = total => {
+  if (total <= 75) return [5, 10, 20, 50, 75]
+  if (total <= 100) return [5, 25, 50, 75, 100]
+  if (total <= 1000) return [5, 50, 100, 500, 1000]
+
+  return [5, 100, 500, 1000, total]
+}
+
+const itemsPerPageOptions = computed(() => {
+  const total = Array.isArray(mahasiswaList.value) ? mahasiswaList.value.length : 0
+  return getItemsPerPageOptions(total)
+})
+
+watch(itemsPerPageOptions, options => {
+  if (!Array.isArray(options) || options.length === 0) return
+  if (!options.includes(itemsPerPage.value))
+    itemsPerPage.value = options[0]
+})
+
 const deletingId = ref(null)
 const showDeleteDialog = ref(false)
 const deleteTarget = ref(null)
@@ -521,7 +541,7 @@ onMounted(fetchData)
       <span>Showing per Page</span>
       <VSelect
         v-model="itemsPerPage"
-        :items="[5, 10, 20]"
+        :items="itemsPerPageOptions"
         density="compact"
         style="max-inline-size: 100px;"
       />

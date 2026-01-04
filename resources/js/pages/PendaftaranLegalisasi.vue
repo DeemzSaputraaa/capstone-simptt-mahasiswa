@@ -42,6 +42,7 @@
                 { title: 'Semua', value: 'all' },
                 { title: 'Pending', value: 'pending' },
                 { title: 'Dikirim', value: 'dikirim' },
+                { title: 'Diterima', value: 'diterima' },
               ]"
               density="compact"
               hide-details
@@ -344,14 +345,33 @@
     </VMain>
     <VDialog
       v-model="showValidationModal"
-      max-width="400"
+      max-width="520"
+      :persistent="modalType === 'success'"
     >
-      <VCard>
-        <VCardTitle class="text-h5">
+      <VCard :class="['validation-card', `validation-${modalType}`]">
+        <VCardTitle class="validation-title">
           {{ modalType === 'success' ? 'Sukses' : modalType === 'error' ? 'Gagal' : 'Peringatan' }}
         </VCardTitle>
-        <VCardText>
-          {{ validationMessage }}
+        <VCardText class="validation-content">
+          <div
+            v-if="validationMessage"
+            class="validation-message"
+          >
+            {{ validationMessage }}
+          </div>
+          <div
+            v-if="validationDetails.length"
+            class="validation-list"
+          >
+            <div
+              v-for="(item, index) in validationDetails"
+              :key="`${item.label}-${index}`"
+              class="validation-row"
+            >
+              <span class="validation-label">{{ item.label }}</span>
+              <span class="validation-value">{{ item.message }}</span>
+            </div>
+          </div>
         </VCardText>
         <VCardActions>
           <VSpacer />
@@ -846,10 +866,12 @@ export default {
     const showValidationModal = ref(false)
     const validationMessage = ref('')
     const modalType = ref('warning') // 'success' | 'error' | 'warning'
+    const validationDetails = ref([])
 
-    const openModal = (type = 'warning', message = '') => {
+    const openModal = (type = 'warning', message = '', details = []) => {
       modalType.value = type
       validationMessage.value = message
+      validationDetails.value = Array.isArray(details) ? details : []
       showValidationModal.value = true
     }
 
@@ -891,6 +913,59 @@ export default {
         noTelpPenerima: '',
         comment: '',
       }
+    }
+
+    const fieldLabels = {
+      jml: 'Jumlah',
+      alamat: 'Alamat',
+      namaPenerima: 'Nama Penerima',
+      noTelpPenerima: 'No Telp Penerima',
+      jumlah_legalisasi: 'Jumlah',
+      alamat_kirim: 'Alamat',
+      nama_penerima_legalisasi: 'Nama Penerima',
+      telp_penerima: 'No Telp Penerima',
+      dokumen: 'Jenis Dokumen',
+    }
+
+    const formatHints = {
+      jml: 'Harus angka minimal 1.\nContoh: 2',
+      jumlah_legalisasi: 'Harus angka minimal 1.\nContoh: 2',
+      alamat: 'Hanya huruf, angka, spasi, titik, koma, dan tanda strip.\nContoh: Jl. Mlati No. 12, Sleman',
+      alamat_kirim: 'Hanya huruf, angka, spasi, titik, koma, dan tanda strip.\nContoh: Jl. Mlati No. 12, Sleman',
+      namaPenerima: 'Hanya huruf dan spasi.\nContoh: Siti Aminah',
+      nama_penerima_legalisasi: 'Hanya huruf dan spasi.\nContoh: Siti Aminah',
+      noTelpPenerima: 'Hanya angka.\nContoh: 08123456789',
+      telp_penerima: 'Hanya angka.\nContoh: 08123456789',
+    }
+
+    const formatList = items => items.map(item => `- ${item}`).join('\n')
+
+    const buildMissingIssues = missing => missing.map(label => ({
+      label,
+      message: 'Wajib diisi.',
+    }))
+
+    const getServerValidationIssues = json => {
+      const errors = json?.errors
+      if (!errors || typeof errors !== 'object') return []
+
+      return Object.entries(errors).map(([field, messages]) => {
+        const label = fieldLabels[field] || field
+        const message = Array.isArray(messages) ? messages[0] : String(messages || '')
+        let hint = ''
+
+        if (/required/i.test(message))
+          hint = 'Wajib diisi.'
+        else if (/format|regex/i.test(message))
+          hint = formatHints[field] || ''
+        else if (/integer|numeric|min|least/i.test(message))
+          hint = formatHints[field] || ''
+
+        return {
+          label,
+          message: hint || message,
+        }
+      })
     }
 
     const fetchList = async () => {
@@ -938,24 +1013,44 @@ export default {
 
     const handleSubmit = async () => {
       if (currentStep.value === 1) {
-        if (!form.value.jml || !form.value.alamat || !form.value.namaPenerima || !form.value.noTelpPenerima) {
-          openModal('warning', 'Mohon lengkapi semua data pendaftaran legalisasi')
-          
+        const missingFields = []
+        if (!form.value.jml) missingFields.push(fieldLabels.jml)
+        if (!form.value.alamat) missingFields.push(fieldLabels.alamat)
+        if (!form.value.namaPenerima) missingFields.push(fieldLabels.namaPenerima)
+        if (!form.value.noTelpPenerima) missingFields.push(fieldLabels.noTelpPenerima)
+
+        if (missingFields.length) {
+          openModal('warning', 'Periksa data berikut:', buildMissingIssues(missingFields))
+
+          return
+        }
+        const jmlValue = Number(form.value.jml)
+        if (!Number.isFinite(jmlValue) || jmlValue < 1) {
+          openModal('warning', 'Periksa data berikut:', [
+            { label: fieldLabels.jml, message: formatHints.jml },
+          ])
+
           return
         }
         if (!/^[A-Z0-9\s.,-]+$/i.test(form.value.alamat || '')) {
-          openModal('warning', 'Alamat hanya boleh berisi huruf, angka, spasi, titik, koma, dan tanda strip')
-          
+          openModal('warning', 'Periksa data berikut:', [
+            { label: fieldLabels.alamat, message: formatHints.alamat },
+          ])
+
           return
         }
         if (!/^[A-Z\s]+$/i.test(form.value.namaPenerima || '')) {
-          openModal('warning', 'Nama penerima hanya boleh berisi huruf dan spasi')
-          
+          openModal('warning', 'Periksa data berikut:', [
+            { label: fieldLabels.namaPenerima, message: formatHints.namaPenerima },
+          ])
+
           return
         }
         if (!/^\d+$/.test(form.value.noTelpPenerima || '')) {
-          openModal('warning', 'No telp penerima hanya boleh berisi angka')
-          
+          openModal('warning', 'Periksa data berikut:', [
+            { label: fieldLabels.noTelpPenerima, message: formatHints.noTelpPenerima },
+          ])
+
           return
         }
         currentStep.value = 2
@@ -995,8 +1090,15 @@ export default {
         })
 
         const json = await res.json()
-        if (!res.ok || json.success === false)
+        if (!res.ok || json.success === false) {
+          const serverIssues = getServerValidationIssues(json)
+          if (serverIssues.length) {
+            openModal('error', 'Periksa data berikut:', serverIssues)
+            
+            return
+          }
           throw new Error(json.message || 'Gagal mengirim pengajuan')
+        }
 
         const dataBaru = json.data ?? null
         if (dataBaru)
@@ -1094,6 +1196,7 @@ export default {
       showValidationModal,
       validationMessage,
       modalType,
+      validationDetails,
       closeValidationModal,
       handleSubmit,
       nextStep,
@@ -1882,6 +1985,58 @@ export default {
   border-color: rgba(var(--v-theme-primary), 0.5);
   background: rgba(var(--v-theme-primary), 0.15);
   color: rgb(var(--v-theme-primary));
+}
+
+.validation-card {
+  border-radius: 18px;
+  padding-block: 8px 4px;
+  padding-inline: 8px;
+}
+
+.validation-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  padding-block: 12px 4px;
+  text-align: center;
+}
+
+.validation-success .validation-title { color: #17a2a6; }
+.validation-error .validation-title { color: #e63946; }
+.validation-warning .validation-title { color: #f59e0b; }
+
+.validation-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.validation-message {
+  color: rgba(var(--v-theme-on-surface), 0.7);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.validation-list {
+  display: grid;
+  row-gap: 10px;
+}
+
+.validation-row {
+  display: grid;
+  align-items: start;
+  column-gap: 12px;
+  grid-template-columns: 170px 1fr;
+}
+
+.validation-label {
+  color: rgba(var(--v-theme-on-surface), 0.7);
+  font-weight: 600;
+}
+
+.validation-value {
+  color: rgba(var(--v-theme-on-surface), 0.85);
+  white-space: pre-line;
 }
 
 .payment-tab-body {
