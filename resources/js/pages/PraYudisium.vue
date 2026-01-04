@@ -155,19 +155,25 @@
     <!-- Validation Modal -->
     <VDialog
       v-model="showValidationModal"
-      max-width="400"
+      max-width="440"
     >
-      <VCard>
-        <VCardTitle class="text-h5">
-          {{ validationMessage.includes('berhasil') ? 'Sukses' : 'Peringatan' }}
+      <VCard class="confirm-card">
+        <VCardTitle
+          class="confirm-title"
+          :class="{ 'confirm-title-error': !validationMessage.includes('berhasil') }"
+        >
+          {{ validationMessage.includes('berhasil') ? 'Berhasil' : 'Gagal' }}
         </VCardTitle>
-        <VCardText>
-          {{ validationMessage }}
+        <VCardText class="confirm-body">
+          <div class="confirm-text">
+            {{ validationMessage }}
+          </div>
         </VCardText>
-        <VCardActions>
-          <VSpacer />
+        <VCardActions class="confirm-actions">
           <VBtn
-            color="primary"
+            variant="tonal"
+            color="grey"
+            class="confirm-btn"
             @click="showValidationModal = false"
           >
             OK
@@ -210,6 +216,32 @@ export default {
     const infoTimer = ref(null)
     const existingRecord = ref(null)
     const userNim = ref('')
+
+    const fileFieldLabels = {
+      'berkas ijazah terakhir': 'Berkas ijazah terakhir',
+      'berkas foto ijazah': 'Foto 3x4',
+      'berkas kk ktp': 'Foto KTP',
+    }
+
+    const formatFileSizeMb = kilobytes => {
+      const mb = Math.round((kilobytes / 1024) * 10) / 10
+      return Number.isInteger(mb) ? `${mb}` : `${mb}`.replace('.', ',')
+    }
+
+    const localizeValidationMessage = message => {
+      if (!message) return message
+
+      const sizeMatch = message.match(/The (.+) field must not be greater than (\\d+) kilobytes\\./i)
+      if (sizeMatch) {
+        const rawField = (sizeMatch[1] || '').toLowerCase()
+        const label = fileFieldLabels[rawField] || sizeMatch[1]
+        const sizeMb = formatFileSizeMb(Number(sizeMatch[2]))
+
+        return `Ukuran ${label} maksimal ${sizeMb} MB.`
+      }
+
+      return message
+    }
 
     const canSubmit = computed(() => {
       if (!existingRecord.value) return true
@@ -467,7 +499,10 @@ export default {
           // that falls out of the range of 2xx
           if (error.response.data.errors) {
             // Jika ada error validasi dari Laravel
-            errorMsg = Object.values(error.response.data.errors).flat().join(' ')
+            errorMsg = Object.values(error.response.data.errors)
+              .flat()
+              .map(localizeValidationMessage)
+              .join(' ')
           } else if (error.response.data.message) {
             errorMsg = error.response.data.message
           }
@@ -525,6 +560,60 @@ export default {
 </script>
 
 <style scoped>
+.confirm-card {
+  border-radius: 18px;
+  padding-block: 8px 4px;
+  padding-inline: 8px;
+}
+
+.confirm-title {
+  color: #17a2a6;
+  font-size: 1.35rem;
+  font-weight: 700;
+  padding-block: 12px 4px;
+  text-align: center;
+}
+
+.confirm-title-error {
+  color: #e63946;
+}
+
+.confirm-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-block: 6px 14px;
+  text-align: center;
+}
+
+.confirm-text {
+  color: rgba(var(--v-theme-on-surface), 0.8);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.confirm-subtext {
+  color: rgba(var(--v-theme-on-surface), 0.6);
+  font-size: 0.95rem;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding-block-end: 16px;
+}
+
+.confirm-btn {
+  border-radius: 8px;
+  font-weight: 600;
+  min-inline-size: 120px;
+  text-transform: none;
+}
+
+.confirm-btn-primary {
+  color: #fff !important;
+}
 .form-card {
   margin: 0;
   max-inline-size: 100%;

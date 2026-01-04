@@ -1,13 +1,13 @@
 <script setup>
 import {
-    CategoryScale,
-    Chart,
-    Filler,
-    LineController,
-    LineElement,
-    LinearScale,
-    PointElement,
-    Tooltip,
+  CategoryScale,
+  Chart,
+  Filler,
+  LineController,
+  LineElement,
+  LinearScale,
+  PointElement,
+  Tooltip,
 } from 'chart.js'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -96,7 +96,7 @@ onUnmounted(() => {
 })
 
 const defaultSummary = {
-  statusLabel: 'Belum mengajukan',
+  statusLabel: 'Tidak ada',
   subtitle: 'Belum ada data pengajuan.',
 }
 
@@ -393,6 +393,27 @@ function goToNotification(notification) {
   })
 }
 
+const toTimestamp = (...values) => {
+  for (const value of values) {
+    if (!value) continue
+    if (typeof value === 'number') return value
+
+    let parsed = Date.parse(value)
+    if (!Number.isNaN(parsed)) return parsed
+
+    if (typeof value === 'string') {
+      const normalized = value
+        .replace(/\.\d+$/, '')
+        .replace(' ', 'T')
+
+      parsed = Date.parse(normalized)
+      if (!Number.isNaN(parsed)) return parsed
+    }
+  }
+
+  return 0
+}
+
 const loadNotifications = async () => {
   try {
     const headers = { Accept: 'application/json' }
@@ -427,7 +448,7 @@ const loadNotifications = async () => {
         route: '/pra-yudisium',
         dataId: item.kdprayudisium,
         comment: item.comment,
-        sortDate: item.update_at || item.create_at || null,
+        sortTime: toTimestamp(item.update_at, item.create_at),
       }))
 
     const praRecords = data.filter(item => item.nim === userNim.value || String(item.kdmahasiswa) === String(userNim.value))
@@ -465,7 +486,7 @@ const loadNotifications = async () => {
               route: '/pendaftaran-legalisasi',
               dataId: item.kdlegalisasi || item.id,
               comment: title,
-              sortDate: item.tgl_dikirim || item.update_at || item.create_at || null,
+              sortTime: toTimestamp(item.update_at, item.tgl_dikirim, item.create_at),
             }
           })
       }
@@ -492,7 +513,7 @@ const loadNotifications = async () => {
         route: '/pra-yudisium',
         dataId: item.kdprayudisium,
         comment: 'Pengajuan Pra Yudisium Anda disetujui.',
-        sortDate: item.update_at || item.create_at || null,
+        sortTime: toTimestamp(item.update_at, item.tgl_validate, item.create_at),
       }))
 
     // Notifikasi untuk balasan admin di validasi ijazah & transkrip
@@ -507,6 +528,7 @@ const loadNotifications = async () => {
         setValidasiSummary(validasiRecords)
 
         const notifItems = []
+
         await Promise.all(validasiRecords.map(async record => {
           const recordId = record?.kdvalidasiijazahmahasiswa
           if (!recordId) return
@@ -515,10 +537,12 @@ const loadNotifications = async () => {
             if (!resComments.ok) return
             const commentJson = await resComments.json()
             const flat = flattenCommentTree(Array.isArray(commentJson) ? commentJson : [])
+
             flat
               .filter(comment => comment?.user_type === 'tendik')
               .forEach(comment => {
                 const title = comment?.text || comment?.comment || 'Komentar admin'
+
                 notifItems.push({
                   id: `validasi-${recordId}-${comment?.id ?? Date.now()}`,
                   icon: 'ri-chat-3-line',
@@ -528,7 +552,7 @@ const loadNotifications = async () => {
                   route: '/validasi-ijazah',
                   dataId: recordId,
                   comment: title,
-                  sortDate: comment?.date || comment?.create_at || comment?.created_at || null,
+                  sortTime: toTimestamp(comment?.create_at, comment?.date, comment?.created_at),
                 })
               })
           } catch (err) {
@@ -537,8 +561,7 @@ const loadNotifications = async () => {
         }))
 
         validasiNotifications = notifItems
-          .sort((a, b) => new Date(b.sortDate || 0) - new Date(a.sortDate || 0))
-          .map(({ sortDate, ...item }) => item)
+          .sort((a, b) => (b.sortTime || 0) - (a.sortTime || 0))
       }
     } catch (err) {
       console.error('Gagal memuat notifikasi validasi ijazah', err)
@@ -546,9 +569,10 @@ const loadNotifications = async () => {
 
     // Sort all notifications by newest first (reverse chronological)
     const allNotifications = [...studentNotifications, ...approvedNotifications, ...legalisasiNotifications, ...validasiNotifications]
+
     notifications.value = allNotifications
-      .sort((a, b) => new Date(b.sortDate || 0) - new Date(a.sortDate || 0))
-      .map(({ sortDate, ...item }) => item)
+      .sort((a, b) => (b.sortTime || 0) - (a.sortTime || 0))
+      .map(({ sortTime, ...item }) => item)
   } catch (err) {
     console.error(err)
   }
