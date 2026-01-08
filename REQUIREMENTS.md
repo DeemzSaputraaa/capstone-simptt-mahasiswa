@@ -17,27 +17,19 @@ Backend (Composer dev)
 - phpunit/phpunit: ^11.0.1
 
 Frontend (npm dependencies)
-- @floating-ui/dom: 1.6.8
 - @iconify-json/bxl: ^1.1.10
 - @mdi/font: ^7.4.47
 - @stylistic/stylelint-config: ^1.0.1
 - @vueuse/core: ^10.11.1
 - @vueuse/math: ^10.11.1
-- apexcharts: ^3.54.1
 - chart.js: ^4.4.4
 - html2pdf.js: ^0.10.3
 - pdf-lib: ^1.17.1
 - pdfjs-dist: ^5.4.296
 - pinia: ^2.3.0
-- prismjs: ^1.29.0
 - roboto-fontface: ^0.10.0
 - vue: ^3.5.13
-- vue-flatpickr-component: 11.0.5
-- vue-i18n: ^12.0.0-alpha.2
-- vue-prism-component: ^2.0.0
 - vue-router: ^4.5.0
-- vue-toastification: ^2.0.0-rc.5
-- vue3-apexcharts: 1.5.2
 - vue3-perfect-scrollbar: ^2.0.0
 - vuetify: 3.7.5
 - webfontloader: ^1.6.28
