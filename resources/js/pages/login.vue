@@ -38,6 +38,20 @@ const logoTheme = computed(() => {
 
 const isPasswordVisible = ref(false)
 
+const resolveLoginErrorMessage = (data, fallback) => {
+  if (data?.code === 'BAD_REQUEST') return 'Mohon lengkapi NIM dan password.'
+  if (data?.code === 'UNAUTHORIZED') return 'NIM atau password yang Anda masukkan salah.'
+  if (data?.code === 'USER_NOT_FOUND') return 'NIM tidak terdaftar.'
+  if (data?.code === 'SERVICE_UNAVAILABLE') return 'Layanan autentikasi sedang tidak tersedia. Silakan coba lagi nanti.'
+  if (typeof data?.message === 'string') {
+    const normalized = data.message.toLowerCase()
+    if (normalized.includes('invalid credentials')) return 'NIM atau password yang Anda masukkan salah.'
+    if (normalized.includes('unavailable')) return 'Layanan autentikasi sedang tidak tersedia. Silakan coba lagi nanti.'
+    if (normalized.includes('validation')) return 'Mohon lengkapi semua field yang diperlukan.'
+  }
+  return fallback
+}
+
 const handleLogin = async () => {
   // Validasi form
   if (!form.value.nim || !form.value.password) {
@@ -125,22 +139,10 @@ const handleLogin = async () => {
       }
     } else {
       // Handle error response
-      let errorMessage = 'Login gagal. Silakan coba lagi.'
-      
-      if (data.message) {
-        errorMessage = data.message
-      } else if (!data.isallowed) {
-        errorMessage = 'NIM atau Password yang Anda masukkan salah. Silakan coba lagi.'
-      }
-
-      // Handle specific error messages
-      if (errorMessage.includes('unavailable')) {
-        errorMessage = 'Layanan autentikasi sedang tidak tersedia. Silakan coba lagi nanti.'
-      } else if (errorMessage.includes('Validation failed')) {
-        errorMessage = 'Mohon lengkapi semua field yang diperlukan.'
-      }
-
-      loginErrorMessage.value = errorMessage
+      loginErrorMessage.value = resolveLoginErrorMessage(
+        data,
+        'NIM atau password yang Anda masukkan salah. Silakan coba lagi.',
+      )
       showLoginErrorModal.value = true
       console.error('Login failed:', data)
     }

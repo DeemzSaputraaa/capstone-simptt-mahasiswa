@@ -23,6 +23,19 @@ const router = useRouter()
 const authThemeMask = computed(() => vuetifyTheme.global.name.value === 'light' ? authV1MaskLight : authV1MaskDark)
 const logoTheme = computed(() => vuetifyTheme.global.name.value === 'light' ? logoUnisa : logoUnisaDark)
 
+const resolveLoginErrorMessage = (data, fallback) => {
+  if (data?.code === 'BAD_REQUEST') return 'Mohon lengkapi NIP dan password.'
+  if (data?.code === 'UNAUTHORIZED') return 'NIP atau password yang Anda masukkan salah.'
+  if (data?.code === 'USER_NOT_FOUND') return 'NIP tidak terdaftar.'
+  if (data?.code === 'SERVICE_UNAVAILABLE') return 'Layanan autentikasi sedang tidak tersedia. Silakan coba lagi nanti.'
+  if (typeof data?.message === 'string') {
+    const normalized = data.message.toLowerCase()
+    if (normalized.includes('invalid credentials')) return 'NIP atau password yang Anda masukkan salah.'
+    if (normalized.includes('unavailable')) return 'Layanan autentikasi sedang tidak tersedia. Silakan coba lagi nanti.'
+  }
+  return fallback
+}
+
 const handleLogin = async () => {
   if (!form.value.nip || !form.value.password) {
     loginErrorMessage.value = 'Mohon lengkapi NIP dan Password'
@@ -86,8 +99,10 @@ const handleLogin = async () => {
 
       await router.push('/admin/prayudisium')
     } else {
-      const errorMessage = data?.message || 'NIP atau Password yang Anda masukkan salah. Silakan coba lagi.'
-      loginErrorMessage.value = errorMessage
+      loginErrorMessage.value = resolveLoginErrorMessage(
+        data,
+        'NIP atau password yang Anda masukkan salah. Silakan coba lagi.',
+      )
       showLoginErrorModal.value = true
     }
   } catch (error) {

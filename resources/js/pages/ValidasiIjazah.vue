@@ -519,8 +519,10 @@ export default {
           headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+            'X-Requested-With': 'XMLHttpRequest',
             ...getAuthHeaders(),
           },
+          credentials: 'same-origin',
           body: JSON.stringify({
             comment: commentText,
             parent_id: null, // Komentar utama
@@ -624,8 +626,10 @@ export default {
           headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+            'X-Requested-With': 'XMLHttpRequest',
             ...getAuthHeaders(),
           },
+          credentials: 'same-origin',
           body: JSON.stringify({
             comment: text,
             parent_id: parentId,
@@ -705,8 +709,10 @@ export default {
             'Content-Type': 'application/json',
             Accept: 'application/json',
             ...(csrf ? { 'X-CSRF-TOKEN': csrf } : {}),
+            'X-Requested-With': 'XMLHttpRequest',
             ...getAuthHeaders(),
           },
+          credentials: 'same-origin',
           body: JSON.stringify({}),
         })
 

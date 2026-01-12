@@ -38,6 +38,12 @@ class AuthController extends Controller
             // Decode the JSON response
             $json = $response->json();
 
+            Log::info('Authentication service response', [
+                'username' => $username,
+                'status' => $response->status(),
+                'json' => $json,
+            ]);
+
             // Validate response structure
             if (!is_array($json)) {
                 throw new \Exception('Invalid JSON response from authentication service.');
@@ -486,3 +492,5 @@ class AuthController extends Controller
         }
     }
 }
+
+

@@ -57,6 +57,25 @@ const deleteCandidate = ref(null)
 const showDetailDialog = ref(false)
 const detailItem = ref(null)
 
+const getCsrfToken = () => document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+
+const buildHeaders = (withJson = false) => {
+  const headers = { Accept: 'application/json' }
+  if (withJson)
+    headers['Content-Type'] = 'application/json'
+
+  const token = sessionStorage.getItem('jwt_token')
+  if (token)
+    headers.Authorization = `Bearer ${token}`
+
+  const csrf = getCsrfToken()
+  if (csrf)
+    headers['X-CSRF-TOKEN'] = csrf
+
+  headers['X-Requested-With'] = 'XMLHttpRequest'
+  return headers
+}
+
 const form = ref({
   kdmahasiswa: '',
   jumlah_legalisasi: 1,
@@ -168,14 +187,7 @@ const saveResi = async () => {
   approvingId.value = getRowId(resiTarget.value)
 
   try {
-    const headers = {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    }
-
-    const token = sessionStorage.getItem('jwt_token')
-    if (token)
-      headers.Authorization = `Bearer ${token}`
+    const headers = buildHeaders(true)
 
     const id = getRowId(resiTarget.value)
 
@@ -237,14 +249,7 @@ const saveBiaya = async () => {
   approvingId.value = getRowId(biayaTarget.value)
 
   try {
-    const headers = {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    }
-
-    const token = sessionStorage.getItem('jwt_token')
-    if (token)
-      headers.Authorization = `Bearer ${token}`
+    const headers = buildHeaders(true)
 
     const id = getRowId(biayaTarget.value)
     const amount = parseRupiahInput(biayaValue.value)
@@ -287,14 +292,7 @@ const saveApprove = async () => {
   approvingId.value = getRowId(selectedItem.value)
 
   try {
-    const headers = {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    }
-
-    const token = sessionStorage.getItem('jwt_token')
-    if (token)
-      headers.Authorization = `Bearer ${token}`
+    const headers = buildHeaders(true)
 
     const id = getRowId(selectedItem.value)
 
@@ -361,10 +359,7 @@ const deleteItem = async item => {
   deletingId.value = id
 
   try {
-    const headers = { Accept: 'application/json' }
-    const token = sessionStorage.getItem('jwt_token')
-    if (token)
-      headers.Authorization = `Bearer ${token}`
+    const headers = buildHeaders()
 
     const res = await fetch(`/api/form-legalisasi/${id}`, {
       method: 'DELETE',
@@ -388,14 +383,7 @@ const submitForm = async () => {
   errorMessage.value = ''
   successMessage.value = ''
   try {
-    const headers = {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    }
-
-    const token = sessionStorage.getItem('jwt_token')
-    if (token)
-      headers.Authorization = `Bearer ${token}`
+    const headers = buildHeaders(true)
 
     const res = await fetch('/api/form-legalisasi', {
       method: 'POST',
