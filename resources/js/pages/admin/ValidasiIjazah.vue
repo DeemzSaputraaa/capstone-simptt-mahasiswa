@@ -850,35 +850,48 @@ onMounted(() => {
 .w-auto { inline-size: auto !important; }
 
 @media (max-width: 960px) {
-  .validasi-table thead {
-    display: none;
+  .table-wrapper {
+    -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
   }
 
-  .validasi-table tbody tr {
-    display: grid;
-    padding: 12px;
-    gap: 8px;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  .validasi-table {
+    min-inline-size: 720px;
   }
+}
 
-  .validasi-table tbody td {
-    display: flex;
+@media (max-width: 720px) {
+  .validasi-filters,
+  .table-footer {
     flex-direction: column;
     align-items: flex-start;
-    background-color: rgba(var(--v-theme-surface), 0.9);
-    gap: 4px;
+    gap: 8px;
   }
 
-  .validasi-table tbody td::before {
-    color: rgba(var(--v-theme-on-surface), 0.7);
-    content: attr(data-label);
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
+  .comment-input {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .validasi-table tbody td.text-center {
-    align-items: center;
+  .comment-send-btn {
+    inline-size: 100%;
+  }
+
+  .comment-row {
+    flex-direction: column;
+  }
+
+  .comment-row.reply {
+    margin-inline-start: 16px;
+  }
+
+  .comment-avatar {
+    align-self: flex-start;
+  }
+
+  :deep(.v-overlay__content) {
+    max-inline-size: calc(100% - 24px) !important;
+    inline-size: calc(100% - 24px) !important;
   }
 }
 

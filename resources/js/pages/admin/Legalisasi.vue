@@ -59,7 +59,7 @@ const detailItem = ref(null)
 
 const getCsrfToken = () => document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
 
-const buildHeaders = (withJson = false) => {
+const buildHeaders = (withJson = false, methodOverride = '') => {
   const headers = { Accept: 'application/json' }
   if (withJson)
     headers['Content-Type'] = 'application/json'
@@ -71,6 +71,9 @@ const buildHeaders = (withJson = false) => {
   const csrf = getCsrfToken()
   if (csrf)
     headers['X-CSRF-TOKEN'] = csrf
+
+  if (methodOverride)
+    headers['X-HTTP-Method-Override'] = methodOverride
 
   headers['X-Requested-With'] = 'XMLHttpRequest'
   return headers
@@ -187,12 +190,12 @@ const saveResi = async () => {
   approvingId.value = getRowId(resiTarget.value)
 
   try {
-    const headers = buildHeaders(true)
+    const headers = buildHeaders(true, 'PUT')
 
     const id = getRowId(resiTarget.value)
 
     const res = await fetch(`/api/form-legalisasi/${id}`, {
-      method: 'PUT',
+      method: 'POST',
       headers,
       body: JSON.stringify({ noresi: resiValue.value }),
     })
@@ -249,7 +252,7 @@ const saveBiaya = async () => {
   approvingId.value = getRowId(biayaTarget.value)
 
   try {
-    const headers = buildHeaders(true)
+    const headers = buildHeaders(true, 'PUT')
 
     const id = getRowId(biayaTarget.value)
     const amount = parseRupiahInput(biayaValue.value)
@@ -260,7 +263,7 @@ const saveBiaya = async () => {
     }
 
     const res = await fetch(`/api/form-legalisasi/${id}`, {
-      method: 'PUT',
+      method: 'POST',
       headers,
       body: JSON.stringify({ biaya_legalisasi: Number(amount) }),
     })
@@ -292,12 +295,12 @@ const saveApprove = async () => {
   approvingId.value = getRowId(selectedItem.value)
 
   try {
-    const headers = buildHeaders(true)
+    const headers = buildHeaders(true, 'PUT')
 
     const id = getRowId(selectedItem.value)
 
     const res = await fetch(`/api/form-legalisasi/${id}`, {
-      method: 'PUT',
+      method: 'POST',
       headers,
       body: JSON.stringify({
         tgl_dikirim: approveForm.value.tgl_dikirim,
@@ -359,10 +362,10 @@ const deleteItem = async item => {
   deletingId.value = id
 
   try {
-    const headers = buildHeaders()
+    const headers = buildHeaders(false, 'DELETE')
 
     const res = await fetch(`/api/form-legalisasi/${id}`, {
-      method: 'DELETE',
+      method: 'POST',
       headers,
     })
 
@@ -1335,31 +1338,13 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 960px) {
-  .legalisasi-table thead {
-    display: none;
+  .table-wrapper {
+    -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
   }
 
-  .legalisasi-table tbody tr {
-    display: grid;
-    padding: 12px;
-    gap: 8px;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  }
-
-  .legalisasi-table tbody td {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    background-color: rgba(var(--v-theme-surface), 0.9);
-    gap: 4px;
-  }
-
-  .legalisasi-table tbody td::before {
-    color: rgba(var(--v-theme-on-surface), 0.7);
-    content: attr(data-label);
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
+  .legalisasi-table {
+    min-inline-size: 760px;
   }
 }
 

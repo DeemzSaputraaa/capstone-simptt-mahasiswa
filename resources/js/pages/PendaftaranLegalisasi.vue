@@ -813,6 +813,7 @@ export default {
         const headers = {
           Accept: 'application/json',
           'Content-Type': 'application/json',
+          'X-HTTP-Method-Override': 'PUT',
         }
 
         const token = sessionStorage.getItem('jwt_token')
@@ -820,7 +821,7 @@ export default {
           headers.Authorization = `Bearer ${token}`
 
         const res = await fetch(`/api/form-legalisasi/${id}`, {
-          method: 'PUT',
+          method: 'POST',
           headers,
           body: JSON.stringify({ status_penerimaan: status }),
         })
