@@ -1,11 +1,17 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
 const user = ref({
   name: '',
+})
+
+const userInitial = computed(() => {
+  const value = (user.value.name || '').trim()
+
+  return value ? value.charAt(0).toUpperCase() : 'A'
 })
 
 // Fungsi untuk mengambil data user
@@ -54,12 +60,20 @@ onMounted(() => {
   >
     <!-- Activator: klik nama user -->
     <template #activator="{ props }">
-      <span
+      <div
         v-bind="props"
-        class="cursor-pointer font-weight-semibold"
+        class="user-profile-trigger"
       >
-        {{ user.name.split(' ')[0] }}
-      </span>
+        <span class="font-weight-semibold">
+          {{ user.name.split(' ')[0] }}
+        </span>
+        <VAvatar
+          size="28"
+          class="user-avatar"
+        >
+          {{ userInitial }}
+        </VAvatar>
+      </div>
     </template>
 
     <!-- Dropdown Menu -->
@@ -77,3 +91,18 @@ onMounted(() => {
     </VList>
   </VMenu>
 </template>
+
+<style scoped>
+.user-profile-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.user-avatar {
+  background-color: rgba(var(--v-theme-primary), 0.15);
+  color: rgb(var(--v-theme-primary));
+  font-weight: 700;
+}
+</style>

@@ -50,7 +50,7 @@
           <VCardText>
             <!-- Section 1: Upload Foto 3x4 -->
             <div class="text-subtitle-1 font-weight-bold mb-2">
-              Upload Foto Berukuran 3×4 dan Berlatar Biru
+              Upload Foto Berukuran 3×4 (Berlatar Merah)
             </div>
             <div class="file-upload ">
               <VIcon class="file-upload-icon">
@@ -104,7 +104,7 @@
             
             <!-- Section 5: Upload Foto KTP -->
             <div class="text-subtitle-1 font-weight-bold mt-6">
-              Upload Foto KTP
+              Upload KTP/KK
             </div>
             <div class="file-upload">
               <VIcon class="file-upload-icon">
@@ -225,6 +225,7 @@ export default {
 
     const formatFileSizeMb = kilobytes => {
       const mb = Math.round((kilobytes / 1024) * 10) / 10
+      
       return Number.isInteger(mb) ? `${mb}` : `${mb}`.replace('.', ',')
     }
 
@@ -614,6 +615,7 @@ export default {
 .confirm-btn-primary {
   color: #fff !important;
 }
+
 .form-card {
   margin: 0;
   max-inline-size: 100%;

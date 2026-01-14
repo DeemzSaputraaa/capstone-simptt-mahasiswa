@@ -26,9 +26,11 @@ const successMessage = ref('')
 const filterResi = ref('all')
 const filterBiaya = ref('all')
 const filterApprove = ref('all')
+const filterPengiriman = ref('all')
 const pendingFilterResi = ref('all')
 const pendingFilterBiaya = ref('all')
 const pendingFilterApprove = ref('all')
+const pendingFilterPengiriman = ref('all')
 let successTimer = null
 let errorTimer = null
 
@@ -414,6 +416,8 @@ const filteredLegalisasi = computed(() => {
     const hasResi = !!item?.noresi
     const hasBiaya = item?.biaya_legalisasi !== null && item?.biaya_legalisasi !== undefined && item?.biaya_legalisasi !== ''
     const isApprovedRow = !!item?.tgl_dikirim
+    const isReceived = item?.status_penerimaan === 'received'
+    const isFailed = item?.status_penerimaan === 'not_received'
 
     if (filterResi.value === 'yes' && !hasResi) return false
     if (filterResi.value === 'no' && hasResi) return false
@@ -424,6 +428,9 @@ const filteredLegalisasi = computed(() => {
     if (filterApprove.value === 'yes' && !isApprovedRow) return false
     if (filterApprove.value === 'no' && isApprovedRow) return false
 
+    if (filterPengiriman.value === 'received' && !isReceived) return false
+    if (filterPengiriman.value === 'failed' && !isFailed) return false
+
     return true
   })
 })
@@ -432,6 +439,7 @@ const applyFilters = () => {
   filterResi.value = pendingFilterResi.value
   filterBiaya.value = pendingFilterBiaya.value
   filterApprove.value = pendingFilterApprove.value
+  filterPengiriman.value = pendingFilterPengiriman.value
 }
 
 onMounted(fetchData)
@@ -504,6 +512,19 @@ onBeforeUnmount(() => {
             { title: 'Semua', value: 'all' },
             { title: 'Sudah', value: 'yes' },
             { title: 'Belum', value: 'no' },
+          ]"
+          density="compact"
+          style="max-inline-size: 160px;"
+        />
+      </div>
+      <div class="filter-item">
+        <span>Status Pengiriman</span>
+        <VSelect
+          v-model="pendingFilterPengiriman"
+          :items="[
+            { title: 'Semua', value: 'all' },
+            { title: 'Diterima', value: 'received' },
+            { title: 'Gagal', value: 'failed' },
           ]"
           density="compact"
           style="max-inline-size: 160px;"
@@ -668,7 +689,10 @@ onBeforeUnmount(() => {
             v-for="(m, i) in filteredLegalisasi.slice(0, itemsPerPage)"
             v-else
             :key="m.kdlegalisasi || i"
-            :class="{ 'row-received': m.status_penerimaan === 'received' }"
+            :class="{
+              'row-received': m.status_penerimaan === 'received',
+              'row-failed': m.status_penerimaan === 'not_received',
+            }"
           >
             <td data-label="No">
               {{ i + 1 }}
@@ -1114,7 +1138,17 @@ onBeforeUnmount(() => {
   font-weight: 600;
 }
 
+.legalisasi-table tbody tr.row-failed td {
+  background-color: rgba(230, 57, 70, 12%);
+  color: #842029;
+  font-weight: 600;
+}
+
 .v-theme--dark .legalisasi-table tbody tr.row-received td {
+  color: #fff;
+}
+
+.v-theme--dark .legalisasi-table tbody tr.row-failed td {
   color: #fff;
 }
 

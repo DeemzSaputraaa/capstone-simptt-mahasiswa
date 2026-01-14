@@ -84,14 +84,6 @@ class AkValidasiIjazahCommentController extends Controller
                 return response()->json(['error' => 'User tidak terautentikasi'], 401);
             }
 
-            if ($userType === 'mahasiswa' && is_null($parentId)) {
-                AkValidasiIjazahMahasiswa::where('kdvalidasiijazahmahasiswa', $resolvedValidasiId)
-                    ->update([
-                        'is_ijazah_validate' => false,
-                        'is_transkrip_validate' => false,
-                    ]);
-            }
-
             $dataToStore = [
                 'kdvalidasiijazahmahasiswa' => $resolvedValidasiId,
                 'parent_id' => $validated['parent_id'] ?? null,

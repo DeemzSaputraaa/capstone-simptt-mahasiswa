@@ -378,7 +378,9 @@ onMounted(fetchData)
       <thead>
         <tr>
           <th>No</th>
+          <th>NIM</th>
           <th>Nama Mahasiswa</th>
+          <th>Prodi</th>
           <th>Pas Foto</th>
           <th>Ijazah</th>
           <th>KTP</th>
@@ -391,7 +393,7 @@ onMounted(fetchData)
       <tbody>
         <tr v-if="loading">
           <td
-            colspan="7"
+            colspan="9"
             class="text-center py-6"
           >
             Memuat data...
@@ -399,7 +401,7 @@ onMounted(fetchData)
         </tr>
         <tr v-else-if="!filteredList.length">
           <td
-            colspan="7"
+            colspan="9"
             class="text-center py-6"
           >
             Tidak ada data pra yudisium.
@@ -411,7 +413,9 @@ onMounted(fetchData)
           :key="m.kdprayudisium"
         >
           <td>{{ i + 1 }}</td>
+          <td>{{ m.nim || '-' }}</td>
           <td>{{ m.namalengkap || '-' }}</td>
+          <td>{{ m.prodi || '-' }}</td>
           <td>
             <div class="doc-cell">
               <template v-if="isImage(m.berkas_foto_ijazah)">

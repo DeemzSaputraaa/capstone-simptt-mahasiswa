@@ -6,9 +6,10 @@
         class="pa-0"
       >
         <div v-if="!showWizard">
-          <div class="d-flex flex-wrap justify-space-between align-center">
+          <div class="legalisasi-actions d-flex flex-wrap justify-space-between align-center">
             <VBtn
               color="#17a2a6"
+              class="legalisasi-action-btn"
               style="border-radius: 10px; background: rgb(var(--v-theme-primary)); color: #fff; font-size: 1.1rem; font-weight: 500; margin-block-end: 32px; min-block-size: 48px;"
               @click="showWizard = true"
             >
@@ -16,6 +17,7 @@
             </VBtn>
             <VBtn
               color="#17a2a6"
+              class="legalisasi-action-btn"
               style="border-radius: 10px; background: rgb(var(--v-theme-primary)); color: #fff; font-size: 1.1rem; font-weight: 500; margin-block-end: 32px; min-block-size: 48px;"
               @click="openCaraPembayaran"
             >
@@ -41,8 +43,11 @@
               :items="[
                 { title: 'Semua', value: 'all' },
                 { title: 'Pending', value: 'pending' },
+                { title: 'Belum Dibayar', value: 'belum dibayar' },
+                { title: 'Proses Pengiriman', value: 'proses pengiriman' },
                 { title: 'Dikirim', value: 'dikirim' },
                 { title: 'Diterima', value: 'diterima' },
+                { title: 'Gagal', value: 'gagal' },
               ]"
               density="compact"
               hide-details
@@ -94,11 +99,22 @@
                   :key="item.kdlegalisasi || item.id || index"
                   :class="{ 'done-row': statusText(item) === 'Done' }"
                 >
-                  <td>{{ (currentPage - 1)* itemsPerPage + index + 1 }}</td>
-                  <td>{{ formatDate(item.create_at || item.tgl_dikirim) }}</td>
-                  <td>{{ item.biaya_legalisasi ? formatRupiah(item.biaya_legalisasi) : '-' }}</td>
-                  <td>{{ item.jumlah_legalisasi ?? '-' }}</td>
-                  <td v-if="item.noresi">
+                  <td data-label="No">
+                    {{ (currentPage - 1)* itemsPerPage + index + 1 }}
+                  </td>
+                  <td data-label="Tanggal Pengajuan">
+                    {{ formatDate(item.create_at || item.tgl_dikirim) }}
+                  </td>
+                  <td data-label="Tagihan">
+                    {{ item.biaya_legalisasi ? formatRupiah(item.biaya_legalisasi) : '-' }}
+                  </td>
+                  <td data-label="Jumlah">
+                    {{ item.jumlah_legalisasi ?? '-' }}
+                  </td>
+                  <td
+                    v-if="item.noresi"
+                    data-label="No. Resi"
+                  >
                     <a
                       :href="`https://www.posindonesia.co.id/en/tracking/${item.noresi}`"
                       target="_blank"
@@ -108,10 +124,13 @@
                       {{ item.noresi }}
                     </a>
                   </td>
-                  <td v-else>
+                  <td
+                    v-else
+                    data-label="No. Resi"
+                  >
                     -
                   </td>
-                  <td>
+                  <td data-label="Status">
                     <span :class="statusClass(statusText(item))">
                       {{ statusText(item) }}
                     </span>
@@ -120,28 +139,30 @@
                     data-label="Aksi"
                     class="action-cell"
                   >
-                    <VBtn
-                      icon
-                      variant="text"
-                      color="success"
-                      class="action-icon-btn"
-                      :loading="receivingId === getRowId(item)"
-                      :disabled="!canConfirmReceipt(item) || receivingId !== null"
-                      @click="updateReceiptStatus(item, 'received')"
-                    >
-                      <VIcon icon="ri-check-line" />
-                    </VBtn>
-                    <VBtn
-                      icon
-                      variant="text"
-                      color="error"
-                      class="action-icon-btn"
-                      :loading="receivingId === getRowId(item)"
-                      :disabled="!canConfirmReceipt(item) || receivingId !== null"
-                      @click="updateReceiptStatus(item, 'not_received')"
-                    >
-                      <VIcon icon="ri-close-line" />
-                    </VBtn>
+                    <div class="action-buttons">
+                      <VBtn
+                        icon
+                        variant="text"
+                        color="success"
+                        class="action-icon-btn"
+                        :loading="receivingId === getRowId(item)"
+                        :disabled="!canConfirmReceipt(item) || receivingId !== null"
+                        @click="updateReceiptStatus(item, 'received')"
+                      >
+                        <VIcon icon="ri-check-line" />
+                      </VBtn>
+                      <VBtn
+                        icon
+                        variant="text"
+                        color="error"
+                        class="action-icon-btn"
+                        :loading="receivingId === getRowId(item)"
+                        :disabled="!canConfirmReceipt(item) || receivingId !== null"
+                        @click="updateReceiptStatus(item, 'not_received')"
+                      >
+                        <VIcon icon="ri-close-line" />
+                      </VBtn>
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -208,7 +229,7 @@
                   />
                 </div>
                 <div class="text-subtitle-1 font-weight-bold mb-2">
-                  Jumlah (Jml)
+                  Jumlah (Berlaku Untuk Setiap Dokumen)
                 </div>
                 <VTextField
                   v-model="form.jml"
@@ -219,7 +240,7 @@
                   class="mb-4"
                 />
                 <div class="text-subtitle-1 font-weight-bold mb-2">
-                  Alamat
+                  Alamat Lengkap
                 </div>
                 <VTextField
                   v-model="form.alamat"
@@ -348,7 +369,10 @@
       max-width="520"
       :persistent="modalType === 'success'"
     >
-      <VCard :class="['validation-card', `validation-${modalType}`]">
+      <VCard
+        class="validation-card"
+        :class="[`validation-${modalType}`]"
+      >
         <VCardTitle class="validation-title">
           {{ modalType === 'success' ? 'Sukses' : modalType === 'error' ? 'Gagal' : 'Peringatan' }}
         </VCardTitle>
@@ -752,8 +776,9 @@ export default {
 
       return pengajuanList.value.filter(item => {
         const status = statusText(item).toLowerCase()
-        
-        return status === statusFilter.value
+        const filterKey = (statusFilter.value || '').toLowerCase()
+
+        return status === filterKey
       })
     })
 
@@ -771,6 +796,8 @@ export default {
       if (key === 'diterima') return 'status-chip status-approved'
       if (key === 'gagal') return 'status-chip status-failed'
       if (key === 'dikirim') return 'status-chip status-shipped'
+      if (key === 'proses pengiriman') return 'status-chip status-processing'
+      if (key === 'belum dibayar') return 'status-chip status-unpaid'
 
       return 'status-chip status-pending'
     }
@@ -789,9 +816,13 @@ export default {
     }
 
     const statusText = item => {
+      const hasBiaya = item?.biaya_legalisasi !== null && item?.biaya_legalisasi !== undefined && item?.biaya_legalisasi !== ''
+      const hasResi = !!item?.noresi
       if (item?.status_penerimaan === 'received') return 'Diterima'
       if (item?.status_penerimaan === 'not_received') return 'Gagal'
-      if (item?.tgl_dikirim) return 'Dikirim'
+      if (hasBiaya && hasResi && item?.tgl_dikirim) return 'Dikirim'
+      if (hasBiaya && hasResi) return 'Proses Pengiriman'
+      if (hasBiaya && !hasResi) return 'Belum Dibayar'
 
       return 'Pending'
     }
@@ -1326,6 +1357,16 @@ export default {
 .status-approved {
   background: rgba(27, 196, 125, 15%);
   color: #1bc47d;
+}
+
+.status-unpaid {
+  background: rgba(245, 158, 11, 15%);
+  color: #f59e0b;
+}
+
+.status-processing {
+  background: rgba(14, 165, 233, 15%);
+  color: #0ea5e9;
 }
 
 .status-failed {
@@ -2118,6 +2159,87 @@ export default {
 }
 
 @media (max-width: 768px) {
+  .legalisasi-actions {
+    gap: 12px;
+  }
+
+  .legalisasi-action-btn {
+    flex: 1 1 0;
+    font-size: 0.95rem !important;
+    margin-block-end: 16px !important;
+    min-block-size: 42px !important;
+    min-inline-size: 0;
+    padding-block: 8px !important;
+  }
+
+  .pengajuan-table thead {
+    display: none;
+  }
+
+  .pengajuan-table,
+  .pengajuan-table tbody,
+  .pengajuan-table tr,
+  .pengajuan-table td {
+    display: block;
+    inline-size: 100%;
+  }
+
+  .pengajuan-table tbody tr {
+    border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+    border-radius: 14px;
+    background: rgba(var(--v-theme-surface), 0.98);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 6%);
+    margin-block: 12px;
+    padding-block: 6px;
+    padding-inline: 10px;
+  }
+
+  .pengajuan-table tbody td {
+    display: grid;
+    align-items: center;
+    column-gap: 12px;
+    grid-template-columns: minmax(120px, 44%) 1fr;
+    padding-block: 10px;
+    padding-inline: 6px;
+    text-align: start;
+    white-space: normal;
+  }
+
+  .pengajuan-table tbody td::before {
+    color: rgba(var(--v-theme-on-surface), 0.6);
+    content: attr(data-label);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    min-inline-size: 0;
+    text-transform: uppercase;
+  }
+
+  .pengajuan-table tbody td > * {
+    min-inline-size: 0;
+  }
+
+  .pengajuan-table tbody td a {
+    word-break: break-all;
+  }
+
+  .action-cell {
+    display: grid;
+    align-items: center;
+    column-gap: 12px;
+    grid-template-columns: minmax(120px, 44%) 1fr;
+  }
+
+  .action-buttons {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 12px;
+  }
+
+  .pengajuan-table colgroup {
+    display: none;
+  }
+
   .payment-section-header {
     align-items: flex-start;
   }

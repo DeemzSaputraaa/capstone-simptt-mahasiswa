@@ -22,7 +22,8 @@ class PraYudisiumController extends Controller
                 ->select(
                     'kdmahasiswa',
                     DB::raw('MIN(nim) as nim'),
-                    DB::raw('MIN(namalengkap) as namalengkap')
+                    DB::raw('MIN(namalengkap) as namalengkap'),
+                    DB::raw('MIN(prodi) as prodi')
                 )
                 ->groupBy('kdmahasiswa');
 
@@ -42,7 +43,8 @@ class PraYudisiumController extends Controller
                     'ak_pra_yudisium.status_ktp',
                     'ak_pra_yudisium.create_at',
                     'm.nim',
-                    'm.namalengkap'
+                    'm.namalengkap',
+                    'm.prodi'
                 )
                 ->orderByDesc('ak_pra_yudisium.create_at')
                 ->get();

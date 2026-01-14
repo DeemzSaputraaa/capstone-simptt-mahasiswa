@@ -200,27 +200,95 @@ const setLegalisasiSummary = records => {
     
     return
   }
-  const latest = getLatestItem(records)
-  const hasResi = !!latest?.noresi
-  const hasBiaya = latest?.biaya_legalisasi !== null && latest?.biaya_legalisasi !== undefined && latest?.biaya_legalisasi !== ''
-  const isSent = !!latest?.tgl_dikirim
-  const lastDate = formatShortDate(latest?.tgl_dikirim || latest?.create_at)
+  const statusPriority = {
+    Diterima: 6,
+    Gagal: 5,
+    Dikirim: 4,
+    'Proses Pengiriman': 3,
+    'Belum Dibayar': 2,
+    Pending: 1,
+  }
 
-  if (isSent) {
+  const getLegalisasiStatus = item => {
+    const hasBiaya = item?.biaya_legalisasi !== null && item?.biaya_legalisasi !== undefined && item?.biaya_legalisasi !== ''
+    const hasResi = !!item?.noresi
+
+    if (item?.status_penerimaan === 'received') return 'Diterima'
+    if (item?.status_penerimaan === 'not_received') return 'Gagal'
+    if (hasBiaya && hasResi && item?.tgl_dikirim) return 'Dikirim'
+    if (hasBiaya && hasResi) return 'Proses Pengiriman'
+    if (hasBiaya && !hasResi) return 'Belum Dibayar'
+
+    return 'Pending'
+  }
+
+  const candidates = records.map(item => {
+    const status = getLegalisasiStatus(item)
+    const priority = statusPriority[status] || 0
+    const sortTime = toTimestamp(item?.update_at, item?.tgl_dikirim, item?.create_at)
+
+    return {
+      item,
+      status,
+      priority,
+      sortTime,
+    }
+  })
+
+  const best = candidates.reduce((currentBest, entry) => {
+    if (!currentBest) return entry
+    if (entry.priority !== currentBest.priority)
+      return entry.priority > currentBest.priority ? entry : currentBest
+
+    return entry.sortTime > currentBest.sortTime ? entry : currentBest
+  }, null)
+
+  const status = best?.status || 'Pending'
+  const lastDate = formatShortDate(best?.item?.tgl_dikirim || best?.item?.update_at || best?.item?.create_at)
+
+  if (status === 'Diterima') {
+    legalisasiSummary.value = {
+      statusLabel: 'Diterima',
+      subtitle: 'Dokumen legalisasi sudah diterima.',
+    }
+    return
+  }
+
+  if (status === 'Gagal') {
+    legalisasiSummary.value = {
+      statusLabel: 'Gagal',
+      subtitle: 'Pengiriman legalisasi gagal.',
+    }
+    return
+  }
+
+  if (status === 'Dikirim') {
     legalisasiSummary.value = {
       statusLabel: 'Dikirim',
       subtitle: lastDate ? `Dikirim ${lastDate}.` : 'Dokumen sudah dikirim.',
     }
-  } else if (hasResi || hasBiaya) {
+    return
+  }
+
+  if (status === 'Proses Pengiriman') {
     legalisasiSummary.value = {
-      statusLabel: 'Diproses',
-      subtitle: 'Admin sedang memproses pengiriman.',
+      statusLabel: 'Proses Pengiriman',
+      subtitle: 'Dokumen sedang diproses pengiriman.',
     }
-  } else {
+    return
+  }
+
+  if (status === 'Belum Dibayar') {
     legalisasiSummary.value = {
-      statusLabel: 'Menunggu',
-      subtitle: 'Menunggu verifikasi admin.',
+      statusLabel: 'Belum Dibayar',
+      subtitle: 'Menunggu pembayaran legalisasi.',
     }
+    return
+  }
+
+  legalisasiSummary.value = {
+    statusLabel: 'Pending',
+    subtitle: 'Menunggu verifikasi admin.',
   }
 }
 
@@ -267,9 +335,14 @@ const goTo = path => {
 }
 
 const statusPillClass = status => {
-  if (status === 'Disetujui' || status === 'Dikirim') return 'status-pill status-success'
-  if (status === 'Perlu Revisi' || status === 'Ada Catatan') return 'status-pill status-warning'
-  if (status === 'Diproses' || status === 'Menunggu') return 'status-pill status-info'
+  if (status === 'Disetujui' || status === 'Dikirim' || status === 'Diterima')
+    return 'status-pill status-success'
+  if (status === 'Perlu Revisi' || status === 'Ada Catatan' || status === 'Belum Dibayar')
+    return 'status-pill status-warning'
+  if (status === 'Diproses' || status === 'Menunggu' || status === 'Proses Pengiriman')
+    return 'status-pill status-info'
+  if (status === 'Gagal')
+    return 'status-pill status-error'
   
   return 'status-pill status-muted'
 }
@@ -1034,6 +1107,11 @@ const loadNotifications = async () => {
 .status-info {
   background: rgba(33, 150, 243, 12%);
   color: #1a73c9;
+}
+
+.status-error {
+  background: rgba(230, 57, 70, 15%);
+  color: #e63946;
 }
 
 .status-muted {
