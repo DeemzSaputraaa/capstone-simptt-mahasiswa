@@ -815,6 +815,18 @@ export default {
       }).format(number)
     }
 
+    const getCsrfToken = () => document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+
+    const readJson = async res => {
+      const text = await res.text()
+      if (!text) return {}
+      try {
+        return JSON.parse(text)
+      } catch {
+        return { message: text }
+      }
+    }
+
     const statusText = item => {
       const hasBiaya = item?.biaya_legalisasi !== null && item?.biaya_legalisasi !== undefined && item?.biaya_legalisasi !== ''
       const hasResi = !!item?.noresi
@@ -844,12 +856,15 @@ export default {
         const headers = {
           Accept: 'application/json',
           'Content-Type': 'application/json',
-          'X-HTTP-Method-Override': 'PUT',
         }
 
         const token = sessionStorage.getItem('jwt_token')
         if (token)
           headers.Authorization = `Bearer ${token}`
+
+        const csrf = getCsrfToken()
+        if (csrf)
+          headers['X-CSRF-TOKEN'] = csrf
 
         const res = await fetch(`/api/form-legalisasi/${id}`, {
           method: 'POST',
@@ -857,7 +872,7 @@ export default {
           body: JSON.stringify({ status_penerimaan: status }),
         })
 
-        const json = await res.json()
+        const json = await readJson(res)
         if (!res.ok || json.success === false)
           throw new Error(json.message || 'Gagal memperbarui status penerimaan')
 

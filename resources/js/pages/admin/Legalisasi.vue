@@ -81,6 +81,16 @@ const buildHeaders = (withJson = false, methodOverride = '') => {
   return headers
 }
 
+const readJson = async res => {
+  const text = await res.text()
+  if (!text) return {}
+  try {
+    return JSON.parse(text)
+  } catch {
+    return { message: text }
+  }
+}
+
 const form = ref({
   kdmahasiswa: '',
   jumlah_legalisasi: 1,
@@ -192,7 +202,7 @@ const saveResi = async () => {
   approvingId.value = getRowId(resiTarget.value)
 
   try {
-    const headers = buildHeaders(true, 'PUT')
+    const headers = buildHeaders(true)
 
     const id = getRowId(resiTarget.value)
 
@@ -202,7 +212,7 @@ const saveResi = async () => {
       body: JSON.stringify({ noresi: resiValue.value }),
     })
 
-    const json = await res.json()
+    const json = await readJson(res)
     if (!res.ok || json.success === false)
       throw new Error(json.message || 'Gagal menyimpan nomor resi')
 
@@ -254,7 +264,7 @@ const saveBiaya = async () => {
   approvingId.value = getRowId(biayaTarget.value)
 
   try {
-    const headers = buildHeaders(true, 'PUT')
+    const headers = buildHeaders(true)
 
     const id = getRowId(biayaTarget.value)
     const amount = parseRupiahInput(biayaValue.value)
@@ -270,7 +280,7 @@ const saveBiaya = async () => {
       body: JSON.stringify({ biaya_legalisasi: Number(amount) }),
     })
 
-    const json = await res.json()
+    const json = await readJson(res)
     if (!res.ok || json.success === false)
       throw new Error(json.message || 'Gagal menyimpan biaya')
 
@@ -297,7 +307,7 @@ const saveApprove = async () => {
   approvingId.value = getRowId(selectedItem.value)
 
   try {
-    const headers = buildHeaders(true, 'PUT')
+    const headers = buildHeaders(true)
 
     const id = getRowId(selectedItem.value)
 
@@ -309,7 +319,7 @@ const saveApprove = async () => {
       }),
     })
 
-    const json = await res.json()
+    const json = await readJson(res)
     if (!res.ok || json.success === false)
       throw new Error(json.message || 'Gagal approve legalisasi')
 

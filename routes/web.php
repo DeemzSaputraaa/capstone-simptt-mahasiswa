@@ -30,6 +30,7 @@ Route::prefix('api')->group(function () {
         Route::delete('/pra-yudisium/{id}', [PraYudisiumController::class, 'destroy']);
 
         // Form Legalisasi routes
+        Route::post('form-legalisasi/{id}', [FormLegalisasiController::class, 'update']);
         Route::resource('form-legalisasi', FormLegalisasiController::class);
 
         // Mh Syarat routes
